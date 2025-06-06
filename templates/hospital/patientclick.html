@@ -1,0 +1,24 @@
+{% extends 'hospital/homebase.html' %}
+
+{% block content %}
+<!-- Spacing for header/nav -->
+<br><br>
+
+<div class="container">
+  <div class="jumbotron shadow-sm bg-light text-center">
+    <h1 class="display-4 text-primary font-weight-bold">Hello, Patient 👩‍⚕️👨‍⚕️</h1>
+    <p class="lead mt-3">Welcome to the Hospital Management System.</p>
+    <hr class="my-4">
+    <p class="mb-4">Please sign up or log in to access patient features such as booking appointments, viewing doctors, and checking your discharge summary.</p>
+    <div class="d-flex justify-content-center gap-3">
+      <a class="btn btn-success btn-lg mx-2" href="/patientsignup" role="button">
+        <i class="fa fa-user-plus"></i> Register Your Account
+      </a>
+      <a class="btn btn-primary btn-lg mx-2" href="/patientlogin" role="button">
+        <i class="fa fa-sign-in"></i> Login
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

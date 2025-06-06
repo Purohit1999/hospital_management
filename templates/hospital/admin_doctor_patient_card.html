@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Choose Your Role - Hospital Management</title>
+
+  <!-- Bootstrap & FontAwesome -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <style>
+    body {
+      background: #f5f7fa;
+    }
+
+    .section-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 2rem;
+      color: #343a40;
+      margin-bottom: 40px;
+    }
+
+    .role-card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .role-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .role-card .card-body {
+      padding: 30px 20px 20px;
+      background: #fff;
+    }
+
+    .role-icon {
+      font-size: 4rem;
+      color: #0d6efd;
+      margin-bottom: 20px;
+    }
+
+    .role-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #212529;
+    }
+
+    .btn-role {
+      border-radius: 25px;
+      padding: 10px 25px;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 767px) {
+      .role-icon {
+        font-size: 3rem;
+      }
+
+      .role-title {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-5">
+    <h2 class="section-title">Choose Your Role</h2>
+    <div class="row justify-content-center">
+
+      <!-- Admin -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card role-card text-center">
+          <div class="card-body">
+            <i class="fas fa-user-shield role-icon"></i>
+            <h5 class="role-title">Admin</h5>
+            <a href="/adminclick" class="btn btn-primary btn-role">Proceed</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card role-card text-center">
+          <div class="card-body">
+            <i class="fas fa-user-md role-icon"></i>
+            <h5 class="role-title">Doctor</h5>
+            <a href="/doctorclick" class="btn btn-primary btn-role">Proceed</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patient -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card role-card text-center">
+          <div class="card-body">
+            <i class="fas fa-procedures role-icon"></i>
+            <h5 class="role-title">Patient</h5>
+            <a href="/patientclick" class="btn btn-primary btn-role">Proceed</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Developed By: Param Purohit -->
+</body>
+
+</html>

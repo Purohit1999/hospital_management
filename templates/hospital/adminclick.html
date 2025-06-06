@@ -1,0 +1,69 @@
+{% extends 'hospital/homebase.html' %}
+
+{% block content %}
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Portal</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <style>
+    .custom-jumbotron {
+      background: linear-gradient(to right, #0072ff, #8811c5);
+      color: white;
+      border-radius: 0;
+      padding: 60px 30px;
+      margin-bottom: 0;
+      text-align: center;
+    }
+
+    .custom-jumbotron h1 {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+
+    .custom-jumbotron p.lead {
+      font-size: 1.25rem;
+    }
+
+    .custom-jumbotron .btn {
+      margin: 10px 15px;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      border-radius: 30px;
+    }
+
+    @media (max-width: 576px) {
+      .custom-jumbotron h1 {
+        font-size: 2.2rem;
+      }
+
+      .custom-jumbotron .btn {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+
+<div class="jumbotron custom-jumbotron">
+  <h1 class="display-4">Hello, Admin</h1>
+  <p class="lead">Welcome to the Hospital Management System.</p>
+  <hr class="my-4" style="border-color: rgba(255,255,255,0.3);">
+  <p>You can access powerful features and manage hospital operations efficiently after logging in.</p>
+  <div>
+    <a class="btn btn-light btn-lg" href="/adminsignup" role="button">
+      <i class="fas fa-user-plus"></i> Sign Up
+    </a>
+    <a class="btn btn-outline-light btn-lg" href="/adminlogin" role="button">
+      <i class="fas fa-sign-in-alt"></i> Login
+    </a>
+  </div>
+</div>
+
+<!--
+developed By : Param Purohit
+facebook : fb.com/
+youtube : youtube.com/
+-->
+
+{% endblock content %}

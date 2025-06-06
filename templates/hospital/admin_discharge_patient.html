@@ -1,0 +1,87 @@
+{% extends 'hospital/admin_base.html' %}
+{% block content %}
+
+<!-- Page-specific head and style includes -->
+<head>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <style>
+    a:link {
+      text-decoration: none;
+    }
+
+    h5 {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #337ab7;
+    }
+
+    .panel-heading {
+      background-color: #337ab7 !important;
+      color: white !important;
+    }
+
+    .table th, .table td {
+      vertical-align: middle !important;
+    }
+
+    .btn-discharge {
+      font-size: 13px;
+      padding: 4px 10px;
+    }
+
+    .container {
+      margin-top: 60px;
+      margin-bottom: 60px;
+    }
+  </style>
+</head>
+
+<!-- Main content -->
+<div class="container">
+  <div class="panel panel-primary shadow rounded">
+    <div class="panel-heading text-center py-2">
+      <h5 class="panel-title">Discharge Patients</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover" id="dev-table">
+        <thead class="thead-dark">
+          <tr>
+            <th>Name</th>
+            <th>Symptoms</th>
+            <th>Mobile</th>
+            <th>Discharge</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in patients %}
+          <tr>
+            <td>{{ p.get_name }}</td>
+            <td>{{ p.symptoms }}</td>
+            <td>{{ p.mobile }}</td>
+            <td>
+              <a class="btn btn-success btn-xs btn-discharge" href="{% url 'discharge-patient' p.id %}" title="Discharge Patient">
+                <span class="glyphicon glyphicon-log-out"></span> Discharge
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center text-muted">No patients available for discharge.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--
+developed By : Param Purohit
+facebook : fb.com
+youtube : youtube.com/
+-->
+
+{% endblock content %}

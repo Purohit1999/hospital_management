@@ -1,0 +1,119 @@
+{% extends 'hospital/homebase.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .jumbotron {
+    position: relative;
+    background-image: url('{% static "images/bg.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+
+  .jumbotron::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+  }
+
+  .jumbotron-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .glow {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 10px #ffffff, 0 0 20px #9554b3;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 10px #ffffff, 0 0 20px #9554b3;
+    }
+    to {
+      text-shadow: 0 0 20px #ffffff, 0 0 40px #ff4da6;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .glow {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<!-- Hero Banner -->
+<div class="jumbotron">
+  <div class="jumbotron-content">
+    <h1 class="glow">You’ll Love the Way We Care for You</h1>
+    <p class="lead mt-4">Dedicated to compassionate, world-class medical care.</p>
+    <h3 class="mt-4">Emergency?</h3>
+    <a class="btn btn-lg btn-outline-light mt-3" href="/patientclick" role="button">Book an Appointment</a>
+  </div>
+</div>
+
+<!-- Single Set of 4 Feature Cards -->
+<div class="container my-5">
+  <div class="row text-center">
+
+    <!-- Doctor Card -->
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <i class="fa fa-user-md fa-3x text-primary mb-3"></i>
+          <h5 class="card-title">Doctor</h5>
+          <p class="card-text">Access schedules, patients, and prescriptions with ease.</p>
+          <a href="/doctorclick" class="btn btn-outline-primary">Go</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient Card -->
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <i class="fa fa-user fa-3x text-success mb-3"></i>
+          <h5 class="card-title">Patient</h5>
+          <p class="card-text">Book appointments, view bills, and track treatments.</p>
+          <a href="/patientclick" class="btn btn-outline-success">Go</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Us Card -->
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <i class="fa fa-info-circle fa-3x text-warning mb-3"></i>
+          <h5 class="card-title">About Us</h5>
+          <p class="card-text">Learn about our mission, team, and facilities.</p>
+          <a href="/aboutus" class="btn btn-outline-warning">Explore</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Us Card -->
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <i class="fa fa-envelope fa-3x text-danger mb-3"></i>
+          <h5 class="card-title">Contact Us</h5>
+          <p class="card-text">Reach out with queries or appointment requests.</p>
+          <a href="/contactus" class="btn btn-outline-danger">Contact</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

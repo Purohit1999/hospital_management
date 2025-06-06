@@ -1,0 +1,23 @@
+{% extends 'hospital/homebase.html' %}
+
+{% block content %}
+<br><br>
+
+<div class="container">
+  <div class="card shadow-lg mx-auto" style="max-width: 600px;">
+    <div class="card-header bg-primary text-white text-center">
+      <h4 class="mb-0">Hello, Doctor</h4>
+    </div>
+    <div class="card-body text-center">
+      <p class="lead">Welcome to the Hospital Management System.</p>
+      <p class="text-muted">You can access various features after applying or logging in.</p>
+      <div class="mt-4">
+        <a class="btn btn-success btn-lg mx-2" href="/doctorsignup" role="button">Apply</a>
+        <a class="btn btn-primary btn-lg mx-2" href="/doctorlogin" role="button">Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br><br>
+{% endblock content %}

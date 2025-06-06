@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Panel | Hospital Management System</title>
+
+  <!-- Bootstrap & Icons -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  <style>
+    body {
+      padding-left: 240px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+    }
+
+    a:hover {
+      color: #f0f0f0;
+    }
+
+    nav.menu {
+      background: #3bb78f;
+      background: linear-gradient(to right, #3bb78f, #0bab64);
+      height: 100vh;
+      width: 240px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .avatar {
+      text-align: center;
+      padding: 30px 15px;
+    }
+
+    .avatar img {
+      width: 90px;
+      border-radius: 50%;
+      border: 3px solid #ffea92;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+    }
+
+    .avatar h2 {
+      margin-top: 10px;
+      font-size: 18px;
+      color: white;
+    }
+
+    .avatar h6 {
+      margin: 5px 0;
+      font-weight: normal;
+      color: #eee;
+    }
+
+    nav.menu ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    nav.menu ul li {
+      padding: 15px 30px;
+      font-size: 16px;
+      background-position: left 10px center;
+      background-size: 22px;
+      background-repeat: no-repeat;
+      transition: background 0.2s;
+    }
+
+    nav.menu ul li:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-dashboard {
+      background-image: url("https://img.icons8.com/ios-filled/24/ffffff/dashboard.png");
+    }
+
+    .icon-users {
+      background-image: url("https://img.icons8.com/ios-filled/24/ffffff/user-group-man-man.png");
+    }
+
+    .icon-calendar {
+      background-image: url("https://img.icons8.com/ios-filled/24/ffffff/calendar.png");
+    }
+
+    .smartphone-menu-trigger {
+      display: none;
+    }
+
+    main {
+      padding-top: 70px;
+    }
+
+    footer {
+      background-color: black;
+      color: white;
+      padding: 30px 0;
+      margin-top: 30px;
+    }
+
+    footer p {
+      margin: 0;
+      text-align: center;
+    }
+
+    .fa {
+      padding: 10px;
+      font-size: 20px;
+      width: 40px;
+      border-radius: 50%;
+      text-align: center;
+      margin: 0 5px;
+    }
+
+    .fa-facebook { background: #3B5998; }
+    .fa-twitter { background: #55ACEE; }
+    .fa-instagram { background: #e4405f; }
+    .fa-whatsapp { background: #25D366; }
+
+    .fa:hover {
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-left: 0;
+      }
+
+      nav.menu {
+        width: 220px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+      }
+
+      nav.menu.active {
+        transform: translateX(0);
+      }
+
+      .smartphone-menu-trigger {
+        display: block;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1100;
+        background: #3bb78f;
+        border-radius: 4px;
+        padding: 10px;
+        cursor: pointer;
+      }
+
+      .smartphone-menu-trigger span {
+        display: block;
+        width: 25px;
+        height: 3px;
+        background: #fff;
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Mobile Trigger -->
+  <div class="smartphone-menu-trigger" onclick="document.querySelector('nav.menu').classList.toggle('active')">
+    <span></span><span></span><span></span>
+  </div>
+
+  <!-- Sidebar Menu -->
+  <nav class="menu" tabindex="0">
+    <header class="avatar">
+      <img src="{% static doctor.profile_pic.url %}" alt="Profile Picture" />
+      <h6>Doctor</h6>
+      <h2>{{ request.user.first_name }}</h2>
+    </header>
+    <ul>
+      <li class="icon-dashboard"><a href="/doctor-dashboard">Dashboard</a></li>
+      <li class="icon-users"><a href="/doctor-patient">Patient</a></li>
+      <li class="icon-calendar"><a href="/doctor-appointment">Appointments</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top" style="left: 240px;">
+      <a href="/doctor-dashboard" class="navbar-brand">Hospital Management</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="topNavbar">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a href="/logout" class="nav-link">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-fluid mt-5 pt-4">
+      {% block content %}
+      {% endblock content %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="text-center">
+        <p>
+          <a href="https://facebook.com/Param.Paramp/" class="fa fa-facebook"></a>
+          <a href="https://api.whatsapp.com/send?phone=919572181024&text=Hello%20Param" class="fa fa-whatsapp"></a>
+          <a href="https://instagram.com/Param.Paramp" class="fa fa-instagram"></a>
+          <a href="https://twitter.com/Paramkumar1503" class="fa fa-twitter"></a>
+        </p>
+        <p>Made in India<br>Copyright &copy; 2020 Param</p>
+      </div>
+    </footer>
+  </main>
+
+</body>
+</html>

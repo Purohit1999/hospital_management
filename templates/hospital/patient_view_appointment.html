@@ -1,0 +1,126 @@
+{% extends 'hospital/patient_base.html' %}
+{% block content %}
+
+<head>
+  <!-- Bootstrap 4 & Font Awesome for cleaner modern UI -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    /* Page-specific styling */
+    h4 {
+      text-align: center;
+      margin: 30px 0;
+      color: #007bff;
+    }
+
+    .table {
+      background-color: white;
+    }
+
+    .status-confirmed {
+      color: #fff;
+      background-color: #007bff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.9em;
+    }
+
+    .status-pending {
+      color: #fff;
+      background-color: #28a745;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.9em;
+    }
+
+    .cancel-button {
+      font-size: 0.85em;
+      color: white;
+      background-color: #dc3545;
+      padding: 3px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .cancel-button:hover {
+      background-color: #bd2130;
+    }
+
+    .card {
+      margin-top: 50px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    @media only screen and (max-width: 600px) {
+      h4 {
+        font-size: 1.2rem;
+      }
+
+      .table th,
+      .table td {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<!-- 🗓️ Patient Appointment List -->
+<div class="container">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h4>Your Upcoming & Past Appointments</h4>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered">
+          <thead class="thead-light">
+            <tr>
+              <th>Doctor Name</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in appointments %}
+              <tr>
+                <td>{{ a.doctorName }}</td>
+                <td>{{ a.description }}</td>
+                <td>{{ a.appointmentDate }}</td>
+                <td>
+                  {% if a.status %}
+                    <span class="status-confirmed">Confirmed</span>
+                  {% else %}
+                    <span class="status-pending">Pending</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if not a.status %}
+                    <a href="{% url 'cancel-appointment' a.id %}" class="cancel-button">Cancel</a>
+                  {% else %}
+                    <span class="text-muted">-</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center text-muted">No appointments found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  🛠 Developed by: Param
+  📘 Facebook: fb.com/
+  📺 YouTube: youtube.com/
+-->
+
+{% endblock content %}

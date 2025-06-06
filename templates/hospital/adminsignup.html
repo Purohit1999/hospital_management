@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Admin Signup | Hospital Management</title>
+
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(to right, #0072ff, #8811c5);
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+    }
+
+    .signup-container {
+      margin-top: 100px;
+    }
+
+    .signup-card {
+      background: #fff;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .signup-title {
+      text-align: center;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 30px;
+      font-size: 24px;
+    }
+
+    .form-control {
+      border-radius: 1.25rem;
+    }
+
+    .btn-signup {
+      background-color: #0062cc;
+      color: white;
+      border-radius: 1.25rem;
+      padding: 10px 25px;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .btn-signup:hover {
+      background-color: #004c99;
+    }
+
+    .login-link {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .login-link a {
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  {% include "hospital/navbar.html" %}
+
+  <div class="container signup-container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="signup-card">
+          <h3 class="signup-title"><i class="fas fa-user-plus"></i> Admin Registration</h3>
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              {% render_field form.first_name class="form-control" placeholder="First Name" %}
+            </div>
+            <div class="form-group">
+              {% render_field form.last_name class="form-control" placeholder="Last Name" %}
+            </div>
+            <div class="form-group">
+              {% render_field form.username class="form-control" placeholder="Username" %}
+            </div>
+            <div class="form-group">
+              {% render_field form.password class="form-control" placeholder="Password" %}
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-signup">Register</button>
+            </div>
+            <div class="login-link">
+              Already have an account? <a href="/adminlogin">Login here</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include "hospital/footer.html" %}
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Doctor Dashboard - Cards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap & Font Awesome -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+  <style>
+    .dashboard-card {
+      color: #fff;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .dashboard-card .card-icon {
+      font-size: 3rem;
+      background: #fff;
+      color: #000;
+      border-radius: 50%;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+    }
+
+    .dashboard-card h3 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+
+    .dashboard-card h4 {
+      margin: 5px 0 0;
+      font-size: 1.1rem;
+    }
+
+    .bg-appointments {
+      background: linear-gradient(45deg, #007bff, #00c6ff);
+    }
+
+    .bg-patients {
+      background: linear-gradient(45deg, #28a745, #218838);
+    }
+
+    .bg-discharged {
+      background: linear-gradient(45deg, #fd7e14, #f86c0c);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container mt-5">
+    <div class="row">
+      <!-- Appointments Card -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-appointments">
+          <div>
+            <h3>{{ appointmentcount }}</h3>
+            <h4>Appointments For You</h4>
+          </div>
+          <div class="card-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patients Card -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-patients">
+          <div>
+            <h3>{{ patientcount }}</h3>
+            <h4>Patients Under You</h4>
+          </div>
+          <div class="card-icon">
+            <i class="fas fa-user-injured"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Discharged Patients Card -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-discharged">
+          <div>
+            <h3>{{ patientdischarged }}</h3>
+            <h4>Patients Discharged</h4>
+          </div>
+          <div class="card-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

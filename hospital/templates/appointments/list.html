@@ -1,0 +1,50 @@
+{% extends 'hospital/homebase.html' %}
+{% block content %}
+
+<div class="container my-5">
+  <h2 class="text-center mb-4">Upcoming Appointments</h2>
+
+  <div class="row">
+    {% for appt in appointments %}
+      <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+        <div class="card mb-4 shadow-sm w-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ appt.patient.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+              With Dr. {{ appt.doctor.name }}
+            </h6>
+
+            <p class="card-text">
+              <strong>Date & Time:</strong><br>
+              <time datetime="{{ appt.date_time }}">{{ appt.date_time|date:"M d, Y H:i" }}</time><br>
+
+              <strong>Status:</strong>
+              {% if appt.status == 'confirmed' %}
+                <span class="badge bg-success text-white">Confirmed</span>
+              {% elif appt.status == 'pending' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% elif appt.status == 'completed' %}
+                <span class="badge bg-secondary text-white">Completed</span>
+              {% else %}
+                <span class="badge bg-info text-dark">{{ appt.status|title }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <!-- Optional footer (view/reschedule) -->
+          {# <div class="card-footer text-end">
+            <a href="{% url 'appointment_detail' appt.id %}" class="btn btn-sm btn-outline-primary">View</a>
+          </div> #}
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-warning text-center">
+          No upcoming appointments.
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

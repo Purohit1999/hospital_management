@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Feedback Sent | Hospital Management</title>
+
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(to right, #f8fbff, #e6f0ff);
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+    }
+
+    .success-container {
+      margin-top: 100px;
+      margin-bottom: 60px;
+    }
+
+    .success-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .success-icon {
+      font-size: 60px;
+      color: #28a745;
+      margin-bottom: 20px;
+    }
+
+    .btn-home {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 30px;
+      border-radius: 25px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-home:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+
+  {% include "hospital/navbar.html" %}
+
+  <div class="container success-container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="success-card">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2 class="mb-3">Message Sent Successfully!</h2>
+          <p class="lead">Thank you for your feedback. We'll get back to you shortly.</p>
+          <hr class="my-4">
+          <p class="mb-4">Explore other features of our website below.</p>
+          <a class="btn btn-home" href="/" role="button">Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include "hospital/footer.html" %}
+
+</body>
+</html>

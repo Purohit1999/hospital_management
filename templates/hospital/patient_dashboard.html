@@ -1,0 +1,24 @@
+{% extends 'hospital/patient_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Main Heading with Style -->
+<div class="container mt-5 text-center">
+  <h2 class="display-5 fw-bold text-primary mb-4">Welcome to Your Patient Dashboard</h2>
+  <p class="lead text-muted">Access your appointment details, doctor information, and treatment history with ease.</p>
+</div>
+
+<!-- Include the Patient Dashboard Cards -->
+<div class="container mt-5">
+  {% include 'hospital/patient_dashboard_cards.html' %}
+</div>
+
+<!-- Optional call to action or additional features -->
+<div class="container text-center my-5">
+  <a href="/patient-book-appointment" class="btn btn-outline-primary btn-lg">
+    Book New Appointment
+  </a>
+</div>
+
+{% endblock content %}

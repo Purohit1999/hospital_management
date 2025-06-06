@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Dashboard</title>
+
+  <!-- Bootstrap 4 CSS for layout and responsiveness -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    /* Card container style */
+    .dashboard-card {
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      color: #fff;
+      transition: transform 0.3s ease;
+    }
+
+    /* Hover effect on cards */
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Background color themes */
+    .bg-red {
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    }
+
+    .bg-green {
+      background: linear-gradient(45deg, #1d976c, #93f9b9);
+    }
+
+    .bg-blue {
+      background: linear-gradient(45deg, #2193b0, #6dd5ed);
+    }
+
+    /* Icon styling inside cards */
+    .card-icon {
+      font-size: 2.5rem;
+      background-color: #ffffff33;
+      padding: 15px;
+      border-radius: 50%;
+    }
+
+    .card-label {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .card-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    /* Responsive adjustments for mobile */
+    @media (max-width: 768px) {
+      .dashboard-card {
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Main container for patient dashboard cards -->
+  <div class="container mt-5">
+
+    <!-- First row of cards -->
+    <div class="row text-center">
+
+      <!-- Doctor Name -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-red">
+          <div class="card-icon mb-3"><i class="fa fa-user-o"></i></div>
+          <div class="card-value">{{ doctorName }}</div>
+          <div class="card-label">Doctor Name</div>
+        </div>
+      </div>
+
+      <!-- Symptoms -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-green">
+          <div class="card-icon mb-3"><i class="fa fa-info-circle"></i></div>
+          <div class="card-value">{{ symptoms }}</div>
+          <div class="card-label">Symptoms</div>
+        </div>
+      </div>
+
+      <!-- Doctor Mobile -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-blue">
+          <div class="card-icon mb-3"><i class="fa fa-mobile"></i></div>
+          <div class="card-value">{{ doctorMobile }}</div>
+          <div class="card-label">Doctor Mobile</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second row of cards -->
+    <div class="row text-center mt-4">
+
+      <!-- Doctor Address -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-blue">
+          <div class="card-icon mb-3"><i class="fa fa-map-marker"></i></div>
+          <div class="card-value">{{ doctorAddress }}</div>
+          <div class="card-label">Doctor Address</div>
+        </div>
+      </div>
+
+      <!-- Department -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-green">
+          <div class="card-icon mb-3"><i class="fa fa-list-alt"></i></div>
+          <div class="card-value">{{ doctorDepartment }}</div>
+          <div class="card-label">Department</div>
+        </div>
+      </div>
+
+      <!-- Admit Date -->
+      <div class="col-md-4">
+        <div class="dashboard-card bg-red">
+          <div class="card-icon mb-3"><i class="fa fa-calendar-o"></i></div>
+          <div class="card-value">{{ admitDate }}</div>
+          <div class="card-label">Admit Date</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+
+</html>

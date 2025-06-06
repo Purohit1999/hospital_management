@@ -1,0 +1,220 @@
+{% extends 'hospital/patient_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<head>
+  <meta charset="utf-8">
+  <title>Patient Discharge Invoice</title>
+
+  <style>
+    .invoice-box {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+      border: 1px solid #eee;
+      box-shadow: 0 0 15px rgba(0, 0, 0, .1);
+      font-size: 16px;
+      line-height: 24px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #555;
+      background-color: #fff;
+    }
+
+    .invoice-box table {
+      width: 100%;
+      text-align: left;
+      border-collapse: collapse;
+    }
+
+    .invoice-box td {
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    .invoice-box .title img {
+      max-width: 100px;
+    }
+
+    .invoice-box table tr.heading td {
+      background: #f7f7f7;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+    }
+
+    .invoice-box table tr.item td {
+      border-bottom: 1px solid #eee;
+    }
+
+    .invoice-box table tr.total td {
+      border-top: 2px solid #eee;
+      font-weight: bold;
+    }
+
+    .download-print {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .download-print a,
+    .download-print button {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 25px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .download-print a:hover,
+    .download-print button:hover {
+      background-color: #0056b3;
+    }
+
+    .not-discharged {
+      text-align: center;
+      margin-top: 100px;
+      font-size: 18px;
+      color: #444;
+    }
+
+    @media (max-width: 768px) {
+      .invoice-box {
+        font-size: 14px;
+        padding: 20px;
+      }
+
+      .download-print a,
+      .download-print button {
+        display: block;
+        width: 100%;
+        margin: 10px auto;
+      }
+    }
+  </style>
+</head>
+
+<br><br><br>
+
+{% if is_discharged %}
+<!-- Invoice Box -->
+<div class="invoice-box" id="invoice-box">
+  <table>
+    <!-- Invoice Header with Logo and Dates -->
+    <tr class="top">
+      <td colspan="2">
+        <table>
+          <tr>
+            <td class="title">
+              <!-- Optional Logo (Replace path if needed) -->
+              <img src="{% static 'images/hospital-logo.png' %}" alt="Hospital Logo">
+            </td>
+            <td style="text-align:right;">
+              <strong>Admit Date:</strong> {{ admitDate }}<br>
+              <strong>Release Date:</strong> {{ releaseDate }}<br>
+              <strong>Days Spent:</strong> {{ daySpent }}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Patient & Doctor Info -->
+    <tr class="information">
+      <td colspan="2">
+        <table>
+          <tr>
+            <td>
+              <strong>Patient Name:</strong> {{ patientName }}<br>
+              <strong>Mobile:</strong> {{ mobile }}<br>
+              <strong>Address:</strong> {{ address }}
+            </td>
+            <td>
+              <strong>Doctor:</strong> {{ assignedDoctorName }}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Symptoms -->
+    <tr class="heading">
+      <td>Disease and Symptoms</td>
+      <td></td>
+    </tr>
+    <tr class="item">
+      <td colspan="2">{{ symptoms }}</td>
+    </tr>
+
+    <!-- Billing Items -->
+    <tr class="heading">
+      <td>Item</td>
+      <td>Price (₹)</td>
+    </tr>
+
+    <tr class="item">
+      <td>Room Charge ({{ daySpent }} Days)</td>
+      <td>{{ roomCharge }}</td>
+    </tr>
+
+    <tr class="item">
+      <td>Doctor Fee</td>
+      <td>{{ doctorFee }}</td>
+    </tr>
+
+    <tr class="item">
+      <td>Medicine Cost</td>
+      <td>{{ medicineCost }}</td>
+    </tr>
+
+    <tr class="item">
+      <td>Other Charges</td>
+      <td>{{ OtherCharge }}</td>
+    </tr>
+
+    <!-- Total -->
+    <tr class="total">
+      <td></td>
+      <td>Total: ₹ {{ total }}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Action Buttons -->
+<div class="download-print">
+  <!-- Download PDF Button -->
+  <a href="{% url 'download-pdf' patientId %}" title="Download Invoice">Download PDF</a>
+
+  <!-- Print Invoice Button -->
+  <button onclick="printInvoice()">Print Invoice</button>
+</div>
+
+<script>
+  // Print only the invoice area
+  function printInvoice() {
+    var printContents = document.getElementById("invoice-box").innerHTML;
+    var originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload();  // reload to restore JS/CSS
+  }
+</script>
+
+{% else %}
+<!-- If not yet discharged -->
+<div class="not-discharged">
+  <h4>You are not yet discharged from the hospital.</h4>
+  <p>Your treatment is still ongoing.</p>
+  <p>Once discharged, you can view and download your invoice here.</p>
+</div>
+{% endif %}
+
+<br><br><br><br><br>
+
+{% endblock content %}

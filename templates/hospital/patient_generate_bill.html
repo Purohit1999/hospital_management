@@ -1,0 +1,176 @@
+{% extends 'hospital/admin_base.html' %}
+{% load static %}
+{% block content %}
+
+<head>
+  <meta charset="utf-8">
+  <title>Generate Patient Bill – Hospital Management (UK)</title>
+
+  <style>
+    .invoice-box {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 15px rgba(0, 0, 0, .1);
+      font-size: 16px;
+      line-height: 24px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      background-color: #fff;
+    }
+
+    .invoice-box table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .invoice-box table td {
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    .invoice-box table tr.heading td {
+      background: #f0f0f0;
+      border-bottom: 1px solid #bbb;
+      font-weight: bold;
+    }
+
+    .invoice-box table tr.item td {
+      border-bottom: 1px solid #eee;
+    }
+
+    .invoice-box table tr.total td {
+      border-top: 2px solid #eee;
+      font-weight: bold;
+    }
+
+    input[type="number"],
+    input[type="submit"] {
+      padding: 8px;
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    input[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .invoice-box {
+        font-size: 14px;
+        padding: 20px;
+      }
+
+      input[type="submit"] {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<br><br><br>
+
+<!-- 🧾 Patient Bill Generation Form -->
+<div class="invoice-box">
+  <table>
+    <!-- Header with hospital name and patient duration -->
+    <tr class="top">
+      <td colspan="2">
+        <table>
+          <tr>
+            <td>
+              <h2>Hospital Management (UK)</h2>
+            </td>
+            <td style="text-align:right;">
+              <strong>Admit Date:</strong> {{ admitDate }}<br>
+              <strong>Today's Date:</strong> {{ todayDate }}<br>
+              <strong>Total Days:</strong> {{ day }}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Patient and Doctor Info -->
+    <tr class="information">
+      <td colspan="2">
+        <table>
+          <tr>
+            <td>
+              <strong>Patient Name:</strong> {{ name }}<br>
+              <strong>Mobile:</strong> {{ mobile }}<br>
+              <strong>Address:</strong> {{ address }}
+            </td>
+            <td>
+              <strong>Doctor:</strong> {{ assignedDoctorName }}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Symptoms -->
+    <tr class="heading">
+      <td colspan="2">Diagnosis & Symptoms</td>
+    </tr>
+    <tr class="item">
+      <td colspan="2">{{ symptoms }}</td>
+    </tr>
+
+    <!-- Start Billing Input Form -->
+    <tr class="heading">
+      <td>Service Description</td>
+      <td>Enter Amount (£)</td>
+    </tr>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <tr class="item">
+        <td>Room Charges (Per Day)</td>
+        <td><input type="number" name="roomCharge" placeholder="e.g. 120" required></td>
+      </tr>
+
+      <tr class="item">
+        <td>Doctor Consultation Fee</td>
+        <td><input type="number" name="doctorFee" placeholder="e.g. 80" required></td>
+      </tr>
+
+      <tr class="item">
+        <td>Medicine Cost</td>
+        <td><input type="number" name="medicineCost" placeholder="e.g. 45" required></td>
+      </tr>
+
+      <tr class="item">
+        <td>Other Charges</td>
+        <td><input type="number" name="OtherCharge" placeholder="e.g. 25" required></td>
+      </tr>
+
+      <tr class="total">
+        <td></td>
+        <td>
+          <input type="submit" name="submit" value="Generate Final Bill">
+        </td>
+      </tr>
+    </form>
+    <!-- End Billing Input Form -->
+  </table>
+</div>
+
+<!--
+  🛠 Developed by: Param
+  📘 Facebook: fb.com/
+  📺 YouTube: youtube.com/
+-->
+
+{% endblock content %}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About Us | Hospital Management</title>
+
+  <!-- Bootstrap CSS (ensure this is linked in base template if not here) -->
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+  <!-- Optional: Custom CSS -->
+  <style>
+    /* Add spacing and styling to main about section */
+    .about-section {
+      background-color: #f8f9fa;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .about-section h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .about-section p {
+      font-size: 1.2rem;
+      color: #555;
+    }
+
+    .btn-home {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  {% include "hospital/navbar.html" %}
+
+  <!-- Page Header -->
+  <div class="alert alert-success text-center mb-0">
+    <h3 class="mb-0">About Us</h3>
+  </div>
+
+  <!-- Main About Section -->
+  <section class="about-section">
+    <div class="container">
+      <h1 class="display-4">Welcome to Param Hospital System</h1>
+      <p class="lead">We are committed to streamlining the management of hospitals by simplifying the interaction between Admins, Doctors, and Patients.</p>
+      <hr class="my-4">
+      <p>This platform helps in scheduling appointments, managing patient records, and enabling doctors to provide better healthcare service.</p>
+      <a class="btn btn-primary btn-lg btn-home" href="/" role="button">Back to Home</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  {% include "hospital/footer.html" %}
+
+</body>
+
+<!--
+Developed by: Param Purohit
+Facebook: fb.com/yourprofile
+YouTube: youtube.com/yourchannel
+-->
+
+</html>

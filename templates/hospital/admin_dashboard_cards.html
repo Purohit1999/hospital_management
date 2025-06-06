@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin Dashboard Cards</title>
+
+  <!-- Responsive Meta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap & Font Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <!-- Custom Dashboard Styling -->
+  <style>
+    .market-updates {
+      margin: 50px 0;
+    }
+
+    .market-update-block {
+      background: #999;
+      padding: 2em;
+      color: white;
+      border-radius: 10px;
+      transition: all 0.3s ease-in-out;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .market-update-block h3 {
+      font-size: 2.5em;
+      margin: 0;
+    }
+
+    .market-update-block h4 {
+      font-size: 1.3em;
+      margin: 5px 0;
+    }
+
+    .market-update-block p {
+      font-size: 1em;
+      margin-bottom: 0;
+    }
+
+    .market-update-right i {
+      font-size: 3em;
+      width: 70px;
+      height: 70px;
+      background: #fff;
+      color: #333;
+      text-align: center;
+      line-height: 70px;
+      border-radius: 50%;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .clr-block-1 { background: #d9534f; }
+    .clr-block-2 { background: #f0ad4e; }
+    .clr-block-3 { background: #5bc0de; }
+
+    .market-update-block:hover {
+      filter: brightness(90%);
+      cursor: pointer;
+    }
+
+    @media screen and (max-width: 768px) {
+      .market-update-block {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .market-update-right {
+        margin-top: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container market-updates">
+    <!-- Doctor Count -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="market-update-block clr-block-1">
+          <div>
+            <h3>{{ doctorcount }}</h3>
+            <h4>Total Doctors</h4>
+            <p>Pending Approvals: {{ pendingdoctorcount }}</p>
+          </div>
+          <div class="market-update-right">
+            <i class="fa fa-user-md"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patient Count -->
+      <div class="col-md-4">
+        <div class="market-update-block clr-block-2">
+          <div>
+            <h3>{{ patientcount }}</h3>
+            <h4>Total Patients</h4>
+            <p>Wants to Admit: {{ pendingpatientcount }}</p>
+          </div>
+          <div class="market-update-right">
+            <i class="fa fa-user-o"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointment Count -->
+      <div class="col-md-4">
+        <div class="market-update-block clr-block-3">
+          <div>
+            <h3>{{ appointmentcount }}</h3>
+            <h4>Total Appointments</h4>
+            <p>Pending Approvals: {{ pendingappointmentcount }}</p>
+          </div>
+          <div class="market-update-right">
+            <i class="fa fa-calendar"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+<!--
+developed By : Param Purohit
+facebook : fb.com/
+youtube : youtube.com/
+-->
+
+</html>

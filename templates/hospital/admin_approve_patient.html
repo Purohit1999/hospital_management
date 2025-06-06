@@ -1,0 +1,120 @@
+{% extends 'hospital/admin_base.html' %}
+{% load static %}
+{% block content %}
+
+<head>
+  <!-- Bootstrap 4.6 & Font Awesome -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+  <style>
+    a:link {
+      text-decoration: none;
+    }
+
+    .panel {
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-top: 60px;
+    }
+
+    .panel-heading {
+      background: linear-gradient(to right, #28a745, #218838);
+      color: white;
+      padding: 15px 20px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.25rem;
+      text-align: center;
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+    }
+
+    .profile-pic {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+    }
+
+    .btn-xs {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      line-height: 1;
+      border-radius: 0.2rem;
+    }
+
+    .container {
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+
+<!-- Patient Approval Panel -->
+<div class="container">
+  <div class="panel">
+    <div class="panel-heading">
+      <h2 class="panel-title">Patients Awaiting Admission Approval</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th>Name</th>
+            <th>Profile</th>
+            <th>Symptoms</th>
+            <th>Mobile</th>
+            <th>Address</th>
+            <th>Approve</th>
+            <th>Reject</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in patients %}
+          <tr>
+            <td>{{ p.get_name }}</td>
+            <td><img src="{% static p.profile_pic.url %}" alt="Profile Pic" class="profile-pic"></td>
+            <td>{{ p.symptoms }}</td>
+            <td>{{ p.mobile }}</td>
+            <td>{{ p.address }}</td>
+            <td class="text-center">
+              <a href="{% url 'approve-patient' p.id %}" class="btn btn-success btn-xs" title="Approve">
+                <i class="fas fa-check-circle"></i>
+              </a>
+            </td>
+            <td class="text-center">
+              <a href="{% url 'reject-patient' p.id %}" class="btn btn-danger btn-xs" title="Reject">
+                <i class="fas fa-times-circle"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center text-muted">No patients awaiting approval.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--
+  Developed by: Param Purohit
+  Facebook: fb.com/
+  YouTube: youtube.com/
+-->
+
+{% endblock content %}

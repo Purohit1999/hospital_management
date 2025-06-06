@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Doctor Signup | Hospital Management</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <style>
+    body {
+      background-color: #f1f4f7;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+      border-radius: 1rem;
+    }
+
+    .btn-signup {
+      border-radius: 50px;
+      padding: 10px 30px;
+    }
+
+    .card-header {
+      background: linear-gradient(to right, #0072ff, #8811c5);
+      color: #fff;
+      text-align: center;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+    }
+
+    .form-control {
+      border-radius: 1rem;
+    }
+
+    .form-label {
+      font-weight: 600;
+    }
+
+    .form-note {
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  {% include "hospital/navbar.html" %}
+  <br><br>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-lg">
+          <div class="card-header py-3">
+            <h4 class="mb-0">Doctor Registration</h4>
+            <p class="mb-0" style="font-size: 0.95rem;">Please fill in your details to apply for a doctor account.</p>
+          </div>
+          <div class="card-body px-4">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="first_name" class="form-label">First Name</label>
+                  {% render_field userForm.first_name class="form-control" placeholder="Enter First Name" %}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="last_name" class="form-label">Last Name</label>
+                  {% render_field userForm.last_name class="form-control" placeholder="Enter Last Name" %}
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="username" class="form-label">Username</label>
+                  {% render_field userForm.username class="form-control" placeholder="Choose a Username" %}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="password" class="form-label">Password</label>
+                  {% render_field userForm.password class="form-control" placeholder="Enter Password" %}
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="department" class="form-label">Department</label>
+                  {% render_field doctorForm.department class="form-control" placeholder="Enter Department" %}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="mobile" class="form-label">Mobile Number</label>
+                  {% render_field doctorForm.mobile class="form-control" placeholder="Enter Mobile Number" %}
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="address" class="form-label">Address</label>
+                  {% render_field doctorForm.address class="form-control" placeholder="Enter Address" %}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="profile_pic" class="form-label">Profile Picture</label>
+                  {% render_field doctorForm.profile_pic class="form-control" %}
+                </div>
+              </div>
+
+              <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-signup">Register</button>
+              </div>
+              <p class="text-center mt-3 form-note">
+                Already have an account? <a href="/doctorlogin">Login here</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br><br>
+  {% include "hospital/footer.html" %}
+</body>
+
+</html>

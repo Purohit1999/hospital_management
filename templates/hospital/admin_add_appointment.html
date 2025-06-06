@@ -1,0 +1,116 @@
+{% extends 'hospital/admin_base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<head>
+  <!-- Page-specific Styles -->
+  <style>
+    a:link {
+      text-decoration: none;
+    }
+
+    .note {
+      text-align: center;
+      height: 80px;
+      background: linear-gradient(to right, #0072ff, #8811c5);
+      color: #fff;
+      font-weight: bold;
+      line-height: 80px;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .form-content {
+      padding: 5%;
+      border: 1px solid #ced4da;
+      margin-bottom: 2%;
+      border-radius: 0 0 8px 8px;
+      background-color: #fdfdfd;
+    }
+
+    .form-control {
+      border-radius: 1.5rem;
+    }
+
+    .btnSubmit {
+      border: none;
+      border-radius: 1.5rem;
+      padding: 1%;
+      width: 30%;
+      cursor: pointer;
+      background: #0062cc;
+      color: #fff;
+      margin-top: 10px;
+    }
+
+    .register-form {
+      margin-top: 30px;
+      margin-bottom: 50px;
+    }
+
+    label {
+      font-weight: 500;
+      margin-top: 10px;
+    }
+  </style>
+
+  <!-- External Bootstrap (if not already included globally) -->
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<!-- Main Appointment Form Content -->
+<div class="container register-form">
+  <div class="form">
+    <div class="note">
+      <p>Admin: Book an Appointment</p>
+    </div>
+    <div class="form-content">
+      <form method="post">
+        {% csrf_token %}
+
+        <!-- Description Field -->
+        <div class="form-group">
+          <label for="id_description">Description</label>
+          {% render_field appointmentForm.description class="form-control" placeholder="Brief description or symptoms" %}
+        </div>
+
+        <!-- Doctor Selection -->
+        <div class="form-group">
+          <label for="id_doctor">Select Doctor</label>
+          {% render_field appointmentForm.doctor class="form-control" %}
+        </div>
+
+        <!-- Patient Selection -->
+        <div class="form-group">
+          <label for="id_patient">Select Patient</label>
+          {% render_field appointmentForm.patient class="form-control" %}
+        </div>
+
+        <!-- Appointment Date & Time -->
+        <div class="form-group">
+          <label for="id_date_time">Appointment Date & Time</label>
+          {% render_field appointmentForm.date_time class="form-control" %}
+        </div>
+
+        <!-- Status (optional) -->
+        <div class="form-group">
+          <label for="id_status">Status</label>
+          {% render_field appointmentForm.status class="form-control" %}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center">
+          <button type="submit" class="btnSubmit">Book Appointment</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--
+Developed by: Param Purohit
+Facebook: fb.com/Param.Paramp
+YouTube: youtube.com/Params
+-->
+
+{% endblock content %}

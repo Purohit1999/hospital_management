@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Param || Doctor Approval Pending</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .approval-card {
+      margin-top: 80px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .approval-card .card-header {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+    }
+
+    .approval-card .card-body {
+      text-align: center;
+      padding: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  {% include "hospital/navbar.html" %}
+
+  <div class="container">
+    <div class="card approval-card mt-5">
+      <div class="card-header">
+        <h4>Hello {{ request.user.first_name }}</h4>
+      </div>
+      <div class="card-body">
+        <p class="lead">Your account is currently <strong>pending approval</strong>.</p>
+        <p>Our team is reviewing your profile. Once approved, you’ll receive full access to your dashboard.</p>
+        <hr>
+        <p class="text-muted">Please check back later.</p>
+        <a href="/logout" class="btn btn-primary btn-lg mt-3">Logout For Now</a>
+      </div>
+    </div>
+  </div>
+
+  {% include "hospital/footer.html" %}
+</body>
+</html>

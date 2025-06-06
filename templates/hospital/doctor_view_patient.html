@@ -1,0 +1,54 @@
+{% extends 'hospital/doctor_base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container my-5">
+  <div class="row mb-3">
+    <div class="col-md-4 offset-md-8">
+      <form action="/search" method="get" class="form-inline">
+        <input class="form-control mr-2 w-75" type="search" name="query" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+
+  {% if patients %}
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white text-center">
+      <h5 class="mb-0">Your Total Patient List</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Name</th>
+              <th>Profile Picture</th>
+              <th>Symptoms</th>
+              <th>Mobile</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in patients %}
+            <tr>
+              <td>{{ p.get_name }}</td>
+              <td><img src="{% static p.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" class="rounded-circle" /></td>
+              <td>{{ p.symptoms }}</td>
+              <td>{{ p.mobile }}</td>
+              <td>{{ p.address }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-warning text-center mt-5" role="alert">
+    <h5 class="mb-0 text-danger">No Patient Found !!!</h5>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock content %}

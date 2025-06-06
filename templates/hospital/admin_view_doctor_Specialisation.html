@@ -1,0 +1,85 @@
+{% extends 'hospital/admin_base.html' %}
+{% block content %}
+
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Specialisations</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    .section-title {
+      background: linear-gradient(to right, #0072ff, #8811c5);
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      border-radius: 5px 5px 0 0;
+      margin-bottom: 0;
+    }
+
+    .card-box {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      padding: 0;
+    }
+
+    table thead {
+      background-color: #f1f1f1;
+    }
+
+    table th,
+    table td {
+      vertical-align: middle !important;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .container {
+      margin-top: 40px;
+      margin-bottom: 60px;
+    }
+  </style>
+</head>
+
+<div class="container">
+  <div class="card-box">
+    <h4 class="section-title">Department & Doctors</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover mb-0">
+        <thead class="thead-light">
+          <tr>
+            <th>Department</th>
+            <th>Doctor Name</th>
+            <th>Mobile</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in doctors %}
+          <tr>
+            <td>{{ d.department }}</td>
+            <td>{{ d.get_name }}</td>
+            <td>{{ d.mobile }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No doctor specialisations available.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--
+developed By : Param Purohit
+facebook : fb.com/
+youtube : youtube.com/
+-->
+
+{% endblock content %}

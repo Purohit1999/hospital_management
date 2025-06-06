@@ -1,0 +1,41 @@
+{% extends 'hospital/doctor_base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container my-5">
+  <div class="card shadow">
+    <div class="card-header bg-success text-white text-center">
+      <h5 class="mb-0">Your Discharged Patient List</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Name</th>
+              <th>Admit Date</th>
+              <th>Release Date</th>
+              <th>Symptoms</th>
+              <th>Mobile</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in dischargedpatients %}
+            <tr>
+              <td>{{ p.patientName }}</td>
+              <td>{{ p.admitDate }}</td>
+              <td>{{ p.releaseDate }}</td>
+              <td>{{ p.symptoms }}</td>
+              <td>{{ p.mobile }}</td>
+              <td>{{ p.address }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
