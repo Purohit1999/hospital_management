@@ -94,3 +94,17 @@ Rate experience and provide optional comments for improvement.
 * **U**pdate → Edit records or update statuses
 * **D**elete → Remove patients, appointments, or old records (admin only)
 
+## 📐 Wireframe Diagrams
+
+### 🖥️ Desktop View  
+![Desktop Wireframe](https://github.com/Purohit1999/hospital_management/blob/main/static/images/desktop.png?raw=true)
+
+### 📱 Tablet View  
+![Tablet Wireframe](https://github.com/Purohit1999/hospital_management/blob/main/static/images/tablet.png?raw=true)
+
+### 📲 Mobile View  
+![Mobile Wireframe](https://github.com/Purohit1999/hospital_management/blob/main/static/images/mobile.png?raw=true)
+
+## 🧭 Data Flow Diagram
+
+![Data Flow](https://github.com/Purohit1999/hospital_management/blob/main/static/images/data_flow.png?raw=true)
