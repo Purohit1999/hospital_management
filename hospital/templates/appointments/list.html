@@ -1,6 +1,6 @@
 {% extends 'hospital/homebase.html' %}
-{% block content %}
 
+{% block content %}
 <div class="container my-5">
   <h2 class="text-center mb-4">Upcoming Appointments</h2>
 
@@ -30,11 +30,6 @@
               {% endif %}
             </p>
           </div>
-
-          <!-- Optional footer (view/reschedule) -->
-          {# <div class="card-footer text-end">
-            <a href="{% url 'appointment_detail' appt.id %}" class="btn btn-sm btn-outline-primary">View</a>
-          </div> #}
         </div>
       </div>
     {% empty %}
@@ -46,5 +41,4 @@
     {% endfor %}
   </div>
 </div>
-
 {% endblock %}
