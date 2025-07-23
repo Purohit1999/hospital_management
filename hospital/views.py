@@ -1,9 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from .models import Appointment
-from .forms import AppointmentForm, PatientUserForm, PatientForm
+from .forms import (
+    AppointmentForm, 
+    PatientUserForm, PatientForm, 
+    DoctorUserForm, DoctorForm
+)
 
 # ---------- 🔹 HOME PAGE ----------
 def home_view(request):
@@ -65,11 +69,32 @@ def admin_signup_view(request):
     return render(request, 'hospital/adminsignup.html')
 
 def doctor_signup_view(request):
-    return render(request, 'hospital/doctorsignup.html')
+    if request.method == 'POST':
+        user_form = DoctorUserForm(request.POST)
+        doctor_form = DoctorForm(request.POST, request.FILES)
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import Group, User
-from .forms import PatientUserForm, PatientForm
+        if user_form.is_valid() and doctor_form.is_valid():
+            user = user_form.save(commit=False)
+            user.set_password(user.password)
+            user.save()
+
+            doctor_group, _ = Group.objects.get_or_create(name='DOCTOR')
+            user.groups.add(doctor_group)
+
+            doctor = doctor_form.save(commit=False)
+            doctor.user = user
+            doctor.save()
+
+            return redirect('doctorlogin')  # make sure this URL is defined in urls.py
+    else:
+        user_form = DoctorUserForm()
+        doctor_form = DoctorForm()
+
+    return render(request, 'hospital/doctorsignup.html', {
+        'userForm': user_form,
+        'doctorForm': doctor_form
+    })
+
 
 def patient_signup_view(request):
     if request.method == 'POST':
@@ -77,21 +102,18 @@ def patient_signup_view(request):
         patient_form = PatientForm(request.POST, request.FILES)
 
         if user_form.is_valid() and patient_form.is_valid():
-            # Create user
             user = user_form.save(commit=False)
-            user.set_password(user.password)  # hash the password
+            user.set_password(user.password)
             user.save()
 
-            # Assign to 'PATIENT' group if used
             patient_group, _ = Group.objects.get_or_create(name='PATIENT')
             user.groups.add(patient_group)
 
-            # Create patient profile linked to user
             patient = patient_form.save(commit=False)
             patient.user = user
             patient.save()
 
-            return redirect('patientlogin')  # or a success page
+            return redirect('patientlogin')
     else:
         user_form = PatientUserForm()
         patient_form = PatientForm()
@@ -100,7 +122,6 @@ def patient_signup_view(request):
         'userForm': user_form,
         'patientForm': patient_form
     })
-
 
 # ---------- 🔹 Login + Redirect ----------
 def afterlogin_view(request):

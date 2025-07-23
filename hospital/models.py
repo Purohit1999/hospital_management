@@ -1,6 +1,3 @@
-# models.py
-# Defines the database structure for the hospital management system
-
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -10,13 +7,19 @@ from django.contrib.auth.models import User
 # Doctor model
 # ------------------------------------------------------------
 class Doctor(models.Model):
-    name = models.CharField(max_length=100)
-    specialization = models.CharField(max_length=100)
-    contact_number = models.CharField(max_length=15, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    department = models.CharField(max_length=100, default='General')  # Add default
+    mobile = models.CharField(max_length=15, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Dr. {self.name} - {self.specialization}"
+        if self.user:
+            return f"Dr. {self.user.get_full_name()} - {self.department}"
+        return f"Unassigned Doctor - {self.department}"
+
 
 # ------------------------------------------------------------
 # Patient model: extends User with medical details
@@ -34,6 +37,7 @@ class Patient(models.Model):
         if self.user:
             return self.user.get_full_name() or self.user.username
         return "Unassigned Patient"
+
 
 # ------------------------------------------------------------
 # DischargeDetails: Patient discharge records
@@ -78,7 +82,7 @@ class Appointment(models.Model):
 
     def __str__(self):
         patient_name = self.patient.user.get_full_name() if self.patient else "Unknown Patient"
-        doctor_name = f"Dr. {self.doctor.name}" if self.doctor else "Unknown Doctor"
+        doctor_name = f"Dr. {self.doctor.user.get_full_name()}" if self.doctor else "Unknown Doctor"
         return f"{patient_name} with {doctor_name} @ {self.date_time.strftime('%Y-%m-%d %H:%M')}"
 
     class Meta:

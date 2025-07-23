@@ -51,26 +51,59 @@ class PatientUserForm(forms.ModelForm):
     """
     Form for creating a User instance (for Patient).
     """
-    class PatientUserForm(forms.ModelForm):
-        class Meta:
-            model = User
-            fields = ['first_name', 'last_name', 'username', 'password']
-            widgets = {
-            'password': forms.PasswordInput(),
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'password']
+        widgets = {
+            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
 
 class PatientForm(forms.ModelForm):
     """
     Form for creating a Patient profile.
     """
-    class PatientForm(forms.ModelForm):
-        class Meta:
-            model = Patient
-            fields = ['address', 'mobile', 'symptoms', 'profile_pic', 'assignedDoctorId']
-            widgets = {
+    class Meta:
+        model = Patient
+        fields = ['address', 'mobile', 'symptoms', 'profile_pic', 'assignedDoctorId']
+        widgets = {
             'address': forms.TextInput(attrs={'class': 'form-control'}),
             'mobile': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone (optional)'}),
             'symptoms': forms.TextInput(attrs={'class': 'form-control'}),
             'profile_pic': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'assignedDoctorId': forms.Select(attrs={'class': 'form-select'}),
+        }
+from .models import Doctor  # Add this if not already present
+
+# ---------- 🔹 Doctor Registration Forms ----------
+class DoctorUserForm(forms.ModelForm):
+    """
+    Form for creating a User instance (for Doctor).
+    """
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'password']
+        widgets = {
+            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class DoctorForm(forms.ModelForm):
+    """
+    Form for creating a Doctor profile.
+    """
+    class Meta:
+        model = Doctor
+        fields = ['department', 'address', 'mobile', 'profile_pic']
+        widgets = {
+            'department': forms.TextInput(attrs={'class': 'form-control'}),
+            'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'mobile': forms.TextInput(attrs={'class': 'form-control'}),
+            'profile_pic': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
