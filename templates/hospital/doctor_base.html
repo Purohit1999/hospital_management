@@ -31,7 +31,6 @@
     }
 
     nav.menu {
-      background: #3bb78f;
       background: linear-gradient(to right, #3bb78f, #0bab64);
       height: 100vh;
       width: 240px;
@@ -187,9 +186,9 @@
       <h2>{{ request.user.first_name }}</h2>
     </header>
     <ul>
-      <li class="icon-dashboard"><a href="/doctor-dashboard">Dashboard</a></li>
-      <li class="icon-users"><a href="/doctor-patient">Patient</a></li>
-      <li class="icon-calendar"><a href="/doctor-appointment">Appointments</a></li>
+      <li class="icon-dashboard"><a href="{% url 'doctor-dashboard' %}">Dashboard</a></li>
+      <li class="icon-users"><a href="{% url 'doctor-view-patient' %}">Patient</a></li>
+      <li class="icon-calendar"><a href="{% url 'doctor-view-appointment' %}">Appointments</a></li>
     </ul>
   </nav>
 
@@ -197,14 +196,14 @@
   <main>
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top" style="left: 240px;">
-      <a href="/doctor-dashboard" class="navbar-brand">Hospital Management</a>
+      <a href="{% url 'doctor-dashboard' %}" class="navbar-brand">Hospital Management</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="topNavbar">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a href="/logout" class="nav-link">Logout</a>
+            <a href="{% url 'logout' %}" class="nav-link">Logout</a>
           </li>
         </ul>
       </div>
@@ -224,7 +223,7 @@
           <a href="https://instagram.com/Param.Paramp" class="fa fa-instagram"></a>
           <a href="https://twitter.com/Paramkumar1503" class="fa fa-twitter"></a>
         </p>
-        <p>Made in India<br>Copyright &copy; 2020 Param</p>
+        <p>Made in UK<br>Copyright &copy; 2025 Param</p>
       </div>
     </footer>
   </main>

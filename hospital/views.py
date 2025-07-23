@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect 
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
-from .models import Appointment
+from .models import Appointment, Doctor, Patient
 from .forms import (
     AppointmentForm, 
     PatientUserForm, PatientForm, 
@@ -85,7 +85,7 @@ def doctor_signup_view(request):
             doctor.user = user
             doctor.save()
 
-            return redirect('doctorlogin')  # make sure this URL is defined in urls.py
+            return redirect('doctorlogin')
     else:
         user_form = DoctorUserForm()
         doctor_form = DoctorForm()
@@ -94,7 +94,6 @@ def doctor_signup_view(request):
         'userForm': user_form,
         'doctorForm': doctor_form
     })
-
 
 def patient_signup_view(request):
     if request.method == 'POST':
@@ -125,7 +124,14 @@ def patient_signup_view(request):
 
 # ---------- 🔹 Login + Redirect ----------
 def afterlogin_view(request):
-    return redirect('home')
+    if request.user.groups.filter(name='DOCTOR').exists():
+        return redirect('doctor-dashboard')
+    elif request.user.groups.filter(name='PATIENT').exists():
+        return redirect('patient-dashboard')
+    elif request.user.is_superuser:
+        return redirect('admin-dashboard')
+    else:
+        return redirect('home')
 
 # ---------- 🔹 Admin Features ----------
 def admin_dashboard_view(request):
@@ -210,8 +216,21 @@ def reject_appointment_view(request, pk):
     return redirect('admin-approve-appointment')
 
 # ---------- 🔹 Doctor Views ----------
+@login_required
 def doctor_dashboard_view(request):
-    return render(request, 'hospital/doctor_dashboard.html')
+    doctor = Doctor.objects.filter(user=request.user).first()
+
+    if not doctor:
+        return redirect('doctor-wait-for-approval')
+
+    appointments = Appointment.objects.filter(doctor=doctor).order_by('-date_time')
+    patients = Patient.objects.filter(assignedDoctorId=doctor)
+
+    return render(request, 'hospital/doctor_dashboard.html', {
+        'doctor': doctor,
+        'appointments': appointments,
+        'patients': patients
+    })
 
 def search_view(request):
     return render(request, 'hospital/search.html')
