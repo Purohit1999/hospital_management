@@ -230,8 +230,8 @@ def doctor_dashboard_view(request):
     if not doctor:
         return redirect('doctor-wait-for-approval')
 
-    appointments = Appointment.objects.filter(doctor=doctor).order_by('-date_time')
-    patients = Patient.objects.filter(assignedDoctorId=doctor)
+    appointments = Appointment.objects.filter(doctor=doctor).select_related('patient__user').order_by('-date_time')
+    patients = Patient.objects.filter(assignedDoctorId=doctor).select_related('user')
 
     return render(request, 'hospital/doctor_dashboard.html', {
         'doctor': doctor,

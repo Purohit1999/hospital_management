@@ -29,7 +29,11 @@
           <tr>
             <td>{{ appointment.patient.user.get_full_name }}</td>
             <td>
-              <img src="{{ appointment.patient.profile_pic.url }}" alt="Profile Pic" class="img-thumbnail" style="height: 50px; width: 50px;">
+              {% if appointment.patient.profile_pic %}
+                <img src="{{ appointment.patient.profile_pic.url }}" alt="Profile Pic" class="img-thumbnail" style="height: 50px; width: 50px;">
+              {% else %}
+                <img src="{% static 'hospital/default-profile.png' %}" alt="Default Pic" class="img-thumbnail" style="height: 50px; width: 50px;">
+              {% endif %}
             </td>
             <td>{{ appointment.description }}</td>
             <td>{{ appointment.patient.mobile }}</td>

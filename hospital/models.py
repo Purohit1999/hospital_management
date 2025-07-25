@@ -10,7 +10,7 @@ class Doctor(models.Model):
     department = models.CharField(max_length=100, default='General')
     mobile = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)  # ✅ Optional
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -28,7 +28,7 @@ class Patient(models.Model):
     address = models.TextField(blank=True)
     mobile = models.CharField(max_length=15, blank=True)
     symptoms = models.TextField(blank=True)
-    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)  # ✅ Optional
     assignedDoctorId = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
