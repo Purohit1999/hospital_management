@@ -9,7 +9,9 @@ class AppointmentForm(forms.ModelForm):
     Form for patients to book an appointment.
     Includes description, doctor selection, and date_time.
     """
+
     date_time = forms.DateTimeField(
+        input_formats=['%Y-%m-%dT%H:%M'],
         widget=forms.DateTimeInput(attrs={
             'type': 'datetime-local',
             'class': 'form-control',
@@ -38,11 +40,10 @@ class AppointmentForm(forms.ModelForm):
         """
         Ensure the appointment is not in the past.
         """
-        dt = self.cleaned_data['date_time']
-        if dt < timezone.now():
+        dt = self.cleaned_data.get('date_time')
+        if dt and dt < timezone.now():
             raise forms.ValidationError("Appointment date must be in the future.")
         return dt
-
 
 # ---------- 🔹 Patient Registration Forms ----------
 class PatientUserForm(forms.ModelForm):
@@ -74,7 +75,6 @@ class PatientForm(forms.ModelForm):
             'profile_pic': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'assignedDoctorId': forms.Select(attrs={'class': 'form-select'}),
         }
-
 
 # ---------- 🔹 Doctor Registration Forms ----------
 class DoctorUserForm(forms.ModelForm):
