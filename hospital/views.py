@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
+from django.db.models import Q
 from .models import Appointment, Doctor, Patient
 from .forms import (
     AppointmentForm, 
@@ -293,7 +294,14 @@ def patient_view_doctor_view(request):
 
 @login_required
 def search_doctor_view(request):
-    return render(request, 'hospital/searchdoctor.html')
+    query = request.GET.get('query', '')
+    doctors = Doctor.objects.filter(
+        Q(department__icontains=query) |
+        Q(user__first_name__icontains=query) |
+        Q(user__last_name__icontains=query) |
+        Q(address__icontains=query)
+    )
+    return render(request, 'hospital/searchdoctor.html', {'doctors': doctors})
 
 @login_required
 def patient_discharge_view(request):

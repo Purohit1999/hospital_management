@@ -1,0 +1,32 @@
+{% extends 'hospital/patient_base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+  <h2 class="text-center text-primary mb-4">Doctor Search Results</h2>
+
+  {% if doctors %}
+    <div class="row">
+      {% for doctor in doctors %}
+        <div class="col-md-4 mb-4">
+          <div class="card shadow">
+            {% if doctor.profile_pic %}
+              <img src="{{ doctor.profile_pic.url }}" class="card-img-top" alt="{{ doctor.get_name }}">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ doctor.get_name }}</h5>
+              <p class="card-text"><strong>Department:</strong> {{ doctor.department }}</p>
+              <p class="card-text"><strong>Mobile:</strong> {{ doctor.mobile }}</p>
+              <p class="card-text"><strong>Address:</strong> {{ doctor.address }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning text-center">
+      No doctors found matching your query.
+    </div>
+  {% endif %}
+</div>
+
+{% endblock content %}
