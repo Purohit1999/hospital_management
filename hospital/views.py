@@ -53,7 +53,6 @@ def patient_book_appointment_view(request):
 
     return render(request, 'hospital/patient_book_appointment.html', {'form': form})
 
-
 # ---------- 🔹 Static Pages ----------
 def aboutus_view(request):
     return render(request, 'hospital/aboutus.html')
@@ -264,23 +263,38 @@ def delete_appointment_view(request, pk):
     return redirect('appointments')
 
 # ---------- 🔹 Patient Views ----------
+@login_required
 def patient_dashboard_view(request):
-    return render(request, 'hospital/patient_dashboard.html')
+    user = request.user
+    patient = Patient.objects.filter(user=user).first()
 
+    if not patient:
+        return redirect('patient-login')
+
+    assigned_doctor = patient.assignedDoctorId
+
+    context = {
+        'patient': patient,
+        'doctor': assigned_doctor,
+    }
+    return render(request, 'hospital/patient_dashboard.html', context)
+
+@login_required
 def patient_appointment_view(request):
     return render(request, 'hospital/patient_appointment.html')
 
-def patient_book_appointment_view(request):
-    return render(request, 'hospital/patient_book_appointment.html')
-
+@login_required
 def patient_view_appointment_view(request):
     return render(request, 'hospital/patient_view_appointment.html')
 
+@login_required
 def patient_view_doctor_view(request):
     return render(request, 'hospital/patient_view_doctor.html')
 
+@login_required
 def search_doctor_view(request):
     return render(request, 'hospital/searchdoctor.html')
 
+@login_required
 def patient_discharge_view(request):
     return render(request, 'hospital/patient_discharge.html')
