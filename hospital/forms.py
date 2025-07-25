@@ -1,14 +1,13 @@
 from django import forms
 from django.utils import timezone
 from django.contrib.auth.models import User
-from .models import Appointment, Patient
+from .models import Appointment, Patient, Doctor
 
-
-# ---------- 🔹 Appointment Form ----------
+# ---------- 🔹 Appointment Form (Patient Booking) ----------
 class AppointmentForm(forms.ModelForm):
     """
-    Form to schedule or update an appointment.
-    Includes validation for future date and Bootstrap-friendly widgets.
+    Form for patients to book an appointment.
+    Includes description, doctor selection, and date_time.
     """
     date_time = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={
@@ -19,25 +18,25 @@ class AppointmentForm(forms.ModelForm):
         label="Appointment Date & Time"
     )
 
-    status = forms.ChoiceField(
-        choices=Appointment.STATUS_CHOICES,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Describe your symptoms or reason for appointment'
         }),
-        label="Appointment Status"
+        label="Reason / Description"
     )
 
     class Meta:
         model = Appointment
-        fields = ['patient', 'doctor', 'date_time', 'status']
+        fields = ['description', 'doctor', 'date_time']
         widgets = {
-            'patient': forms.Select(attrs={'class': 'form-select'}),
             'doctor': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def clean_date_time(self):
         """
-        Ensure the date_time is not in the past.
+        Ensure the appointment is not in the past.
         """
         dt = self.cleaned_data['date_time']
         if dt < timezone.now():
@@ -46,7 +45,6 @@ class AppointmentForm(forms.ModelForm):
 
 
 # ---------- 🔹 Patient Registration Forms ----------
-
 class PatientUserForm(forms.ModelForm):
     """
     Form for creating a User instance (for Patient).
@@ -76,7 +74,7 @@ class PatientForm(forms.ModelForm):
             'profile_pic': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'assignedDoctorId': forms.Select(attrs={'class': 'form-select'}),
         }
-from .models import Doctor  # Add this if not already present
+
 
 # ---------- 🔹 Doctor Registration Forms ----------
 class DoctorUserForm(forms.ModelForm):

@@ -34,18 +34,25 @@ def appointment_detail(request, pk):
     })
 
 @login_required
-def create_appointment(request):
+def patient_book_appointment_view(request):
+    patient = Patient.objects.filter(user=request.user).first()
+    if not patient:
+        return redirect('patient-dashboard')
+
     if request.method == 'POST':
         form = AppointmentForm(request.POST)
         if form.is_valid():
             appointment = form.save(commit=False)
+            appointment.patient = patient
             appointment.created_by = request.user
             appointment.updated_by = request.user
             appointment.save()
-            return redirect('appointments')
+            return redirect('patient-view-appointment')
     else:
         form = AppointmentForm()
-    return render(request, 'appointments/create.html', {'form': form})
+
+    return render(request, 'hospital/patient_book_appointment.html', {'form': form})
+
 
 # ---------- 🔹 Static Pages ----------
 def aboutus_view(request):
