@@ -3,130 +3,104 @@
 {% block content %}
 <br><br>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Bootstrap & FontAwesome -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
 
-  <!-- Bootstrap & FontAwesome -->
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+<style>
+  .order-card {
+    color: #fff;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 25px;
+    height: 100%;
+  }
 
-  <style>
-    .order-card {
-      color: #fff;
-      border-radius: 10px;
-      transition: transform 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+  .order-card:hover {
+    transform: scale(1.05);
+  }
 
-    .order-card:hover {
-      transform: scale(1.03);
-    }
+  .order-card i {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
 
-    .card .card-block {
-      padding: 25px;
-    }
+  .bg-c-blue {
+    background: linear-gradient(45deg, #4099ff, #73b4ff);
+  }
 
-    .order-card i {
-      font-size: 30px;
-    }
+  .bg-c-green {
+    background: linear-gradient(45deg, #2ed8b6, #59e0c5);
+  }
 
-    .f-left {
-      float: left;
-    }
+  .bg-c-yellow {
+    background: linear-gradient(45deg, #FFB64D, #ffcb80);
+  }
 
-    .f-right {
-      float: right;
-    }
+  .bg-c-pink {
+    background: linear-gradient(45deg, #FF5370, #ff869a);
+  }
 
-    .bg-c-blue {
-      background: linear-gradient(45deg, #4099ff, #73b4ff);
-    }
+  a.card-link {
+    color: white;
+    text-decoration: none;
+    display: block;
+  }
 
-    .bg-c-green {
-      background: linear-gradient(45deg, #2ed8b6, #59e0c5);
-    }
+  a.card-link:hover {
+    text-decoration: none;
+    color: white;
+  }
+</style>
 
-    .bg-c-yellow {
-      background: linear-gradient(45deg, #FFB64D, #ffcb80);
-    }
-
-    .bg-c-pink {
-      background: linear-gradient(45deg, #FF5370, #ff869a);
-    }
-
-    a {
-      color: white;
-      text-decoration: none;
-    }
-
-    a:hover {
-      color: white;
-      text-decoration: none;
-    }
-  </style>
-</head>
-
-<!-- Doctor Management Cards Section -->
-<div class="container">
-  <div class="row text-center">
+<!-- Doctor Management Dashboard -->
+<div class="container mt-4">
+  <div class="row">
 
     <!-- View Doctor Record -->
     <div class="col-md-6 col-lg-3 mb-4">
-      <div class="card bg-c-blue order-card h-100">
-        <div class="card-block">
-          <a href="/admin-view-doctor">
-            <h6 class="m-b-20">Doctor Record</h6>
-            <h2 class="text-right"><i class="fas fa-user-nurse f-left"></i></h2>
-          </a>
+      <a href="{% url 'admin-view-doctor' %}" class="card-link">
+        <div class="card bg-c-blue order-card">
+          <i class="fas fa-user-nurse"></i>
+          <h6 class="mt-2">Doctor Record</h6>
         </div>
-      </div>
+      </a>
     </div>
 
     <!-- Register New Doctor -->
     <div class="col-md-6 col-lg-3 mb-4">
-      <div class="card bg-c-green order-card h-100">
-        <div class="card-block">
-          <a href="/admin-add-doctor">
-            <h6 class="m-b-20">Register Doctor</h6>
-            <h2 class="text-right"><i class="fas fa-user-plus f-left"></i></h2>
-          </a>
+      <a href="{% url 'admin-add-doctor' %}" class="card-link">
+        <div class="card bg-c-green order-card">
+          <i class="fas fa-user-plus"></i>
+          <h6 class="mt-2">Register Doctor</h6>
         </div>
-      </div>
+      </a>
     </div>
 
     <!-- Approve Doctor -->
     <div class="col-md-6 col-lg-3 mb-4">
-      <div class="card bg-c-yellow order-card h-100">
-        <div class="card-block">
-          <a href="/admin-approve-doctor">
-            <h6 class="m-b-20">Approve Doctor</h6>
-            <h2 class="text-right"><i class="fas fa-check-circle f-left"></i></h2>
-          </a>
+      <a href="{% url 'admin-approve-doctor' %}" class="card-link">
+        <div class="card bg-c-yellow order-card">
+          <i class="fas fa-check-circle"></i>
+          <h6 class="mt-2">Approve Doctor</h6>
         </div>
-      </div>
+      </a>
     </div>
 
-    <!-- View Specialisations -->
+    <!-- Doctor Specialisation -->
     <div class="col-md-6 col-lg-3 mb-4">
-      <div class="card bg-c-pink order-card h-100">
-        <div class="card-block">
-          <a href="/admin-view-doctor-specialisation">
-            <h6 class="m-b-20">Doctor Specialisation</h6>
-            <h2 class="text-right"><i class="fas fa-user-md f-left"></i></h2>
-          </a>
+      <a href="{% url 'admin-view-doctor-specialisation' %}" class="card-link">
+        <div class="card bg-c-pink order-card">
+          <i class="fas fa-user-md"></i>
+          <h6 class="mt-2">Doctor Specialisation</h6>
         </div>
-      </div>
+      </a>
     </div>
 
   </div>
 </div>
 
-<!--
-  developed By : Param Purohit
-  facebook : fb.com/
-  youtube : youtube.com/
--->
 <br><br><br><br>
-
 {% endblock content %}

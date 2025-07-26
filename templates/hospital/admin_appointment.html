@@ -2,128 +2,103 @@
 {% load static %}
 {% block content %}
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Load Bootstrap and Font Awesome for styling -->
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+<!-- Bootstrap & FontAwesome -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
 
-  <style>
-    /* Navigation correction */
-    a:link {
-      text-decoration: none;
-    }
+<style>
+  .order-card {
+    color: #fff;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 25px;
+    height: 100%;
+  }
 
-    .menu {
-      top: 50px;
-    }
+  .order-card:hover {
+    transform: scale(1.05);
+  }
 
-    /* Card theme styles */
+  .order-card i {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+
+  .bg-c-blue {
+    background: linear-gradient(45deg, #4099ff, #73b4ff);
+  }
+
+  .bg-c-green {
+    background: linear-gradient(45deg, #2ed8b6, #59e0c5);
+  }
+
+  .bg-c-yellow {
+    background: linear-gradient(45deg, #FFB64D, #ffcb80);
+  }
+
+  a.card-link {
+    color: white;
+    text-decoration: none;
+    display: block;
+  }
+
+  a.card-link:hover {
+    color: white;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
     .order-card {
-      color: #fff;
-    }
-
-    .bg-c-blue {
-      background: linear-gradient(45deg, #4099ff, #73b4ff);
-    }
-
-    .bg-c-green {
-      background: linear-gradient(45deg, #2ed8b6, #59e0c5);
-    }
-
-    .bg-c-yellow {
-      background: linear-gradient(45deg, #FFB64D, #ffcb80);
-    }
-
-    .card {
-      border-radius: 5px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-      border: none;
-      margin-bottom: 30px;
-      transition: transform 0.3s ease-in-out;
-    }
-
-    .card:hover {
-      transform: scale(1.02);
-    }
-
-    .card .card-block {
-      padding: 25px;
+      padding: 20px 15px;
     }
 
     .order-card i {
-      font-size: 26px;
+      margin-bottom: 15px;
     }
+  }
+</style>
 
-    .f-left {
-      float: left;
-    }
-
-    .f-right {
-      float: right;
-    }
-
-    @media (max-width: 768px) {
-      .card .card-block {
-        padding: 20px 15px;
-        text-align: center;
-      }
-
-      .order-card i {
-        float: none !important;
-        margin: 10px auto;
-        display: block;
-      }
-    }
-  </style>
-</head>
-
-<!-- Admin appointment options section -->
-<div class="container mt-5">
+<!-- Admin Appointment Dashboard -->
+<div class="container mt-4">
   <div class="row justify-content-center">
-    
-    <!-- View Appointments Card -->
-    <div class="col-md-4 col-sm-6">
-      <div class="card bg-c-blue order-card">
-        <div class="card-block">
-          <a href="{% url 'admin-view-appointment' %}">
-            <h6 class="m-b-20">View Appointments</h6>
-          </a>
-          <h2 class="text-right"><i class="fas fa-calendar f-left"></i></h2>
+
+    <!-- View Appointments -->
+    <div class="col-md-4 col-sm-6 mb-4">
+      <a href="{% url 'admin-view-appointment' %}" class="card-link">
+        <div class="card bg-c-blue order-card">
+          <i class="fas fa-calendar"></i>
+          <h6 class="mt-2">View Appointments</h6>
         </div>
-      </div>
+      </a>
     </div>
 
-    <!-- Book New Appointment Card -->
-    <div class="col-md-4 col-sm-6">
-      <div class="card bg-c-green order-card">
-        <div class="card-block">
-          <a href="{% url 'admin-add-appointment' %}">
-            <h6 class="m-b-20">Book New Appointment</h6>
-          </a>
-          <h2 class="text-right"><i class="fas fa-book-medical f-left"></i></h2>
+    <!-- Book Appointment -->
+    <div class="col-md-4 col-sm-6 mb-4">
+      <a href="{% url 'admin-add-appointment' %}" class="card-link">
+        <div class="card bg-c-green order-card">
+          <i class="fas fa-book-medical"></i>
+          <h6 class="mt-2">Book New Appointment</h6>
         </div>
-      </div>
+      </a>
     </div>
 
-    <!-- Approve Appointments Card -->
-    <div class="col-md-4 col-sm-6">
-      <div class="card bg-c-yellow order-card">
-        <div class="card-block">
-          <a href="{% url 'admin-approve-appointment' %}">
-            <h6 class="m-b-20">Approve Appointments</h6>
-          </a>
-          <h2 class="text-right"><i class="fas fa-check-circle f-left"></i></h2>
+    <!-- Approve Appointment -->
+    <div class="col-md-4 col-sm-6 mb-4">
+      <a href="{% url 'admin-approve-appointment' %}" class="card-link">
+        <div class="card bg-c-yellow order-card">
+          <i class="fas fa-check-circle"></i>
+          <h6 class="mt-2">Approve Appointments</h6>
         </div>
-      </div>
+      </a>
     </div>
 
   </div>
 </div>
 
-<!-- Footer spacing -->
-<div class="mb-5"></div>
+<!-- Footer Spacing -->
+<br><br><br><br>
 
 <!--
   Developed by: Param Purohit

@@ -181,11 +181,12 @@
   <!-- Sidebar Menu -->
   <nav class="menu" tabindex="0">
     <header class="avatar">
-      {% if request.user.doctor.profile_pic %}
-        <img src="{{ request.user.doctor.profile_pic.url }}" alt="Profile Picture" />
+      {% if doctor.profile_pic %}
+        <img src="{{ doctor.profile_pic.url }}" alt="Profile Picture" />
       {% else %}
         <img src="{% static 'images/doctor.png' %}" alt="Default Doctor Picture" />
       {% endif %}
+
       <h6>Doctor</h6>
       <h2>{{ request.user.first_name }}</h2>
     </header>

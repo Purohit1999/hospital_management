@@ -142,7 +142,21 @@ def afterlogin_view(request):
 
 # ---------- 🔹 Admin Features ----------
 def admin_dashboard_view(request):
-    return render(request, 'hospital/admin_dashboard.html')
+    pending_doctors = Doctor.objects.filter(status=False).count()
+    pending_patients = Patient.objects.filter(status=False).count()
+    pending_appointments = Appointment.objects.filter(status=False).count()
+
+    recent_doctors = Doctor.objects.select_related('user').order_by('-id')[:5]
+    recent_patients = Patient.objects.select_related('user').order_by('-id')[:5]
+
+    context = {
+        'pending_doctors': pending_doctors,
+        'pending_patients': pending_patients,
+        'pending_appointments': pending_appointments,
+        'recent_doctors': recent_doctors,
+        'recent_patients': recent_patients,
+    }
+    return render(request, 'hospital/admin_dashboard.html', context)
 
 def admin_doctor_view(request):
     return render(request, 'hospital/admin_doctor.html')

@@ -3,7 +3,46 @@
 {% block content %}
 
 <!-- Dashboard Cards -->
-{% include 'hospital/doctor_dashboard_cards.html' %}
+<div class="container mt-4">
+  <div class="row text-center">
+    <!-- Appointments Card -->
+    <div class="col-md-4 mb-3">
+      <a href="{% url 'doctor-view-appointment' %}" class="text-decoration-none text-dark">
+        <div class="card shadow-lg border-0 bg-info text-white">
+          <div class="card-body">
+            <h5 class="card-title">Appointments For You</h5>
+            <i class="fa fa-calendar fa-2x"></i>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Patients Card -->
+    <div class="col-md-4 mb-3">
+      <a href="{% url 'doctor-view-patient' %}" class="text-decoration-none text-dark">
+        <div class="card shadow-lg border-0 bg-success text-white">
+          <div class="card-body">
+            <h5 class="card-title">Patients Under You</h5>
+            <i class="fa fa-user-md fa-2x"></i>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Discharged Patients Card -->
+    <div class="col-md-4 mb-3">
+      <a href="{% url 'doctor-view-discharge-patient' %}" class="text-decoration-none text-dark">
+        <div class="card shadow-lg border-0 bg-warning text-white">
+          <div class="card-body">
+            <h5 class="card-title">Patients Discharged</h5>
+            <i class="fa fa-check-circle fa-2x"></i>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
 <br><br>
 
 <!-- Recent Appointments Section -->
@@ -29,11 +68,12 @@
           <tr>
             <td>{{ appointment.patient.user.get_full_name }}</td>
             <td>
-              {% if appointment.patient.profile_pic %}
-                <img src="{{ appointment.patient.profile_pic.url }}" alt="Profile Pic" class="img-thumbnail" style="height: 50px; width: 50px;">
-              {% else %}
-                <img src="{% static 'hospital/default-profile.png' %}" alt="Default Pic" class="img-thumbnail" style="height: 50px; width: 50px;">
-              {% endif %}
+          {% if appointment.patient.profile_pic %}
+            <img src="{{ appointment.patient.profile_pic.url }}" alt="Profile Pic" class="img-thumbnail" style="height: 50px; width: 50px;">
+          {% else %}
+            <img src="{% static 'images/patient.jpg' %}" alt="Default Patient Pic" class="img-thumbnail" style="height: 50px; width: 50px;">
+          {% endif %}
+
             </td>
             <td>{{ appointment.description }}</td>
             <td>{{ appointment.patient.mobile }}</td>
