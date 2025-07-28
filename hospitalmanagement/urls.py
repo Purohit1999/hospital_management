@@ -57,6 +57,7 @@ urlpatterns = [
     path('delete_patient/<int:pk>/', views.delete_patient_view, name='delete_patient'),
     path('discharge_patient/<int:pk>/', views.discharge_patient_view, name='discharge_patient'),
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
+    path('admin-view-appointment/', views.admin_view_appointment, name='admin-view-appointment'),
 
     # Optional (Uncomment if you implement these views)
     
