@@ -5,8 +5,6 @@
 <!-- Dashboard Summary Cards -->
 <div class="container mt-5">
   <div class="row text-center">
-
-    <!-- Total Doctors -->
     <div class="col-md-4 mb-4">
       <div class="card text-white bg-danger shadow">
         <div class="card-body">
@@ -16,8 +14,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Total Patients -->
     <div class="col-md-4 mb-4">
       <div class="card text-white bg-warning shadow">
         <div class="card-body">
@@ -27,8 +23,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Total Appointments -->
     <div class="col-md-4 mb-4">
       <div class="card text-white bg-info shadow">
         <div class="card-body">
@@ -38,7 +32,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -46,7 +39,7 @@
 <div class="container">
   <div class="row">
 
-    <!-- Recent Doctors Panel -->
+    <!-- Recent Doctors -->
     <div class="col-md-6 mb-5">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white text-center">
@@ -87,7 +80,7 @@
       </div>
     </div>
 
-    <!-- Recent Patients Panel -->
+    <!-- Recent Patients -->
     <div class="col-md-6 mb-5">
       <div class="card shadow-sm">
         <div class="card-header bg-success text-white text-center">
@@ -120,11 +113,13 @@
                   {% endif %}
                 </td>
                 <td>
-                  <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="{% url 'delete_patient' p.id %}" class="btn btn-sm btn-danger">Delete</a>
-                  {% if not p.dischargedetails %}
-                  <a href="{% url 'discharge_patient' p.id %}" class="btn btn-sm btn-warning">Discharge</a>
-                  {% endif %}
+                  <div class="d-flex flex-wrap gap-1">
+                    <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary">Edit</a>
+                    <a href="{% url 'delete_patient' p.id %}" class="btn btn-sm btn-danger">Delete</a>
+                    {% if not p.dischargedetails %}
+                      <a href="{% url 'discharge_patient' p.id %}" class="btn btn-sm btn-warning">Discharge</a>
+                    {% endif %}
+                  </div>
                 </td>
               </tr>
               {% empty %}
