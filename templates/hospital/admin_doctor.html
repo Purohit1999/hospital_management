@@ -1,7 +1,6 @@
 {% extends 'hospital/admin_base.html' %}
 {% load static %}
 {% block content %}
-<br><br>
 
 <!-- Bootstrap & FontAwesome -->
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -50,31 +49,31 @@
   }
 
   a.card-link:hover {
-    text-decoration: none;
     color: white;
+    text-decoration: none;
   }
 </style>
 
-<!-- Doctor Management Dashboard -->
-<div class="container mt-4">
-  <div class="row">
+<div class="container mt-5">
+  <h3 class="text-center text-primary mb-4">Doctor Management Dashboard</h3>
+  <div class="row justify-content-center">
 
-    <!-- View Doctor Record -->
+    <!-- View Doctor Records -->
     <div class="col-md-6 col-lg-3 mb-4">
       <a href="{% url 'admin-view-doctor' %}" class="card-link">
         <div class="card bg-c-blue order-card">
           <i class="fas fa-user-nurse"></i>
-          <h6 class="mt-2">Doctor Record</h6>
+          <h6 class="mt-2">View Doctors</h6>
         </div>
       </a>
     </div>
 
-    <!-- Register New Doctor -->
+    <!-- Add New Doctor -->
     <div class="col-md-6 col-lg-3 mb-4">
       <a href="{% url 'admin-add-doctor' %}" class="card-link">
         <div class="card bg-c-green order-card">
           <i class="fas fa-user-plus"></i>
-          <h6 class="mt-2">Register Doctor</h6>
+          <h6 class="mt-2">Add Doctor</h6>
         </div>
       </a>
     </div>
@@ -83,8 +82,8 @@
     <div class="col-md-6 col-lg-3 mb-4">
       <a href="{% url 'admin-approve-doctor' %}" class="card-link">
         <div class="card bg-c-yellow order-card">
-          <i class="fas fa-check-circle"></i>
-          <h6 class="mt-2">Approve Doctor</h6>
+          <i class="fas fa-user-check"></i>
+          <h6 class="mt-2">Approve Requests</h6>
         </div>
       </a>
     </div>
@@ -94,7 +93,7 @@
       <a href="{% url 'admin-view-doctor-specialisation' %}" class="card-link">
         <div class="card bg-c-pink order-card">
           <i class="fas fa-user-md"></i>
-          <h6 class="mt-2">Doctor Specialisation</h6>
+          <h6 class="mt-2">Specialisations</h6>
         </div>
       </a>
     </div>
@@ -102,5 +101,6 @@
   </div>
 </div>
 
-<br><br><br><br>
+<br><br><br>
+
 {% endblock content %}

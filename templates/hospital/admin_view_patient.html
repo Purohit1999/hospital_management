@@ -1,6 +1,6 @@
 {% extends 'hospital/admin_base.html' %}
-{% block content %}
 {% load static %}
+{% block content %}
 
 <head>
   <meta charset="UTF-8">
@@ -76,7 +76,11 @@
           <tr>
             <td>{{ p.get_name }}</td>
             <td>
-              <img src="{% static p.profile_pic.url %}" alt="Profile" class="profile-pic">
+              {% if p.profile_pic %}
+                <img src="{{ p.profile_pic.url }}" alt="Profile" class="profile-pic">
+              {% else %}
+                <img src="{% static 'images/default_avatar.png' %}" alt="No Pic" class="profile-pic">
+              {% endif %}
             </td>
             <td>{{ p.symptoms }}</td>
             <td>{{ p.mobile }}</td>
@@ -104,9 +108,6 @@
 </div>
 
 <!--
-developed By : Param Purohit
-facebook : fb.com/
-youtube : youtube.com/
+Developed by: Param Purohit
 -->
-
 {% endblock content %}

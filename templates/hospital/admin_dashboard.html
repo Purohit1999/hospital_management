@@ -44,15 +44,15 @@
 
 <!-- Recent Doctors and Patients -->
 <div class="container">
-  <div class="row justify-content-center">
-    
+  <div class="row">
+
     <!-- Recent Doctors Panel -->
-    <div class="col-md-5 mb-5">
-      <div class="panel panel-primary shadow-sm rounded">
-        <div class="panel-heading text-center bg-primary text-white py-2 rounded-top">
-          <h5 class="panel-title mb-0">Recent Doctors</h5>
+    <div class="col-md-6 mb-5">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+          <h5 class="mb-0">Recent Doctors</h5>
         </div>
-        <div class="table-responsive">
+        <div class="card-body p-0">
           <table class="table table-hover table-bordered mb-0">
             <thead class="thead-light">
               <tr>
@@ -65,14 +65,14 @@
             <tbody>
               {% for d in recent_doctors %}
               <tr>
-                <td>{{ d.get_name }}</td>
+                <td>{{ d.user.get_full_name }}</td>
                 <td>{{ d.department }}</td>
                 <td>{{ d.mobile }}</td>
                 <td>
                   {% if d.status %}
-                    <span class="badge badge-success">Permanent</span>
+                    <span class="badge badge-success">Approved</span>
                   {% else %}
-                    <span class="badge badge-warning">On Hold</span>
+                    <span class="badge badge-warning">Pending</span>
                   {% endif %}
                 </td>
               </tr>
@@ -88,12 +88,12 @@
     </div>
 
     <!-- Recent Patients Panel -->
-    <div class="col-md-5 offset-md-1 mb-5">
-      <div class="panel panel-success shadow-sm rounded">
-        <div class="panel-heading text-center bg-success text-white py-2 rounded-top">
-          <h5 class="panel-title mb-0">Recent Patients</h5>
+    <div class="col-md-6 mb-5">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white text-center">
+          <h5 class="mb-0">Recent Patients</h5>
         </div>
-        <div class="table-responsive">
+        <div class="card-body p-0">
           <table class="table table-hover table-bordered mb-0">
             <thead class="thead-light">
               <tr>
@@ -102,26 +102,34 @@
                 <th>Mobile</th>
                 <th>Address</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {% for p in recent_patients %}
               <tr>
-                <td>{{ p.get_name }}</td>
+                <td>{{ p.user.get_full_name }}</td>
                 <td>{{ p.symptoms }}</td>
                 <td>{{ p.mobile }}</td>
                 <td>{{ p.address }}</td>
                 <td>
-                  {% if p.status %}
-                    <span class="badge badge-success">Admitted</span>
+                  {% if p.dischargedetails %}
+                    <span class="badge badge-secondary">Discharged</span>
                   {% else %}
-                    <span class="badge badge-warning">On Hold</span>
+                    <span class="badge badge-success">Admitted</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="{% url 'delete_patient' p.id %}" class="btn btn-sm btn-danger">Delete</a>
+                  {% if not p.dischargedetails %}
+                  <a href="{% url 'discharge_patient' p.id %}" class="btn btn-sm btn-warning">Discharge</a>
                   {% endif %}
                 </td>
               </tr>
               {% empty %}
               <tr>
-                <td colspan="5" class="text-center text-muted">No recent patients found.</td>
+                <td colspan="6" class="text-center text-muted">No recent patients found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -132,13 +140,5 @@
 
   </div>
 </div>
-
-<br><br>
-
-<!--
-  Developed by: Param Purohit
-  Facebook: fb.com/
-  YouTube: youtube.com/
--->
 
 {% endblock content %}

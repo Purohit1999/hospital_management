@@ -91,8 +91,9 @@
       {% block content %}{% endblock content %}
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center">
+    <!-- Footer (Overridable) -->
+    {% block footer %}
+    <footer class="text-center mt-5">
       <p>
         <a href="https://facebook.com/Param.Paramp/" class="fa fa-facebook"></a>
         <a href="https://api.whatsapp.com/send?phone=919572181024&text=Hello%20Param.%0d%0aHow%20are%20you%20%3f%0d%0aI%20came%20from%20your%20website." class="fa fa-whatsapp"></a>
@@ -103,6 +104,7 @@
         <p>Made in UK<br>&copy; 2025 Param</p>
       </div>
     </footer>
+    {% endblock %}
   </main>
 
   <!--

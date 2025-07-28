@@ -3,13 +3,27 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from .models import Appointment, Patient, Doctor
 
+# ---------- 🔹 UserForm (For editing basic user info) ----------
+class UserForm(forms.ModelForm):
+    """
+    Form for editing User details (used by admin for patient/doctor).
+    """
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+
 # ---------- 🔹 Appointment Form (Patient Booking) ----------
 class AppointmentForm(forms.ModelForm):
     """
     Form for patients to book an appointment.
     Includes description, doctor selection, and date_time.
     """
-
     date_time = forms.DateTimeField(
         input_formats=['%Y-%m-%dT%H:%M'],
         widget=forms.DateTimeInput(attrs={
@@ -60,7 +74,6 @@ class PatientUserForm(forms.ModelForm):
             'username': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-
 class PatientForm(forms.ModelForm):
     """
     Form for creating a Patient profile.
@@ -90,7 +103,6 @@ class DoctorUserForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'username': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
 
 class DoctorForm(forms.ModelForm):
     """

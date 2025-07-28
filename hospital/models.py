@@ -10,15 +10,12 @@ class Doctor(models.Model):
     department = models.CharField(max_length=100, default='General')
     mobile = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)  # ✅ Optional
-    status = models.BooleanField(default=False)
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    status = models.BooleanField(default=False)  # ✅ Admin approval
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        if self.user:
-            return f"Dr. {self.user.get_full_name()} - {self.department}"
-        return f"Unassigned Doctor - {self.department}"
-
+        return f"Dr. {self.user.get_full_name()} - {self.department}" if self.user else f"Unassigned Doctor"
 
 # ------------------------------------------------------------
 # Patient model
@@ -28,16 +25,16 @@ class Patient(models.Model):
     address = models.TextField(blank=True)
     mobile = models.CharField(max_length=15, blank=True)
     symptoms = models.TextField(blank=True)
-    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)  # ✅ Optional
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     assignedDoctorId = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.BooleanField(default=False)  # ✅ Admin approval (future use)
 
     def __str__(self):
         return self.user.get_full_name() if self.user else "Unassigned Patient"
 
-
 # ------------------------------------------------------------
-# DischargeDetails model
+# Discharge Details model
 # ------------------------------------------------------------
 class DischargeDetails(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
@@ -55,9 +52,8 @@ class DischargeDetails(models.Model):
     def __str__(self):
         return f"{self.patient.user.get_full_name()} discharged on {self.discharge_date}"
 
-
 # ------------------------------------------------------------
-# Appointment model (Updated)
+# Appointment model
 # ------------------------------------------------------------
 class Appointment(models.Model):
     STATUS_CHOICES = [
@@ -69,20 +65,19 @@ class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True, blank=True)
     date_time = models.DateTimeField(default=timezone.now)
-    description = models.TextField(blank=True)  # ✅ Add this field for notes/symptoms
+    description = models.TextField(blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='appointments_created')
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='appointments_updated')
 
     def __str__(self):
-        patient_name = self.patient.user.get_full_name() if self.patient else "Unknown Patient"
-        doctor_name = f"Dr. {self.doctor.user.get_full_name()}" if self.doctor else "Unknown Doctor"
+        patient_name = self.patient.user.get_full_name() if self.patient and self.patient.user else "Unknown Patient"
+        doctor_name = f"Dr. {self.doctor.user.get_full_name()}" if self.doctor and self.doctor.user else "Unknown Doctor"
         return f"{patient_name} with {doctor_name} @ {self.date_time.strftime('%Y-%m-%d %H:%M')}"
 
     class Meta:
         ordering = ['-date_time']
-
 
 # ------------------------------------------------------------
 # Prescription model
@@ -98,7 +93,6 @@ class Prescription(models.Model):
     def __str__(self):
         return f"Prescription for {self.appointment.patient.user.get_full_name()}"
 
-
 # ------------------------------------------------------------
 # Invoice model
 # ------------------------------------------------------------
@@ -112,7 +106,6 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f"Invoice #{self.id} - {self.patient.user.get_full_name()}"
-
 
 # ------------------------------------------------------------
 # Feedback model
