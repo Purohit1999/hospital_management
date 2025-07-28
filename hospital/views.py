@@ -263,3 +263,6 @@ def list_appointments(request):
 def appointment_detail(request, pk):
     appointment = get_object_or_404(Appointment.objects.select_related('patient', 'doctor'), pk=pk)
     return render(request, 'appointments/detail.html', {'appointment': appointment})
+def admin_approve_patient_view(request):
+    patients = Patient.objects.filter(dischargedetails__isnull=True)  # Only admitted
+    return render(request, 'hospital/admin_approve_patient.html', {'patients': patients})
