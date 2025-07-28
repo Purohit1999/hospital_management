@@ -2,60 +2,54 @@
 {% load widget_tweaks %}
 {% block content %}
 
-<head>
-  <!-- Page-specific Styles -->
-  <style>
-    a:link {
-      text-decoration: none;
-    }
+<!-- Enhanced Styling -->
+<style>
+  .note {
+    text-align: center;
+    height: 80px;
+    background: linear-gradient(to right, #0072ff, #8811c5);
+    color: #fff;
+    font-weight: bold;
+    line-height: 80px;
+    border-radius: 8px 8px 0 0;
+  }
 
-    .note {
-      text-align: center;
-      height: 80px;
-      background: linear-gradient(to right, #0072ff, #8811c5);
-      color: #fff;
-      font-weight: bold;
-      line-height: 80px;
-      border-radius: 8px 8px 0 0;
-    }
+  .form-content {
+    padding: 5%;
+    border: 1px solid #ced4da;
+    margin-bottom: 2%;
+    border-radius: 0 0 8px 8px;
+    background-color: #fdfdfd;
+  }
 
-    .form-content {
-      padding: 5%;
-      border: 1px solid #ced4da;
-      margin-bottom: 2%;
-      border-radius: 0 0 8px 8px;
-      background-color: #fdfdfd;
-    }
+  .form-control {
+    border-radius: 1.5rem;
+  }
 
-    .form-control {
-      border-radius: 1.5rem;
-    }
+  .btnSubmit {
+    border: none;
+    border-radius: 1.5rem;
+    padding: 10px 30px;
+    background: #0062cc;
+    color: #fff;
+    font-weight: 500;
+    transition: background 0.3s ease;
+  }
 
-    .btnSubmit {
-      border: none;
-      border-radius: 1.5rem;
-      padding: 1%;
-      width: 30%;
-      cursor: pointer;
-      background: #0062cc;
-      color: #fff;
-      margin-top: 10px;
-    }
+  .btnSubmit:hover {
+    background: #004999;
+  }
 
-    .register-form {
-      margin-top: 30px;
-      margin-bottom: 50px;
-    }
+  .register-form {
+    margin-top: 40px;
+    margin-bottom: 60px;
+  }
 
-    label {
-      font-weight: 500;
-      margin-top: 10px;
-    }
-  </style>
-
-  <!-- External Bootstrap (if not already included globally) -->
-  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-</head>
+  label {
+    font-weight: 500;
+    margin-top: 10px;
+  }
+</style>
 
 <!-- Main Appointment Form Content -->
 <div class="container register-form">
@@ -64,42 +58,42 @@
       <p>Admin: Book an Appointment</p>
     </div>
     <div class="form-content">
-      <form method="post">
+      <form method="post" novalidate>
         {% csrf_token %}
 
         <!-- Description Field -->
         <div class="form-group">
           <label for="id_description">Description</label>
-          {% render_field appointmentForm.description class="form-control" placeholder="Brief description or symptoms" %}
+          {% render_field appointmentForm.description class="form-control" placeholder="Brief description or symptoms" required="required" aria-label="Description" %}
         </div>
 
         <!-- Doctor Selection -->
         <div class="form-group">
           <label for="id_doctor">Select Doctor</label>
-          {% render_field appointmentForm.doctor class="form-control" %}
+          {% render_field appointmentForm.doctor class="form-control" required="required" aria-label="Select Doctor" %}
         </div>
 
         <!-- Patient Selection -->
         <div class="form-group">
           <label for="id_patient">Select Patient</label>
-          {% render_field appointmentForm.patient class="form-control" %}
+          {% render_field appointmentForm.patient class="form-control" required="required" aria-label="Select Patient" %}
         </div>
 
         <!-- Appointment Date & Time -->
         <div class="form-group">
           <label for="id_date_time">Appointment Date & Time</label>
-          {% render_field appointmentForm.date_time class="form-control" %}
+          {% render_field appointmentForm.date_time class="form-control" required="required" aria-label="Appointment Date and Time" %}
         </div>
 
-        <!-- Status (optional) -->
+        <!-- Status -->
         <div class="form-group">
           <label for="id_status">Status</label>
-          {% render_field appointmentForm.status class="form-control" %}
+          {% render_field appointmentForm.status class="form-control" aria-label="Status" %}
         </div>
 
         <!-- Submit Button -->
-        <div class="text-center">
-          <button type="submit" class="btnSubmit">Book Appointment</button>
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btnSubmit">Book Appointment</button>
         </div>
 
       </form>

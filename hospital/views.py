@@ -273,3 +273,5 @@ def admin_appointment_view(request):
     return render(request, 'hospital/admin_appointment.html')
 def admin_view_appointment(request):
     return render(request, 'hospital/admin_view_appointment.html')  # Or whichever template you intend
+def admin_add_appointment_view(request):
+    return render(request, 'hospital/admin_add_appointment.html')
