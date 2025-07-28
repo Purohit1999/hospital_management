@@ -1,6 +1,6 @@
 {% extends 'hospital/admin_base.html' %}
-{% block content %}
 {% load static %}
+{% block content %}
 
 <head>
   <meta charset="UTF-8">
@@ -13,7 +13,7 @@
     .section-title {
       background: linear-gradient(to right, #0072ff, #8811c5);
       color: white;
-      padding: 15px 0;
+      padding: 15px;
       text-align: center;
       border-radius: 5px 5px 0 0;
       margin-bottom: 0;
@@ -35,18 +35,16 @@
       background-color: #f9f9f9;
     }
 
-    .btn-xs {
-      padding: 2px 8px;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
     .profile-pic {
       height: 40px;
       width: 40px;
       object-fit: cover;
       border-radius: 50%;
       border: 1px solid #ccc;
+    }
+
+    .btn-sm i {
+      margin-right: 3px;
     }
 
     .container {
@@ -84,12 +82,12 @@
             <td>{{ d.department }}</td>
             <td>
               <a class="btn btn-sm btn-info" href="{% url 'update-doctor' d.id %}" title="Edit">
-                <i class="fa fa-pencil"></i>
+                <i class="fa fa-pencil"></i> Edit
               </a>
             </td>
             <td>
               <a class="btn btn-sm btn-danger" href="{% url 'delete-doctor-from-hospital' d.id %}" title="Delete">
-                <i class="fa fa-trash"></i>
+                <i class="fa fa-trash"></i> Delete
               </a>
             </td>
           </tr>
@@ -105,9 +103,9 @@
 </div>
 
 <!--
-developed By : Param Purohit
-facebook : fb.com/
-youtube : youtube.com/
+Developed By : Param Purohit
+Facebook : fb.com/
+YouTube : youtube.com/
 -->
 
 {% endblock content %}

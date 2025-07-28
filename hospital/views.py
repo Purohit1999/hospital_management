@@ -277,3 +277,5 @@ def admin_add_appointment_view(request):
     return render(request, 'hospital/admin_add_appointment.html')
 def admin_approve_appointment_view(request):
     return render(request, 'hospital/admin_approve_appointment.html')
+def update_doctor_view(request, pk):
+    pass

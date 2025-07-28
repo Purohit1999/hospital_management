@@ -54,12 +54,14 @@ urlpatterns = [
     path('admin-patient/', views.admin_patient_view, name='admin-patient'),
     path('admin-view-patient/', views.admin_view_patient_view, name='admin-view-patient'),
     path('admin-add-patient/', views.admin_add_patient_view, name='admin-add-patient'),
-    path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),  # ✅ Fixed here
+    path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
     path('delete_patient/<int:pk>/', views.delete_patient_view, name='delete_patient'),
     path('discharge_patient/<int:pk>/', views.discharge_patient_view, name='discharge_patient'),
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
     path('admin-view-appointment/', views.admin_view_appointment, name='admin-view-appointment'),
-    path('admin-add-appointment/', views.admin_add_appointment_view, name='admin-add-appointment')
+    path('admin-add-appointment/', views.admin_add_appointment_view, name='admin-add-appointment'),
+    path('update-doctor/<int:pk>/', views.update_doctor_view, name='update-doctor'),
+
 
     # Optional (Uncomment if you implement these views)
     
