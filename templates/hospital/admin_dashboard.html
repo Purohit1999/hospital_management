@@ -46,36 +46,38 @@
           <h5 class="mb-0">Recent Doctors</h5>
         </div>
         <div class="card-body p-0">
-          <table class="table table-hover table-bordered mb-0">
-            <thead class="thead-light">
-              <tr>
-                <th>Name</th>
-                <th>Department</th>
-                <th>Mobile</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for d in recent_doctors %}
-              <tr>
-                <td>{{ d.user.get_full_name }}</td>
-                <td>{{ d.department }}</td>
-                <td>{{ d.mobile }}</td>
-                <td>
-                  {% if d.status %}
-                    <span class="badge badge-success">Approved</span>
-                  {% else %}
-                    <span class="badge badge-warning">Pending</span>
-                  {% endif %}
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="4" class="text-center text-muted">No recent doctors found.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Mobile</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in recent_doctors %}
+                <tr>
+                  <td>{{ d.user.get_full_name }}</td>
+                  <td>{{ d.department }}</td>
+                  <td>{{ d.mobile }}</td>
+                  <td>
+                    {% if d.status %}
+                      <span class="badge badge-success">Approved</span>
+                    {% else %}
+                      <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center text-muted">No recent doctors found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -83,52 +85,54 @@
     <!-- Recent Patients -->
     <div class="col-md-6">
       <div class="card h-100 shadow-sm">
-        <div class="card-header bg-success text-white text-center">
+        <div class="card-header text-white text-center" style="background-color: #28a745;">
           <h5 class="mb-0">Recent Patients</h5>
         </div>
         <div class="card-body p-0">
-          <table class="table table-hover table-bordered mb-0">
-            <thead class="thead-light">
-              <tr>
-                <th>Name</th>
-                <th>Symptoms</th>
-                <th>Mobile</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for p in recent_patients %}
-              <tr>
-                <td>{{ p.user.get_full_name }}</td>
-                <td>{{ p.symptoms }}</td>
-                <td>{{ p.mobile }}</td>
-                <td>{{ p.address }}</td>
-                <td>
-                  {% if p.dischargedetails %}
-                    <span class="badge badge-secondary">Discharged</span>
-                  {% else %}
-                    <span class="badge badge-success">Admitted</span>
-                  {% endif %}
-                </td>
-                <td>
-                  <div class="d-flex flex-column flex-md-row gap-1">
-                    <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary mb-1">Edit</a>
-                    <a href="{% url 'delete_patient' p.id %}" class="btn btn-sm btn-danger mb-1">Delete</a>
-                    {% if not p.dischargedetails %}
-                      <a href="{% url 'discharge_patient' p.id %}" class="btn btn-sm btn-warning mb-1">Discharge</a>
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th>Name</th>
+                  <th>Symptoms</th>
+                  <th>Mobile</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in recent_patients %}
+                <tr>
+                  <td>{{ p.user.get_full_name }}</td>
+                  <td>{{ p.symptoms }}</td>
+                  <td>{{ p.mobile }}</td>
+                  <td>{{ p.address }}</td>
+                  <td>
+                    {% if p.dischargedetails %}
+                      <span class="badge badge-secondary">Discharged</span>
+                    {% else %}
+                      <span class="badge badge-success">Admitted</span>
                     {% endif %}
-                  </div>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="6" class="text-center text-muted">No recent patients found.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column flex-md-row gap-1">
+                      <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary mb-1">Edit</a>
+                      <a href="{% url 'delete_patient' p.id %}" class="btn btn-sm btn-danger mb-1">Delete</a>
+                      {% if not p.dischargedetails %}
+                        <a href="{% url 'discharge_patient' p.id %}" class="btn btn-sm btn-warning mb-1">Discharge</a>
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center text-muted">No recent patients found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
