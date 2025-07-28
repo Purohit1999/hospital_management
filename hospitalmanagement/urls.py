@@ -49,6 +49,7 @@ urlpatterns = [
     path('admin-doctor/', views.admin_doctor_view, name='admin-doctor'),
     path('admin-approve-patient/', views.admin_approve_patient_view, name='admin-approve-patient'),
     path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
+     path('admin-approve-appointment/', views.admin_approve_appointment_view, name='admin-approve-appointment'),
     # Admin - Patient Management
     path('admin-patient/', views.admin_patient_view, name='admin-patient'),
     path('admin-view-patient/', views.admin_view_patient_view, name='admin-view-patient'),
