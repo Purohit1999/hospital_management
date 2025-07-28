@@ -48,7 +48,7 @@ urlpatterns = [
     path('delete-doctor/<int:pk>/', views.delete_doctor_view, name='delete_doctor'),
     path('admin-doctor/', views.admin_doctor_view, name='admin-doctor'),
     path('admin-approve-patient/', views.admin_approve_patient_view, name='admin-approve-patient'),
-
+    path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
     # Admin - Patient Management
     path('admin-patient/', views.admin_patient_view, name='admin-patient'),
     path('admin-view-patient/', views.admin_view_patient_view, name='admin-view-patient'),
@@ -56,10 +56,10 @@ urlpatterns = [
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),  # ✅ Fixed here
     path('delete_patient/<int:pk>/', views.delete_patient_view, name='delete_patient'),
     path('discharge_patient/<int:pk>/', views.discharge_patient_view, name='discharge_patient'),
-
+    path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
 
     # Optional (Uncomment if you implement these views)
-    # path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
+    
     # path('admin-view-appointment/', views.admin_view_appointment_view, name='admin-view-appointment'),
     # path('approve-appointment/<int:pk>/', views.approve_appointment_view, name='approve-appointment'),
     # path('reject-appointment/<int:pk>/', views.reject_appointment_view, name='reject-appointment'),

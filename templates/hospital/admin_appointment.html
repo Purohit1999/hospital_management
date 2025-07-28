@@ -9,21 +9,23 @@
 <style>
   .order-card {
     color: #fff;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
     padding: 25px;
     height: 100%;
+    position: relative;
   }
 
   .order-card:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
 
   .order-card i {
-    font-size: 30px;
-    margin-bottom: 10px;
+    font-size: 32px;
+    margin-bottom: 12px;
   }
 
   .bg-c-blue {
@@ -49,24 +51,33 @@
     text-decoration: none;
   }
 
+  .dashboard-title {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    font-weight: bold;
+    color: #007bff;
+  }
+
   @media (max-width: 768px) {
     .order-card {
       padding: 20px 15px;
     }
 
     .order-card i {
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
   }
 </style>
 
 <!-- Admin Appointment Dashboard -->
 <div class="container mt-4">
+  <h3 class="dashboard-title">Appointment Management Dashboard</h3>
   <div class="row justify-content-center">
 
     <!-- View Appointments -->
     <div class="col-md-4 col-sm-6 mb-4">
-      <a href="{% url 'admin-view-appointment' %}" class="card-link">
+      <a href="{% url 'admin-view-appointment' %}" class="card-link" aria-label="View Appointments">
         <div class="card bg-c-blue order-card">
           <i class="fas fa-calendar"></i>
           <h6 class="mt-2">View Appointments</h6>
@@ -76,7 +87,7 @@
 
     <!-- Book Appointment -->
     <div class="col-md-4 col-sm-6 mb-4">
-      <a href="{% url 'admin-add-appointment' %}" class="card-link">
+      <a href="{% url 'admin-add-appointment' %}" class="card-link" aria-label="Book New Appointment">
         <div class="card bg-c-green order-card">
           <i class="fas fa-book-medical"></i>
           <h6 class="mt-2">Book New Appointment</h6>
@@ -86,7 +97,7 @@
 
     <!-- Approve Appointment -->
     <div class="col-md-4 col-sm-6 mb-4">
-      <a href="{% url 'admin-approve-appointment' %}" class="card-link">
+      <a href="{% url 'admin-approve-appointment' %}" class="card-link" aria-label="Approve Appointments">
         <div class="card bg-c-yellow order-card">
           <i class="fas fa-check-circle"></i>
           <h6 class="mt-2">Approve Appointments</h6>

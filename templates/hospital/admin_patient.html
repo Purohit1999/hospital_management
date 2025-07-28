@@ -10,21 +10,21 @@
 <style>
   .order-card {
     color: #fff;
-    border-radius: 10px;
+    border-radius: 12px;
     transition: transform 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
-    padding: 25px;
+    padding: 30px 20px;
     height: 100%;
   }
 
   .order-card:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
   }
 
   .order-card i {
-    font-size: 30px;
-    margin-bottom: 10px;
+    font-size: 32px;
+    margin-bottom: 12px;
   }
 
   .bg-c-blue {
@@ -51,15 +51,23 @@
 
   a.card-link:hover {
     text-decoration: none;
-    color: white;
+    color: #fff;
+  }
+
+  .dashboard-title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #343a40;
   }
 </style>
 
 <!-- Patient Management Dashboard -->
 <div class="container mt-4">
-  <div class="row">
+  <h3 class="dashboard-title">Patient Management Dashboard</h3>
+  <div class="row justify-content-center">
 
-    <!-- View Patient Record -->
+    <!-- View Patient Records -->
     <div class="col-md-6 col-lg-3 mb-4">
       <a href="{% url 'admin-view-patient' %}" class="card-link">
         <div class="card bg-c-blue order-card">

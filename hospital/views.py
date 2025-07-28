@@ -266,3 +266,8 @@ def appointment_detail(request, pk):
 def admin_approve_patient_view(request):
     patients = Patient.objects.filter(dischargedetails__isnull=True)  # Only admitted
     return render(request, 'hospital/admin_approve_patient.html', {'patients': patients})
+def admin_discharge_patient_view(request):
+    patients = Patient.objects.filter(status=True, dischargedetails__isnull=True)
+    return render(request, 'hospital/admin_discharge_patient.html', {'patients': patients})
+def admin_appointment_view(request):
+    return render(request, 'hospital/admin_appointment.html')
