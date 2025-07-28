@@ -35,13 +35,13 @@
   </div>
 </div>
 
-<!-- Recent Doctors and Patients -->
-<div class="container">
+<!-- Recent Doctors and Patients Section -->
+<div class="container mb-5">
   <div class="row">
 
     <!-- Recent Doctors -->
-    <div class="col-md-6 mb-5">
-      <div class="card shadow-sm">
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm">
         <div class="card-header bg-primary text-white text-center">
           <h5 class="mb-0">Recent Doctors</h5>
         </div>
@@ -81,8 +81,8 @@
     </div>
 
     <!-- Recent Patients -->
-    <div class="col-md-6 mb-5">
-      <div class="card shadow-sm">
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm">
         <div class="card-header bg-success text-white text-center">
           <h5 class="mb-0">Recent Patients</h5>
         </div>
@@ -113,11 +113,11 @@
                   {% endif %}
                 </td>
                 <td>
-                  <div class="d-flex flex-wrap gap-1">
-                    <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary">Edit</a>
-                    <a href="{% url 'delete_patient' p.id %}" class="btn btn-sm btn-danger">Delete</a>
+                  <div class="d-flex flex-column flex-md-row gap-1">
+                    <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary mb-1">Edit</a>
+                    <a href="{% url 'delete_patient' p.id %}" class="btn btn-sm btn-danger mb-1">Delete</a>
                     {% if not p.dischargedetails %}
-                      <a href="{% url 'discharge_patient' p.id %}" class="btn btn-sm btn-warning">Discharge</a>
+                      <a href="{% url 'discharge_patient' p.id %}" class="btn btn-sm btn-warning mb-1">Discharge</a>
                     {% endif %}
                   </div>
                 </td>
