@@ -214,6 +214,19 @@ def delete_patient_view(request, pk):
         user.delete()
     return redirect('admin-view-patient')
 
+def approve_patient_view(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    patient.status = True
+    patient.save()
+    return redirect('admin-approve-patient')
+
+def reject_patient_view(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    user = patient.user  # assuming there's a OneToOne relation with auth User
+    patient.delete()
+    user.delete()
+    return redirect('admin-approve-patient')
+
 # ---------------- DISCHARGE PATIENT ----------------
 def discharge_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)

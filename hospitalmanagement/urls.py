@@ -48,18 +48,21 @@ urlpatterns = [
     path('delete-doctor/<int:pk>/', views.delete_doctor_view, name='delete-doctor-from-hospital'),
 
     # Admin - Patient Management
+    # Admin - Patient Management
     path('admin-patient/', views.admin_patient_view, name='admin-patient'),
     path('admin-view-patient/', views.admin_view_patient_view, name='admin-view-patient'),
     path('admin-add-patient/', views.admin_add_patient_view, name='admin-add-patient'),
     path('admin-approve-patient/', views.admin_approve_patient_view, name='admin-approve-patient'),
     path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
-    path('approve-patient/<int:pk>/', views.approve_patient_view, name='approve-patient'),
 
-    path('update-patient/<int:pk>/', views.edit_patient_view, name='update-patient'),       # ✅ used in template
-    path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),           # 🔁 redundant but okay
+    path('approve-patient/<int:pk>/', views.approve_patient_view, name='approve-patient'),   
+    path('reject-patient/<int:pk>/', views.reject_patient_view, name='reject-patient'),      
 
-    path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),     # ✅ correct pattern
+    path('update-patient/<int:pk>/', views.edit_patient_view, name='update-patient'),        
+    path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),            
+    path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),     
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
+
 
     # Admin - Appointment Management
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
