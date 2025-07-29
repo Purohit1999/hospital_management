@@ -270,7 +270,7 @@ def admin_approve_appointment_view(request):
 def admin_view_doctor_specialisation_view(request):
     return render(request, 'hospital/admin_view_doctor_specialisation.html')
 # Doctor Specialisation View
-def admin_view_doctor_specialisation_view(request):
+def admin_view_doctor_specialisation(request):
     doctors = Doctor.objects.select_related('user').all()
     return render(request, 'hospital/admin_view_doctor_specialisation.html', {'doctors': doctors})
 

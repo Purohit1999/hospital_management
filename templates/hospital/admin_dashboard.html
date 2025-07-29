@@ -118,9 +118,9 @@
                   <td>
                     <div class="d-flex flex-column flex-md-row gap-1">
                       <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary mb-1">Edit</a>
-                      <a href="{% url 'delete_patient' p.id %}" class="btn btn-sm btn-danger mb-1">Delete</a>
+                      <a href="{% url 'delete-patient' p.id %}" class="btn btn-sm btn-danger mb-1">Delete</a>
                       {% if not p.dischargedetails %}
-                        <a href="{% url 'discharge_patient' p.id %}" class="btn btn-sm btn-warning mb-1">Discharge</a>
+                        <a href="{% url 'discharge-patient' p.id %}" class="btn btn-sm btn-warning mb-1">Discharge</a>
                       {% endif %}
                     </div>
                   </td>

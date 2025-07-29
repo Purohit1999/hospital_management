@@ -38,7 +38,7 @@ urlpatterns = [
     path('admin-view-doctor/', views.admin_view_doctor_view, name='admin-view-doctor'),
     path('admin-add-doctor/', views.admin_add_doctor_view, name='admin-add-doctor'),
     path('admin-approve-doctor/', views.admin_approve_doctor_view, name='admin-approve-doctor'),
-    path('admin-view-doctor-specialisation/', views.admin_view_doctor_specialisation_view, name='admin-view-doctor-specialisation'),
+    path('admin-view-doctor-specialisation/', views.admin_view_doctor_specialisation, name='admin-view-doctor-specialisation'),  # ✅ fixed name
     path('admin-doctor/', views.admin_doctor_view, name='admin-doctor'),
 
     path('approve-doctor/<int:pk>/', views.approve_doctor_view, name='approve-doctor'),
@@ -55,7 +55,7 @@ urlpatterns = [
     path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
 
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
-    path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),
+    path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),  # ✅ correct name
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
 
     # Admin - Appointment Management
@@ -68,11 +68,6 @@ urlpatterns = [
     path('appointments/', views.list_appointments, name='appointments'),
     path('appointments/<int:pk>/', views.appointment_detail, name='appointment_detail'),
     path('patient-book-appointment/', views.patient_book_appointment_view, name='patient-book-appointment'),
-
-    # Optional (uncomment if implemented)
-    # path('approve-appointment/<int:pk>/', views.approve_appointment_view, name='approve-appointment'),
-    # path('reject-appointment/<int:pk>/', views.reject_appointment_view, name='reject-appointment'),
-    # path('download-bill/<int:pk>/', views.download_pdf_view, name='download-bill'),
 ]
 
 # ✅ Serve media files during development

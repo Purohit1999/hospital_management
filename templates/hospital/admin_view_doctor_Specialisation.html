@@ -1,5 +1,4 @@
 {% extends 'hospital/admin_base.html' %}
-{% load static %}
 {% block content %}
 
 <head>
@@ -31,8 +30,7 @@
       background-color: #f1f1f1;
     }
 
-    table th,
-    table td {
+    table th, table td {
       vertical-align: middle !important;
     }
 
@@ -61,12 +59,12 @@
           </tr>
         </thead>
         <tbody>
-          {% for doctor in doctors %}
+          {% for d in doctors %}
           <tr>
-            <td>{{ doctor.department }}</td>
-            <td>{{ doctor.get_name }}</td>
-            <td>{{ doctor.user.email }}</td>
-            <td>{{ doctor.mobile }}</td>
+            <td>{{ d.department }}</td>
+            <td>{{ d.user.get_full_name }}</td>
+            <td>{{ d.user.email }}</td>
+            <td>{{ d.mobile }}</td>
           </tr>
           {% empty %}
           <tr>
@@ -78,9 +76,5 @@
     </div>
   </div>
 </div>
-
-<!--
-Developed by: Param Purohit
--->
 
 {% endblock content %}
