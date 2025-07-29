@@ -29,6 +29,7 @@
 
     .table th, .table td {
       vertical-align: middle !important;
+      text-align: center;
     }
 
     .table-hover tbody tr:hover {
@@ -74,7 +75,7 @@
         <tbody>
           {% for p in patients %}
           <tr>
-            <td>{{ p.get_name }}</td>
+            <td>{{ p.user.first_name }} {{ p.user.last_name }}</td>
             <td>
               {% if p.profile_pic %}
                 <img src="{{ p.profile_pic.url }}" alt="Profile" class="profile-pic">
