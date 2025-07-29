@@ -78,10 +78,10 @@
         <tbody>
           {% for a in appointments %}
           <tr>
-            <td>{{ a.doctorName }}</td>
-            <td>{{ a.patientName }}</td>
+            <td>{{ a.doctor.user.get_full_name }}</td>
+            <td>{{ a.patient.user.get_full_name }}</td>
             <td>{{ a.description }}</td>
-            <td>{{ a.appointmentDate }}</td>
+            <td>{{ a.date_time|date:"d M Y, H:i" }}</td>
           </tr>
           {% empty %}
           <tr>
@@ -95,9 +95,7 @@
 </div>
 
 <!--
-Developed By : Param Purohit
-Facebook : fb.com/
-YouTube : youtube.com/
+Developed By: Param Purohit
 -->
 
 {% endblock content %}

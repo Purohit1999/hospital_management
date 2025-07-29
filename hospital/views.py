@@ -49,7 +49,7 @@ def doctor_signup_view(request):
             user.groups.add(doctor_group)
             doctor = doctor_form.save(commit=False)
             doctor.user = user
-            doctor.status = False  # set to pending approval
+            doctor.status = False
             doctor.save()
             return redirect('doctorlogin')
     else:
@@ -222,7 +222,7 @@ def approve_patient_view(request, pk):
 
 def reject_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
-    user = patient.user  # assuming there's a OneToOne relation with auth User
+    user = patient.user
     patient.delete()
     user.delete()
     return redirect('admin-approve-patient')
@@ -239,7 +239,7 @@ def admin_approve_patient_view(request):
     return render(request, 'hospital/admin_approve_patient.html', {'patients': patients})
 
 def admin_discharge_patient_view(request):
-    patients = Patient.objects.filter(status=True, dischargedetails__isnull=True)
+    patients = Patient.objects.filter(status=True, dischargedetails__isnull=True).select_related('user')
     return render(request, 'hospital/admin_discharge_patient.html', {'patients': patients})
 
 # ---------------- APPOINTMENTS ----------------
@@ -269,14 +269,12 @@ def appointment_detail(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     return render(request, 'appointments/detail.html', {'appointment': appointment})
 
+def admin_view_appointment(request):
+    appointments = Appointment.objects.select_related('doctor__user', 'patient__user').all()
+    return render(request, 'hospital/admin_view_appointment.html', {'appointments': appointments})
+
 def admin_appointment_view(request):
     return render(request, 'hospital/admin_appointment.html')
-
-def admin_view_appointment(request):
-    return render(request, 'hospital/admin_view_appointment.html')
-
-def admin_add_appointment_view(request):
-    return render(request, 'hospital/admin_add_appointment.html')
 
 def admin_approve_appointment_view(request):
     return render(request, 'hospital/admin_approve_appointment.html')
@@ -286,7 +284,6 @@ def admin_view_doctor_specialisation(request):
     doctors = Doctor.objects.select_related('user').filter(status=True)
     return render(request, 'hospital/admin_view_doctor_specialisation.html', {'doctors': doctors})
 
-# ---------------- EDIT DOCTOR ----------------
 def edit_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
@@ -300,10 +297,21 @@ def edit_doctor_view(request, pk):
     else:
         user_form = DoctorUserForm(instance=user)
         doctor_form = DoctorForm(instance=doctor)
-    return render(request, 'hospital/edit_doctor.html', {'userForm': user_form, 'doctorForm': doctor_form})
+    return render(request, 'hospital/edit_doctor.html', {
+        'userForm': user_form,
+        'doctorForm': doctor_form
+    })
 
-def approve_patient_view(request, pk):
-    patient = get_object_or_404(Patient, id=pk)
-    patient.status = True  # assuming there is a boolean field `status` to track approval
-    patient.save()
-    return redirect('admin-approve-patient')  
+def admin_add_appointment_view(request):
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.created_by = request.user
+            appointment.updated_by = request.user
+            appointment.save()
+            messages.success(request, "Appointment added successfully.")
+            return redirect('admin-view-appointment')
+    else:
+        form = AppointmentForm()
+    return render(request, 'hospital/admin_add_appointment.html', {'form': form})

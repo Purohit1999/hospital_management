@@ -28,16 +28,22 @@
 
     .table th, .table td {
       vertical-align: middle !important;
+      text-align: center;
     }
 
     .btn-discharge {
       font-size: 13px;
       padding: 4px 10px;
+      border-radius: 4px;
     }
 
     .container {
       margin-top: 40px;
       margin-bottom: 60px;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #f9f9f9;
     }
   </style>
 </head>
@@ -58,7 +64,7 @@
         <tbody>
           {% for p in patients %}
           <tr>
-            <td>{{ p.get_name }}</td>
+            <td>{{ p.user.first_name }} {{ p.user.last_name }}</td>
             <td>{{ p.symptoms }}</td>
             <td>{{ p.mobile }}</td>
             <td>
