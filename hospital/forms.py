@@ -3,10 +3,10 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from .models import Appointment, Patient, Doctor
 
-# ---------- 🔹 UserForm (For editing basic user info) ----------
+# ---------- 🔹 User Edit Form (Admin Edit Only) ----------
 class UserForm(forms.ModelForm):
     """
-    Form for editing User details (used by admin for patient/doctor).
+    Form for editing user info (by admin or staff).
     """
     class Meta:
         model = User
@@ -18,11 +18,11 @@ class UserForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
 
-# ---------- 🔹 Appointment Form (Patient Booking) ----------
+
+# ---------- 🔹 Appointment Form ----------
 class AppointmentForm(forms.ModelForm):
     """
-    Form for patients to book an appointment.
-    Includes description, doctor selection, and date_time.
+    Used by patients to book an appointment.
     """
     date_time = forms.DateTimeField(
         input_formats=['%Y-%m-%dT%H:%M'],
@@ -51,32 +51,32 @@ class AppointmentForm(forms.ModelForm):
         }
 
     def clean_date_time(self):
-        """
-        Ensure the appointment is not in the past.
-        """
         dt = self.cleaned_data.get('date_time')
         if dt and dt < timezone.now():
             raise forms.ValidationError("Appointment date must be in the future.")
         return dt
 
-# ---------- 🔹 Patient Registration Forms ----------
+
+# ---------- 🔹 Patient User Form ----------
 class PatientUserForm(forms.ModelForm):
     """
-    Form for creating a User instance (for Patient).
+    Creates a new User for Patient.
     """
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'password']
         widgets = {
-            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
+
+# ---------- 🔹 Patient Profile Form ----------
 class PatientForm(forms.ModelForm):
     """
-    Form for creating a Patient profile.
+    Creates or updates Patient profile.
     """
     class Meta:
         model = Patient
@@ -89,24 +89,27 @@ class PatientForm(forms.ModelForm):
             'assignedDoctorId': forms.Select(attrs={'class': 'form-select'}),
         }
 
-# ---------- 🔹 Doctor Registration Forms ----------
+
+# ---------- 🔹 Doctor User Form ----------
 class DoctorUserForm(forms.ModelForm):
     """
-    Form for creating a User instance (for Doctor).
+    Creates a new User for Doctor.
     """
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'password']
         widgets = {
-            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
+
+# ---------- 🔹 Doctor Profile Form ----------
 class DoctorForm(forms.ModelForm):
     """
-    Form for creating a Doctor profile.
+    Creates or updates Doctor profile.
     """
     class Meta:
         model = Doctor

@@ -1,4 +1,5 @@
 {% extends 'hospital/admin_base.html' %}
+{% load static %}
 {% block content %}
 
 <head>
@@ -48,26 +49,28 @@
 
 <div class="container">
   <div class="card-box">
-    <h4 class="section-title">Department & Doctors</h4>
+    <h4 class="section-title">Doctor Departments & Specialisations</h4>
     <div class="table-responsive">
       <table class="table table-bordered table-hover mb-0">
         <thead class="thead-light">
           <tr>
             <th>Department</th>
             <th>Doctor Name</th>
+            <th>Email</th>
             <th>Mobile</th>
           </tr>
         </thead>
         <tbody>
-          {% for d in doctors %}
+          {% for doctor in doctors %}
           <tr>
-            <td>{{ d.department }}</td>
-            <td>{{ d.get_name }}</td>
-            <td>{{ d.mobile }}</td>
+            <td>{{ doctor.department }}</td>
+            <td>{{ doctor.get_name }}</td>
+            <td>{{ doctor.user.email }}</td>
+            <td>{{ doctor.mobile }}</td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="3" class="text-center">No doctor specialisations available.</td>
+            <td colspan="4" class="text-center">No doctor specialisations available.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -77,9 +80,7 @@
 </div>
 
 <!--
-developed By : Param Purohit
-facebook : fb.com/
-youtube : youtube.com/
+Developed by: Param Purohit
 -->
 
 {% endblock content %}

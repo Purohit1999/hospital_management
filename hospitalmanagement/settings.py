@@ -7,15 +7,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Custom directory paths
 TEMPLATE_DIR = BASE_DIR / 'templates'
 STATIC_DIR   = BASE_DIR / 'static'
-STATIC_ROOT  = BASE_DIR / 'staticfiles'
-MEDIA_ROOT   = BASE_DIR / 'media'
+STATIC_ROOT  = BASE_DIR / 'staticfiles'  # Used for collectstatic in production
+MEDIA_ROOT   = BASE_DIR / 'media'        # Where uploaded files are stored
 
 # SECURITY SETTINGS
-SECRET_KEY = 'hpbv()ep00boce&o0w7z1h)st148(*m@6@-rk$nn)(n9ojj4c0'  # Replace this for production
-DEBUG = True  # Turn OFF in production
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # Add domain names for deployment
+SECRET_KEY = 'hpbv()ep00boce&o0w7z1h)st148(*m@6@-rk$nn)(n9ojj4c0'  # Replace before deployment
+DEBUG = True  # ⚠️ Set to False in production
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-# APPLICATION DEFINITIONS
+# APPLICATIONS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -24,14 +24,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-party apps
-    'widget_tweaks',  # Allows form customization in templates
+    # Third-party
+    'widget_tweaks',
 
     # Local apps
     'hospital',
 ]
 
-# MIDDLEWARE DEFINITIONS
+# MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -42,16 +42,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# URL CONFIGURATION
+# ROOT URL CONFIGURATION
 ROOT_URLCONF = 'hospitalmanagement.urls'
 WSGI_APPLICATION = 'hospitalmanagement.wsgi.application'
 
-# TEMPLATES CONFIGURATION
+# TEMPLATES
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR],  # ✅ Custom templates folder
-        'APP_DIRS': True,        # ✅ Enables app-level templates too
+        'DIRS': [TEMPLATE_DIR],  # ✅ Custom templates directory
+        'APP_DIRS': True,        # ✅ Enables looking inside app/templates folders
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -63,8 +63,7 @@ TEMPLATES = [
     },
 ]
 
-
-# DATABASE CONFIGURATION (SQLite for development)
+# DATABASE (SQLite for development)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -87,25 +86,26 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# STATIC & MEDIA FILES
+# ✅ STATIC FILES
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [STATIC_DIR]  # Development static files
-STATIC_ROOT = STATIC_ROOT  # Where `collectstatic` places production files
+STATICFILES_DIRS = [STATIC_DIR]       # Local static (CSS, JS, etc.)
+STATIC_ROOT = STATIC_ROOT             # Production static root for `collectstatic`
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = MEDIA_ROOT  # Uploaded files storage
+# ✅ MEDIA FILES
+MEDIA_URL = '/media/'                 # URL prefix for media files
+MEDIA_ROOT = MEDIA_ROOT              # Actual directory where uploaded files are stored
 
-# LOGIN SETTINGS
+# LOGIN REDIRECT
 LOGIN_REDIRECT_URL = '/afterlogin/'
 
-# EMAIL SETTINGS
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Correct backend class
-EMAIL_HOST = 'smtp.gmail.com'  # Gmail SMTP server
+# EMAIL SETTINGS (for notifications, password reset, etc.)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'from@gmail.com'       # Replace with your email
-EMAIL_HOST_PASSWORD = 'your_app_password'  # Use App Password if using Gmail
-EMAIL_RECEIVING_USER = ['to@gmail.com']
+EMAIL_HOST_USER = 'from@gmail.com'          # ✅ Replace with sender email
+EMAIL_HOST_PASSWORD = 'your_app_password'   # ✅ Use App Password for Gmail
+EMAIL_RECEIVING_USER = ['to@gmail.com']     # ✅ Replace with target inbox
 
-# DEFAULT PRIMARY KEY FIELD
+# DEFAULT AUTO FIELD
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

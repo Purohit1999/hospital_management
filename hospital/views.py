@@ -13,7 +13,7 @@ from .forms import (
     DoctorUserForm, DoctorForm
 )
 
-# ---------- 🔹 HOME & STATIC PAGES ----------
+# ---------------- HOME & STATIC ----------------
 def home_view(request):
     return render(request, 'hospital/index.html')
 
@@ -23,7 +23,7 @@ def aboutus_view(request):
 def contactus_view(request):
     return render(request, 'hospital/contactus.html')
 
-# ---------- 🔹 ROLE SELECTION ----------
+# ---------------- ROLE SELECTION ----------------
 def adminclick_view(request):
     return render(request, 'hospital/adminclick.html')
 
@@ -33,7 +33,7 @@ def doctorclick_view(request):
 def patientclick_view(request):
     return render(request, 'hospital/patientclick.html')
 
-# ---------- 🔹 SIGNUP VIEWS ----------
+# ---------------- SIGNUP ----------------
 def admin_signup_view(request):
     return render(request, 'hospital/adminsignup.html')
 
@@ -64,8 +64,8 @@ def patient_signup_view(request):
             user = user_form.save(commit=False)
             user.set_password(user.password)
             user.save()
-            patient_group, _ = Group.objects.get_or_create(name='PATIENT')
-            user.groups.add(patient_group)
+            group, _ = Group.objects.get_or_create(name='PATIENT')
+            user.groups.add(group)
             patient = patient_form.save(commit=False)
             patient.user = user
             patient.save()
@@ -75,7 +75,7 @@ def patient_signup_view(request):
         patient_form = PatientForm()
     return render(request, 'hospital/patientsignup.html', {'userForm': user_form, 'patientForm': patient_form})
 
-# ---------- 🔹 LOGIN REDIRECT ----------
+# ---------------- LOGIN REDIRECT ----------------
 def afterlogin_view(request):
     if request.user.groups.filter(name='DOCTOR').exists():
         return redirect('doctor-dashboard')
@@ -85,7 +85,7 @@ def afterlogin_view(request):
         return redirect('admin-dashboard')
     return redirect('home')
 
-# ---------- 🔹 ADMIN DASHBOARD ----------
+# ---------------- ADMIN DASHBOARD ----------------
 def admin_dashboard_view(request):
     context = {
         'pending_doctors': Doctor.objects.filter(status=False).count(),
@@ -96,7 +96,7 @@ def admin_dashboard_view(request):
     }
     return render(request, 'hospital/admin_dashboard.html', context)
 
-# ---------- 🔹 DOCTOR ADMIN ----------
+# ---------------- DOCTOR ADMIN ----------------
 def admin_doctor_view(request):
     return render(request, 'hospital/admin_doctor.html')
 
@@ -112,8 +112,8 @@ def admin_add_doctor_view(request):
             user = user_form.save(commit=False)
             user.set_password(user.password)
             user.save()
-            doctor_group, _ = Group.objects.get_or_create(name='DOCTOR')
-            user.groups.add(doctor_group)
+            group, _ = Group.objects.get_or_create(name='DOCTOR')
+            user.groups.add(group)
             doctor = doctor_form.save(commit=False)
             doctor.user = user
             doctor.save()
@@ -126,9 +126,6 @@ def admin_add_doctor_view(request):
 def admin_approve_doctor_view(request):
     doctors = Doctor.objects.filter(status=False)
     return render(request, 'hospital/admin_approve_doctor.html', {'pending_doctors': doctors})
-
-def admin_view_doctor_specialisation_view(request):
-    return render(request, 'hospital/admin_view_doctor_specialisation.html')
 
 def approve_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
@@ -145,15 +142,7 @@ def reject_doctor_view(request, pk):
     messages.success(request, "Doctor has been rejected and removed.")
     return redirect('admin-approve-doctor')
 
-def delete_doctor_view(request, pk):
-    doctor = get_object_or_404(Doctor, pk=pk)
-    user = doctor.user
-    doctor.delete()
-    if user:
-        user.delete()
-    return redirect('admin-view-doctor')
-
-def edit_doctor(request, pk):
+def update_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     if doctor.user is None:
         raise Http404("Doctor user not found")
@@ -166,7 +155,15 @@ def edit_doctor(request, pk):
             return redirect('admin-view-doctor')
     return render(request, 'hospital/edit_doctor.html', {'userForm': user_form, 'doctorForm': doctor_form, 'doctor': doctor})
 
-# ---------- 🔹 PATIENT ADMIN ----------
+def delete_doctor_view(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+    user = doctor.user
+    doctor.delete()
+    if user:
+        user.delete()
+    return redirect('admin-view-doctor')
+
+# ---------------- PATIENT ADMIN ----------------
 def admin_patient_view(request):
     return render(request, 'hospital/admin_patient.html')
 
@@ -216,28 +213,22 @@ def delete_patient_view(request, pk):
         user.delete()
     return redirect('admin-view-patient')
 
-# ---------- 🔹 DISCHARGE PATIENT ----------
+# ---------------- DISCHARGE PATIENT ----------------
 def discharge_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
-    if hasattr(patient, 'dischargedetails'):
-        messages.warning(request, "Patient is already discharged.")
-    else:
-        DischargeDetails.objects.create(
-            patient=patient,
-            doctor=patient.assignedDoctorId,
-            admission_date=timezone.now().date(),
-            discharge_date=timezone.now().date(),
-            summary="Auto-discharged by admin.",
-            room_charge=0.0,
-            doctor_fee=0.0,
-            medicine_cost=0.0,
-            other_charge=0.0,
-            total=0.0
-        )
-        messages.success(request, "Patient has been discharged.")
+    patient.status = True
+    patient.save()
     return redirect('admin-dashboard')
 
-# ---------- 🔹 APPOINTMENTS ----------
+def admin_approve_patient_view(request):
+    patients = Patient.objects.filter(dischargedetails__isnull=True)
+    return render(request, 'hospital/admin_approve_patient.html', {'patients': patients})
+
+def admin_discharge_patient_view(request):
+    patients = Patient.objects.filter(status=True, dischargedetails__isnull=True)
+    return render(request, 'hospital/admin_discharge_patient.html', {'patients': patients})
+
+# ---------------- APPOINTMENTS ----------------
 @login_required
 def patient_book_appointment_view(request):
     patient = Patient.objects.filter(user=request.user).first()
@@ -261,50 +252,40 @@ def list_appointments(request):
     return render(request, 'appointments/list.html', {'appointments': appointments})
 
 def appointment_detail(request, pk):
-    appointment = get_object_or_404(Appointment.objects.select_related('patient', 'doctor'), pk=pk)
+    appointment = get_object_or_404(Appointment, pk=pk)
     return render(request, 'appointments/detail.html', {'appointment': appointment})
-def admin_approve_patient_view(request):
-    patients = Patient.objects.filter(dischargedetails__isnull=True)  # Only admitted
-    return render(request, 'hospital/admin_approve_patient.html', {'patients': patients})
-def admin_discharge_patient_view(request):
-    patients = Patient.objects.filter(status=True, dischargedetails__isnull=True)
-    return render(request, 'hospital/admin_discharge_patient.html', {'patients': patients})
+
 def admin_appointment_view(request):
     return render(request, 'hospital/admin_appointment.html')
+
 def admin_view_appointment(request):
-    return render(request, 'hospital/admin_view_appointment.html')  # Or whichever template you intend
+    return render(request, 'hospital/admin_view_appointment.html')
+
 def admin_add_appointment_view(request):
     return render(request, 'hospital/admin_add_appointment.html')
+
 def admin_approve_appointment_view(request):
     return render(request, 'hospital/admin_approve_appointment.html')
-def update_doctor_view(request, pk):
-    pass
-# Approve Doctor
-def approve_doctor_view(request, pk):
-    doctor = get_object_or_404(Doctor, id=pk)
-    doctor.status = True  # ✅ Boolean value for approval
-    doctor.save()
-    return redirect('admin-dashboard')
 
-# Edit Patient
-def edit_patient_view(request, pk):
-    patient = get_object_or_404(Patient, id=pk)
+def admin_view_doctor_specialisation_view(request):
+    return render(request, 'hospital/admin_view_doctor_specialisation.html')
+# Doctor Specialisation View
+def admin_view_doctor_specialisation_view(request):
+    doctors = Doctor.objects.select_related('user').all()
+    return render(request, 'hospital/admin_view_doctor_specialisation.html', {'doctors': doctors})
+
+# Edit Doctor View (Fixing the missing name)
+def edit_doctor_view(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+    user = doctor.user
     if request.method == 'POST':
-        patient.mobile = request.POST.get('mobile')
-        patient.address = request.POST.get('address')
-        patient.save()
-        return redirect('admin-dashboard')
-    return render(request, 'hospital/edit_patient.html', {'patient': patient})
-
-# Delete Patient
-def delete_patient_view(request, pk):
-    patient = get_object_or_404(Patient, id=pk)
-    patient.delete()
-    return redirect('admin-dashboard')
-
-# Discharge Patient
-def discharge_patient_view(request, pk):
-    patient = get_object_or_404(Patient, id=pk)
-    patient.status = True
-    patient.save()
-    return redirect('admin-dashboard')
+        user_form = DoctorUserForm(request.POST, instance=user)
+        doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
+        if user_form.is_valid() and doctor_form.is_valid():
+            user_form.save()
+            doctor_form.save()
+            return redirect('admin-view-doctor')
+    else:
+        user_form = DoctorUserForm(instance=user)
+        doctor_form = DoctorForm(instance=doctor)
+    return render(request, 'hospital/edit_doctor.html', {'userForm': user_form, 'doctorForm': doctor_form})
