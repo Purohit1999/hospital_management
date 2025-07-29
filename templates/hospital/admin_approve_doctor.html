@@ -23,7 +23,8 @@
       color: #333;
     }
 
-    .table th, .table td {
+    .table th,
+    .table td {
       vertical-align: middle;
     }
 
@@ -83,6 +84,7 @@
         <thead class="thead-light">
           <tr>
             <th>Name</th>
+            <th>Email</th>
             <th>Profile</th>
             <th>Mobile</th>
             <th>Address</th>
@@ -92,11 +94,12 @@
           </tr>
         </thead>
         <tbody>
-          {% for d in doctors %}
+          {% for d in pending_doctors %}
           <tr>
-            <td>{{ d.get_name }}</td>
+            <td>{{ d.user.get_full_name }}</td>
+            <td>{{ d.user.email }}</td>
             <td>
-              <img src="{% static d.profile_pic.url %}" alt="Profile Pic" class="profile-pic">
+              <img src="{{ d.profile_pic.url }}" alt="Profile Pic" class="profile-pic">
             </td>
             <td>{{ d.mobile }}</td>
             <td>{{ d.address }}</td>
@@ -114,7 +117,7 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="7" class="text-center text-muted">No doctor registrations pending approval.</td>
+            <td colspan="8" class="text-center text-muted">No doctor registrations pending approval.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -125,8 +128,6 @@
 
 <!--
   Developed by: Param Purohit
-  Facebook: fb.com/
-  YouTube: youtube.com/
 -->
 
 {% endblock content %}

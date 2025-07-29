@@ -49,6 +49,7 @@ def doctor_signup_view(request):
             user.groups.add(doctor_group)
             doctor = doctor_form.save(commit=False)
             doctor.user = user
+            doctor.status = False  # set to pending approval
             doctor.save()
             return redirect('doctorlogin')
     else:
@@ -91,7 +92,7 @@ def admin_dashboard_view(request):
         'pending_doctors': Doctor.objects.filter(status=False).count(),
         'pending_patients': Patient.objects.count(),
         'pending_appointments': Appointment.objects.filter(status='pending').count(),
-        'recent_doctors': Doctor.objects.select_related('user').order_by('-id')[:5],
+        'recent_doctors': Doctor.objects.select_related('user').filter(status=True).order_by('-id')[:5],
         'recent_patients': Patient.objects.select_related('user').order_by('-id')[:5],
     }
     return render(request, 'hospital/admin_dashboard.html', context)
@@ -267,14 +268,12 @@ def admin_add_appointment_view(request):
 def admin_approve_appointment_view(request):
     return render(request, 'hospital/admin_approve_appointment.html')
 
-def admin_view_doctor_specialisation_view(request):
-    return render(request, 'hospital/admin_view_doctor_specialisation.html')
-# Doctor Specialisation View
+# ---------------- SPECIALISATION VIEW ----------------
 def admin_view_doctor_specialisation(request):
-    doctors = Doctor.objects.select_related('user').all()
+    doctors = Doctor.objects.select_related('user').filter(status=True)
     return render(request, 'hospital/admin_view_doctor_specialisation.html', {'doctors': doctors})
 
-# Edit Doctor View (Fixing the missing name)
+# ---------------- EDIT DOCTOR ----------------
 def edit_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user

@@ -54,8 +54,10 @@ urlpatterns = [
     path('admin-approve-patient/', views.admin_approve_patient_view, name='admin-approve-patient'),
     path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
 
-    path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
-    path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),  # ✅ correct name
+    path('update-patient/<int:pk>/', views.edit_patient_view, name='update-patient'),       # ✅ used in template
+    path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),           # 🔁 redundant but okay
+
+    path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),     # ✅ correct pattern
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
 
     # Admin - Appointment Management
