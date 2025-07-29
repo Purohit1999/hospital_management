@@ -288,3 +288,9 @@ def edit_doctor_view(request, pk):
         user_form = DoctorUserForm(instance=user)
         doctor_form = DoctorForm(instance=doctor)
     return render(request, 'hospital/edit_doctor.html', {'userForm': user_form, 'doctorForm': doctor_form})
+
+def approve_patient_view(request, pk):
+    patient = get_object_or_404(Patient, id=pk)
+    patient.status = True  # assuming there is a boolean field `status` to track approval
+    patient.save()
+    return redirect('admin-approve-patient')  

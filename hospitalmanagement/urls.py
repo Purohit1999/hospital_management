@@ -53,6 +53,7 @@ urlpatterns = [
     path('admin-add-patient/', views.admin_add_patient_view, name='admin-add-patient'),
     path('admin-approve-patient/', views.admin_approve_patient_view, name='admin-approve-patient'),
     path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
+    path('approve-patient/<int:pk>/', views.approve_patient_view, name='approve-patient'),
 
     path('update-patient/<int:pk>/', views.edit_patient_view, name='update-patient'),       # ✅ used in template
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),           # 🔁 redundant but okay

@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 
-<!-- Bootstrap & Font Awesome -->
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -71,7 +70,6 @@
   </style>
 </head>
 
-<!-- Patient Approval Panel -->
 <div class="container">
   <div class="panel">
     <div class="panel-heading">
@@ -96,7 +94,7 @@
             <td>{{ p.get_name }}</td>
             <td>
               {% if p.profile_pic %}
-              <img src="{% static p.profile_pic.url %}" alt="Profile Picture" class="profile-pic">
+              <img src="{{ p.profile_pic.url }}" alt="Profile Picture" class="profile-pic">
               {% else %}
               <span class="text-muted">No Image</span>
               {% endif %}
