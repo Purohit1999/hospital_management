@@ -50,8 +50,8 @@ WSGI_APPLICATION = 'hospitalmanagement.wsgi.application'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR],  # Looks for templates in 'templates/' directory
-        'APP_DIRS': True,  # Also search within app directories
+        'DIRS': [TEMPLATE_DIR],  # ✅ Custom templates folder
+        'APP_DIRS': True,        # ✅ Enables app-level templates too
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -62,6 +62,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 # DATABASE CONFIGURATION (SQLite for development)
 DATABASES = {

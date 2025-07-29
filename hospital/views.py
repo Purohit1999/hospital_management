@@ -282,8 +282,7 @@ def update_doctor_view(request, pk):
 # Approve Doctor
 def approve_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, id=pk)
-    doctor.status = True
-    doctor.status = 'Approved'
+    doctor.status = True  # ✅ Boolean value for approval
     doctor.save()
     return redirect('admin-dashboard')
 
@@ -291,12 +290,11 @@ def approve_doctor_view(request, pk):
 def edit_patient_view(request, pk):
     patient = get_object_or_404(Patient, id=pk)
     if request.method == 'POST':
-        patient.name = request.POST.get('name')
         patient.mobile = request.POST.get('mobile')
         patient.address = request.POST.get('address')
         patient.save()
         return redirect('admin-dashboard')
-    return render(request, 'edit_patient.html', {'patient': patient})
+    return render(request, 'hospital/edit_patient.html', {'patient': patient})
 
 # Delete Patient
 def delete_patient_view(request, pk):
@@ -307,6 +305,6 @@ def delete_patient_view(request, pk):
 # Discharge Patient
 def discharge_patient_view(request, pk):
     patient = get_object_or_404(Patient, id=pk)
-    patient.status = 'Discharged'
+    patient.status = True
     patient.save()
     return redirect('admin-dashboard')
