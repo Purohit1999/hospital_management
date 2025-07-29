@@ -11,12 +11,12 @@ class Doctor(models.Model):
     mobile = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
-    status = models.BooleanField(default=False)  # ✅ Admin approval
+
+    status = models.BooleanField(default=False)  # Admin approval (True = Approved, False = Pending)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Dr. {self.user.get_full_name()} - {self.department}" if self.user else f"Unassigned Doctor"
-
 # ------------------------------------------------------------
 # Patient model
 # ------------------------------------------------------------
