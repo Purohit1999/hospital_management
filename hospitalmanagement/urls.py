@@ -2,9 +2,8 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView  
 from hospital import views
-from hospital.views import CustomLogoutView
 
 urlpatterns = [
     # Admin site
@@ -30,7 +29,7 @@ urlpatterns = [
     path('doctorlogin/', views.doctor_login_view, name='doctorlogin'),
     path('patientlogin/', LoginView.as_view(template_name='hospital/patientlogin.html'), name='patientlogin'),
     path('afterlogin/', views.afterlogin_view, name='afterlogin'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
+    path('logout/', LogoutView.as_view(), name='logout'),  
 
     # Dashboards
     path('admin-dashboard/', views.admin_dashboard_view, name='admin-dashboard'),
@@ -47,11 +46,9 @@ urlpatterns = [
     path('admin-add-doctor/', views.admin_add_doctor_view, name='admin-add-doctor'),
     path('admin-approve-doctor/', views.admin_approve_doctor_view, name='admin-approve-doctor'),
     path('admin-view-doctor-specialisation/', views.admin_view_doctor_specialisation, name='admin-view-doctor-specialisation'),
-
     path('approve-doctor/<int:pk>/', views.approve_doctor_view, name='approve-doctor'),
     path('reject-doctor/<int:pk>/', views.reject_doctor_view, name='reject-doctor'),
     path('edit-doctor/<int:pk>/', views.edit_doctor_view, name='edit-doctor'),
-    path('update-doctor/<int:pk>/', views.update_doctor_view, name='update-doctor'),
     path('delete-doctor/<int:pk>/', views.delete_doctor_view, name='delete-doctor-from-hospital'),
 
     # Admin - Patient Management
@@ -60,7 +57,6 @@ urlpatterns = [
     path('admin-add-patient/', views.admin_add_patient_view, name='admin-add-patient'),
     path('admin-approve-patient/', views.admin_approve_patient_view, name='admin-approve-patient'),
     path('doctor-view-discharge-patient/', views.doctor_view_discharge_patient_view, name='doctor-view-discharge-patient'),
-
     path('approve-patient/<int:pk>/', views.approve_patient_view, name='approve-patient'),
     path('reject-patient/<int:pk>/', views.reject_patient_view, name='reject-patient'),
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),

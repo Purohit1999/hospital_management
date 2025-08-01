@@ -1,90 +1,164 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <title>Patient Panel | Param Hospital</title>
+  <title>Patient Panel | Hospital Management</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap & FontAwesome -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body {
+      padding-left: 240px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav.menu {
+      background: #0bab64;
+      height: 100vh;
+      width: 240px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 20px;
+    }
+
+    .avatar {
+      text-align: center;
+    }
+
+    .avatar img {
+      width: 80px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    nav.menu ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    nav.menu ul li {
+      padding: 12px 20px;
+    }
+
+    nav.menu ul li a {
+      color: white;
+      text-decoration: none;
+      display: block;
+    }
+
+    nav.menu ul li a:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar {
+      margin-left: 240px;
+    }
+
+    .container-fluid {
+      margin-left: 240px;
+    }
+
+    footer {
+      background-color: black;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: auto;
+    }
+
+    .fa {
+      font-size: 20px;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      margin: 0 10px;
+      border-radius: 50%;
+      text-align: center;
+      color: white;
+    }
+
+    .fa-facebook { background: #3B5998; }
+    .fa-whatsapp { background: #25d366; }
+    .fa-twitter { background: #55ACEE; }
+    .fa-instagram { background: #e4405f; }
+
+    .fa:hover {
+      opacity: 0.8;
+      text-decoration: none;
+    }
+  </style>
 </head>
-
 <body>
-  <nav class="menu" tabindex="0">
-    <div class="smartphone-menu-trigger"></div>
-    <header class="avatar">
-      {% if patient.profile_pic %}
-        <img src="{{ patient.profile_pic.url }}" alt="Profile Pic" class="img-fluid rounded-circle shadow">
-      {% else %}
-        <img src="{% static 'images/default-avatar.png' %}" alt="Default Profile Pic" class="img-fluid rounded-circle shadow">
-      {% endif %}
-      <br><br>
-      <h6 class="text-white">Patient</h6>
-      <h2 class="text-white">{{ request.user.first_name }}</h2>
-    </header>
-    <ul>
-      <li tabindex="0" class="icon-dashboard">
-        <a href="/patient-dashboard"><span>Dashboard</span></a>
-      </li>
-      <li tabindex="0" class="icon-calendar">
-        <a href="/patient-appointment"><span>Appointments</span></a>
-      </li>
-      <li tabindex="0" class="icon-users">
-        <a href="/patient-view-doctor"><span>Doctors</span></a>
-      </li>
-      <li tabindex="0" class="icon-users">
-        <a href="/patient-discharge"><span>Discharge</span></a>
-      </li>
-    </ul>
+
+<!-- Sidebar -->
+<nav class="menu">
+  <div class="avatar">
+    {% if patient.profile_pic %}
+      <img src="{{ patient.profile_pic.url }}" alt="Patient Pic">
+    {% else %}
+      <img src="{% static 'images/default-avatar.png' %}" alt="Default Patient">
+    {% endif %}
+    <h6 class="text-white">Patient</h6>
+    <h5 class="text-white">{{ request.user.first_name }}</h5>
+  </div>
+  <ul>
+    <li><a href="{% url 'patient-dashboard' %}">Dashboard</a></li>
+    <li><a href="{% url 'patient-book-appointment' %}">Appointments</a></li>
+    <li><a href="{% url 'appointments' %}">Doctors</a></li>
+    <li><a href="{% url 'discharge-patient' pk=request.user.id %}">Discharge</a></li>
+  </ul>
+</nav>
+
+<!-- Main Content -->
+<main>
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top" style="left: 240px;">
+    <div class="container-fluid">
+      <a href="{% url 'patient-dashboard' %}" class="navbar-brand">Hospital Management</a>
+      <div class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="nav-link btn btn-link" style="color: white; padding: 0;">Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
-      <div class="container-fluid">
-        <a href="/patient-dashboard" class="navbar-brand">Hospital Management</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarCollapse">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a href="/logout" class="nav-link">Logout</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+  <div class="container-fluid pt-5 mt-3">
+    {% block content %}{% endblock %}
+  </div>
 
-    <!-- Content Area -->
-    <div class="pt-5 mt-4">
-      {% block content %}
-      {% endblock content %}
-    </div>
+  <footer>
+    <p>
+      <a href="https://facebook.com/Param.Paramp/" class="fa fa-facebook"></a>
+      <a href="https://api.whatsapp.com/send?phone=919572181024" class="fa fa-whatsapp"></a>
+      <a href="https://instagram.com/Param.Paramp" class="fa fa-instagram"></a>
+      <a href="https://twitter.com/Paramkumar1503" class="fa fa-twitter"></a>
+    </p>
+    <p>&copy; 2025 Param | Made in UK</p>
+  </footer>
+</main>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-center text-white py-4 mt-auto">
-      <div class="container">
-        <div class="mb-3">
-          <a href="https://facebook.com/Param.Paramp/" class="fa fa-facebook me-2"></a>
-          <a href="https://api.whatsapp.com/send?phone=919572181024&text=Hello%20Param.&source=&data=#" class="fa fa-whatsapp me-2"></a>
-          <a href="https://instagram.com/Param.Paramp" class="fa fa-instagram me-2"></a>
-          <a href="https://twitter.com/Paramkumar1503" class="fa fa-twitter"></a>
-        </div>
-        <div>
-          <p class="mb-0">Made in UK</p>
-          <p class="mb-0">&copy; 2025 Param Purohit</p>
-        </div>
-      </div>
-    </footer>
-  </main>
 </body>
-
 </html>

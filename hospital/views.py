@@ -8,7 +8,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.views import LogoutView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from .models import Doctor, Patient, Appointment, DischargeDetails
 from .forms import (
     AppointmentForm,
@@ -16,9 +17,10 @@ from .forms import (
     DoctorUserForm, DoctorForm
 )
 # ---------------- CUSTOM LOGOUT ----------------
+@method_decorator(csrf_exempt, name='dispatch')
 class CustomLogoutView(LogoutView):
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 # ---------------- HOME & STATIC ----------------
 def home_view(request):
