@@ -3,11 +3,11 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from .models import Appointment, Patient, Doctor
 
-# ---------- 🔹 User Edit Form (Admin Edit Only) ----------
+# ------------------------------------------------------------
+# 🔹 User Edit Form (For Admins)
+# ------------------------------------------------------------
 class UserForm(forms.ModelForm):
-    """
-    Form for editing user info (by admin or staff).
-    """
+    """ Form for editing User profile (admin-only). """
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'email']
@@ -18,12 +18,12 @@ class UserForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
 
-
-# ---------- 🔹 Appointment Form ----------
+# ------------------------------------------------------------
+# 🔹 Appointment Form (Used by Admin or Patient)
+# ------------------------------------------------------------
 class AppointmentForm(forms.ModelForm):
-    """
-    Used by patients to book an appointment.
-    """
+    """ Admin or Patient can use this to schedule appointments. """
+
     date_time = forms.DateTimeField(
         input_formats=['%Y-%m-%dT%H:%M'],
         widget=forms.DateTimeInput(attrs={
@@ -40,14 +40,16 @@ class AppointmentForm(forms.ModelForm):
             'rows': 3,
             'placeholder': 'Describe your symptoms or reason for appointment'
         }),
-        label="Reason / Description"
+        label="Description"
     )
 
     class Meta:
         model = Appointment
-        fields = ['description', 'doctor', 'date_time']
+        fields = ['description', 'doctor', 'patient', 'date_time', 'status']
         widgets = {
             'doctor': forms.Select(attrs={'class': 'form-select'}),
+            'patient': forms.Select(attrs={'class': 'form-select'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def clean_date_time(self):
@@ -56,12 +58,11 @@ class AppointmentForm(forms.ModelForm):
             raise forms.ValidationError("Appointment date must be in the future.")
         return dt
 
-
-# ---------- 🔹 Patient User Form ----------
+# ------------------------------------------------------------
+# 🔹 Patient Registration - User Creation
+# ------------------------------------------------------------
 class PatientUserForm(forms.ModelForm):
-    """
-    Creates a new User for Patient.
-    """
+    """ Used to register a new Patient's User. """
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'password']
@@ -72,12 +73,11 @@ class PatientUserForm(forms.ModelForm):
             'password': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
-
-# ---------- 🔹 Patient Profile Form ----------
+# ------------------------------------------------------------
+# 🔹 Patient Profile Form
+# ------------------------------------------------------------
 class PatientForm(forms.ModelForm):
-    """
-    Creates or updates Patient profile.
-    """
+    """ Used to manage Patient profile. """
     class Meta:
         model = Patient
         fields = ['address', 'mobile', 'symptoms', 'profile_pic', 'assignedDoctorId']
@@ -89,12 +89,11 @@ class PatientForm(forms.ModelForm):
             'assignedDoctorId': forms.Select(attrs={'class': 'form-select'}),
         }
 
-
-# ---------- 🔹 Doctor User Form ----------
+# ------------------------------------------------------------
+# 🔹 Doctor Registration - User Creation
+# ------------------------------------------------------------
 class DoctorUserForm(forms.ModelForm):
-    """
-    Creates a new User for Doctor.
-    """
+    """ Used to register a new Doctor's User. """
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'password']
@@ -105,12 +104,11 @@ class DoctorUserForm(forms.ModelForm):
             'password': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
-
-# ---------- 🔹 Doctor Profile Form ----------
+# ------------------------------------------------------------
+# 🔹 Doctor Profile Form
+# ------------------------------------------------------------
 class DoctorForm(forms.ModelForm):
-    """
-    Creates or updates Doctor profile.
-    """
+    """ Used to manage Doctor profile. """
     class Meta:
         model = Doctor
         fields = ['department', 'address', 'mobile', 'profile_pic']

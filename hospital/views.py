@@ -1,17 +1,24 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, User
 from django.db.models import Q
 from django.http import Http404
 from django.contrib import messages
-
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.views import LogoutView
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LogoutView
 from .models import Doctor, Patient, Appointment, DischargeDetails
 from .forms import (
     AppointmentForm,
     PatientUserForm, PatientForm,
     DoctorUserForm, DoctorForm
 )
+# ---------------- CUSTOM LOGOUT ----------------
+class CustomLogoutView(LogoutView):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 # ---------------- HOME & STATIC ----------------
 def home_view(request):
@@ -86,7 +93,65 @@ def afterlogin_view(request):
         return redirect('admin-dashboard')
     return redirect('home')
 
+# ---------------- DOCTOR LOGIN ----------------
+def doctor_login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            try:
+                doctor = Doctor.objects.get(user=user)
+                if doctor.status:
+                    login(request, user)
+                    return redirect('doctor-dashboard')
+                else:
+                    messages.error(request, "❗Your doctor account is not approved yet.")
+            except Doctor.DoesNotExist:
+                messages.error(request, "❗Doctor profile not found.")
+        else:
+            messages.error(request, "❗Invalid username or password.")
+    form = AuthenticationForm()
+    return render(request, 'hospital/doctorlogin.html', {'form': form})
+
+# ---------------- DOCTOR DASHBOARD ----------------
+@login_required
+def doctor_dashboard_view(request):
+    doctor = get_object_or_404(Doctor, user=request.user)
+    return render(request, 'hospital/doctor_dashboard.html', {'doctor': doctor})
+
+@login_required
+def doctor_view_patient_view(request):
+    doctor = get_object_or_404(Doctor, user=request.user)
+    patients = Patient.objects.filter(appointment__doctor=doctor).distinct()
+    return render(request, 'hospital/doctor_view_patient.html', {'patients': patients})
+
+@login_required
+def doctor_view_appointment_view(request):
+    doctor = get_object_or_404(Doctor, user=request.user)
+    appointments = Appointment.objects.filter(doctor=doctor).select_related('patient')
+    return render(request, 'hospital/doctor_view_appointment.html', {'appointments': appointments})
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='DOCTOR').exists())
+def doctor_view_discharge_patient_view(request):
+    doctor = Doctor.objects.get(user=request.user)
+    discharged_patients = DischargeDetails.objects.filter(assignedDoctor=doctor)
+    return render(request, 'hospital/doctor_view_discharge_patient.html', {
+        'discharged_patients': discharged_patients
+    })
+def admin_approve_doctor_view(request):
+    doctors = Doctor.objects.filter(status=False)
+    return render(request, 'hospital/admin_approve_doctor.html', {'pending_doctors': doctors})
+
+# ---------------- PATIENT DASHBOARD ----------------
+@login_required
+def patient_dashboard_view(request):
+    patient = get_object_or_404(Patient, user=request.user)
+    return render(request, 'hospital/patient_dashboard.html', {'patient': patient})
+
 # ---------------- ADMIN DASHBOARD ----------------
+@login_required
 def admin_dashboard_view(request):
     context = {
         'pending_doctors': Doctor.objects.filter(status=False).count(),
@@ -124,45 +189,23 @@ def admin_add_doctor_view(request):
         doctor_form = DoctorForm()
     return render(request, 'hospital/admin_add_doctor.html', {'userForm': user_form, 'doctorForm': doctor_form})
 
-def admin_approve_doctor_view(request):
-    doctors = Doctor.objects.filter(status=False)
-    return render(request, 'hospital/admin_approve_doctor.html', {'pending_doctors': doctors})
-
-def approve_doctor_view(request, pk):
-    doctor = get_object_or_404(Doctor, pk=pk)
-    doctor.status = True
-    doctor.save()
-    return redirect('admin-approve-doctor')
-
-def reject_doctor_view(request, pk):
+def edit_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
-    doctor.delete()
-    if user:
-        user.delete()
-    messages.success(request, "Doctor has been rejected and removed.")
-    return redirect('admin-approve-doctor')
-
-def update_doctor_view(request, pk):
-    doctor = get_object_or_404(Doctor, pk=pk)
-    if doctor.user is None:
-        raise Http404("Doctor user not found")
-    user_form = DoctorUserForm(request.POST or None, instance=doctor.user)
-    doctor_form = DoctorForm(request.POST or None, request.FILES or None, instance=doctor)
     if request.method == 'POST':
+        user_form = DoctorUserForm(request.POST, instance=user)
+        doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
         if user_form.is_valid() and doctor_form.is_valid():
             user_form.save()
             doctor_form.save()
             return redirect('admin-view-doctor')
-    return render(request, 'hospital/edit_doctor.html', {'userForm': user_form, 'doctorForm': doctor_form, 'doctor': doctor})
-
-def delete_doctor_view(request, pk):
-    doctor = get_object_or_404(Doctor, pk=pk)
-    user = doctor.user
-    doctor.delete()
-    if user:
-        user.delete()
-    return redirect('admin-view-doctor')
+    else:
+        user_form = DoctorUserForm(instance=user)
+        doctor_form = DoctorForm(instance=doctor)
+    return render(request, 'hospital/edit_doctor.html', {
+        'userForm': user_form,
+        'doctorForm': doctor_form
+    })
 
 # ---------------- PATIENT ADMIN ----------------
 def admin_patient_view(request):
@@ -315,3 +358,51 @@ def admin_add_appointment_view(request):
     else:
         form = AppointmentForm()
     return render(request, 'hospital/admin_add_appointment.html', {'form': form})
+
+@login_required(login_url='doctorlogin')
+@user_passes_test(lambda u: u.groups.filter(name='DOCTOR').exists())
+def doctor_view_discharge_patient_view(request):
+    doctor = Doctor.objects.get(user=request.user)
+    discharged_patients = DischargeDetails.objects.filter(assignedDoctor=doctor)
+    return render(request, 'hospital/doctor_view_discharge_patient.html', {
+        'discharged_patients': discharged_patients
+    })
+def approve_doctor_view(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+    doctor.status = True
+    doctor.save()
+    messages.success(request, "Doctor approved successfully.")
+    return redirect('admin-approve-doctor')
+
+def reject_doctor_view(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+    user = doctor.user
+    doctor.delete()
+    if user:
+        user.delete()
+    messages.success(request, "Doctor has been rejected and removed.")
+    return redirect('admin-approve-doctor')
+def update_doctor_view(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+    user = doctor.user
+    if request.method == 'POST':
+        user_form = DoctorUserForm(request.POST, instance=user)
+        doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
+        if user_form.is_valid() and doctor_form.is_valid():
+            user_form.save()
+            doctor_form.save()
+            return redirect('admin-view-doctor')
+    else:
+        user_form = DoctorUserForm(instance=user)
+        doctor_form = DoctorForm(instance=doctor)
+    return render(request, 'hospital/edit_doctor.html', {
+        'userForm': user_form,
+        'doctorForm': doctor_form
+    })
+def delete_doctor_view(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+    user = doctor.user
+    doctor.delete()
+    if user:
+        user.delete()
+    return redirect('admin-view-doctor')

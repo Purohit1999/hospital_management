@@ -13,7 +13,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
   <!-- Custom Style -->
-  <link rel="stylesheet" href="{% static '/style.css' %}">
+  <link rel="stylesheet" href="{% static 'style.css' %}">
 
   <style>
     a:link, a {
@@ -61,24 +61,36 @@
       <h2>{{ request.user.first_name }}</h2>
     </header>
     <ul>
-      <li tabindex="0" class="icon-dashboard"><a href="/admin-dashboard"><span>Dashboard</span></a></li>
-      <li tabindex="0" class="icon-customers"><a href="/admin-doctor"><span>Doctor</span></a></li>
-      <li tabindex="0" class="icon-users"><a href="/admin-patient"><span>Patient</span></a></li>
-      <li tabindex="0" class="icon-calendar"><a href="/admin-appointment"><span>Appointment</span></a></li>
+      <li tabindex="0" class="icon-dashboard">
+        <a href="{% url 'admin-dashboard' %}"><span>Dashboard</span></a>
+      </li>
+      <li tabindex="0" class="icon-customers">
+        <a href="{% url 'admin-doctor' %}"><span>Doctor</span></a>
+      </li>
+      <li tabindex="0" class="icon-users">
+        <a href="{% url 'admin-patient' %}"><span>Patient</span></a>
+      </li>
+      <li tabindex="0" class="icon-calendar">
+        <a href="{% url 'admin-appointment' %}"><span>Appointment</span></a>
+      </li>
     </ul>
   </nav>
 
   <!-- Top Navbar -->
   <main>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background:#337AB7;">
-      <a class="navbar-brand" href="/admin-dashboard">HOSPITAL MANAGEMENT</a>
+      <a class="navbar-brand" href="{% url 'admin-dashboard' %}">HOSPITAL MANAGEMENT</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <div class="collapse navbar-collapse justify-content-end" id="navbarCollapse">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="nav-link btn btn-link" style="padding: 0; color: white;">Logout</button>
+            </form>
           </li>
         </ul>
       </div>

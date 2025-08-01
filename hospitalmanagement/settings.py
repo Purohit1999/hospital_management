@@ -11,7 +11,7 @@ STATIC_ROOT  = BASE_DIR / 'staticfiles'  # Used for collectstatic in production
 MEDIA_ROOT   = BASE_DIR / 'media'        # Where uploaded files are stored
 
 # SECURITY SETTINGS
-SECRET_KEY = 'hpbv()ep00boce&o0w7z1h)st148(*m@6@-rk$nn)(n9ojj4c0'  # Replace before deployment
+SECRET_KEY = 'hpbv()ep00boce&o0w7z1h)st148(*m@6@-rk$nn)(n9ojj4c0'  # ⚠️ Replace this before production
 DEBUG = True  # ⚠️ Set to False in production
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-party
+    # Third-party apps
     'widget_tweaks',
 
     # Local apps
@@ -42,7 +42,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# ROOT URL CONFIGURATION
+# URL & WSGI
 ROOT_URLCONF = 'hospitalmanagement.urls'
 WSGI_APPLICATION = 'hospitalmanagement.wsgi.application'
 
@@ -55,7 +55,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # Required for auth views
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -63,7 +63,7 @@ TEMPLATES = [
     },
 ]
 
-# DATABASE (SQLite for development)
+# DATABASE (SQLite - for development)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -86,26 +86,27 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# ✅ STATIC FILES
+# STATIC FILES
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [STATIC_DIR]       # Local static (CSS, JS, etc.)
-STATIC_ROOT = STATIC_ROOT             # Production static root for `collectstatic`
+STATICFILES_DIRS = [STATIC_DIR]        # For development
+STATIC_ROOT = STATIC_ROOT              # For collectstatic (production)
 
-# ✅ MEDIA FILES
-MEDIA_URL = '/media/'                 # URL prefix for media files
-MEDIA_ROOT = MEDIA_ROOT              # Actual directory where uploaded files are stored
+# MEDIA FILES
+MEDIA_URL = '/media/'
+MEDIA_ROOT = MEDIA_ROOT
 
-# LOGIN REDIRECT
-LOGIN_REDIRECT_URL = '/afterlogin/'
+# AUTH REDIRECTS
+LOGIN_REDIRECT_URL = '/afterlogin/'    # After successful login
+LOGOUT_REDIRECT_URL = '/'              # ✅ Redirect to home after logout
 
-# EMAIL SETTINGS (for notifications, password reset, etc.)
+# EMAIL SETTINGS (For password reset, notifications, etc.)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'from@gmail.com'          # ✅ Replace with sender email
-EMAIL_HOST_PASSWORD = 'your_app_password'   # ✅ Use App Password for Gmail
-EMAIL_RECEIVING_USER = ['to@gmail.com']     # ✅ Replace with target inbox
+EMAIL_HOST_USER = 'from@gmail.com'          # ✅ Replace with sender Gmail
+EMAIL_HOST_PASSWORD = 'your_app_password'   # ✅ Use Gmail App Password
+EMAIL_RECEIVING_USER = ['to@gmail.com']     # ✅ Replace with your receiving email
 
-# DEFAULT AUTO FIELD
+# DEFAULT FIELD TYPE
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -2,7 +2,7 @@
 {% load widget_tweaks %}
 {% block content %}
 
-<!-- Enhanced Styling -->
+<!-- Styling -->
 <style>
   .note {
     text-align: center;
@@ -50,6 +50,12 @@
     margin-top: 10px;
   }
 
+  .errorlist {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+
   @media (max-width: 768px) {
     .btnSubmit {
       width: 100%;
@@ -67,35 +73,45 @@
     <div class="form-content">
       <form method="post" novalidate>
         {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
 
         <!-- Description -->
         <div class="form-group">
           <label for="id_description">Description</label>
-          {% render_field appointmentForm.description class="form-control" placeholder="Brief description or symptoms" required="required" aria-label="Description" %}
+          {% render_field form.description class="form-control" placeholder="Brief description or symptoms" required="required" aria-label="Description" %}
+          {{ form.description.errors }}
         </div>
 
         <!-- Doctor -->
         <div class="form-group">
           <label for="id_doctor">Select Doctor</label>
-          {% render_field appointmentForm.doctor class="form-control" required="required" aria-label="Select Doctor" %}
+          {% render_field form.doctor class="form-control" required="required" aria-label="Select Doctor" %}
+          {{ form.doctor.errors }}
         </div>
 
         <!-- Patient -->
         <div class="form-group">
           <label for="id_patient">Select Patient</label>
-          {% render_field appointmentForm.patient class="form-control" required="required" aria-label="Select Patient" %}
+          {% render_field form.patient class="form-control" required="required" aria-label="Select Patient" %}
+          {{ form.patient.errors }}
         </div>
 
         <!-- Date & Time -->
         <div class="form-group">
           <label for="id_date_time">Appointment Date & Time</label>
-          {% render_field appointmentForm.date_time class="form-control" required="required" aria-label="Appointment Date and Time" %}
+          {% render_field form.date_time class="form-control" required="required" aria-label="Appointment Date and Time" %}
+          {{ form.date_time.errors }}
         </div>
 
         <!-- Status -->
         <div class="form-group">
           <label for="id_status">Status</label>
-          {% render_field appointmentForm.status class="form-control" aria-label="Status" %}
+          {% render_field form.status class="form-control" aria-label="Status" %}
+          {{ form.status.errors }}
         </div>
 
         <!-- Submit -->
@@ -110,8 +126,6 @@
 
 <!--
 Developed by: Param Purohit
-Facebook: fb.com/Param.Paramp
-YouTube: youtube.com/Params
 -->
 
 {% endblock content %}
