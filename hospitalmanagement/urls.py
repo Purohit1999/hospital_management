@@ -39,6 +39,7 @@ urlpatterns = [
     # Doctor Panel
     path('doctor-view-patient/', views.doctor_view_patient_view, name='doctor-view-patient'),
     path('doctor-view-appointment/', views.doctor_view_appointment_view, name='doctor-view-appointment'),
+    path('doctor-search-patient/', views.doctor_search_patient_view, name='doctor-search-patient'),
 
     # Admin - Doctor Management
     path('admin-doctor/', views.admin_doctor_view, name='admin-doctor'),
@@ -50,6 +51,8 @@ urlpatterns = [
     path('reject-doctor/<int:pk>/', views.reject_doctor_view, name='reject-doctor'),
     path('edit-doctor/<int:pk>/', views.edit_doctor_view, name='edit-doctor'),
     path('delete-doctor/<int:pk>/', views.delete_doctor_view, name='delete-doctor-from-hospital'),
+    path('edit-doctor/<int:pk>/', views.edit_doctor_view, name='edit-doctor'),
+
 
     # Admin - Patient Management
     path('admin-patient/', views.admin_patient_view, name='admin-patient'),
@@ -62,7 +65,8 @@ urlpatterns = [
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
     path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
-
+    path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
+    
     # Admin - Appointment Management
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
     path('admin-view-appointment/', views.admin_view_appointment, name='admin-view-appointment'),

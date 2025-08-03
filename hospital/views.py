@@ -131,7 +131,7 @@ def doctor_view_patient_view(request):
 @login_required
 def doctor_view_appointment_view(request):
     doctor = get_object_or_404(Doctor, user=request.user)
-    appointments = Appointment.objects.filter(doctor=doctor).select_related('patient')
+    appointments = Appointment.objects.filter(doctor=doctor).select_related('patient__user')
     return render(request, 'hospital/doctor_view_appointment.html', {'appointments': appointments})
 
 @login_required
@@ -365,10 +365,11 @@ def admin_add_appointment_view(request):
 @user_passes_test(lambda u: u.groups.filter(name='DOCTOR').exists())
 def doctor_view_discharge_patient_view(request):
     doctor = Doctor.objects.get(user=request.user)
-    discharged_patients = DischargeDetails.objects.filter(assignedDoctor=doctor)
+    discharged_patients = DischargeDetails.objects.filter(doctor=doctor)
     return render(request, 'hospital/doctor_view_discharge_patient.html', {
         'discharged_patients': discharged_patients
     })
+
 def approve_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     doctor.status = True
@@ -408,3 +409,19 @@ def delete_doctor_view(request, pk):
     if user:
         user.delete()
     return redirect('admin-view-doctor')
+
+@login_required(login_url='doctorlogin')
+@user_passes_test(lambda u: u.groups.filter(name='DOCTOR').exists())
+def doctor_search_patient_view(request):
+    query = request.GET.get('query', '')
+    doctor = Doctor.objects.get(user=request.user)
+
+    patients = Patient.objects.filter(
+        assignedDoctorId=doctor
+    ).filter(
+        Q(user__first_name__icontains=query) |
+        Q(user__last_name__icontains=query) |
+        Q(symptoms__icontains=query)
+    ).distinct()
+
+    return render(request, 'hospital/doctor_view_patient.html', {'patients': patients})
