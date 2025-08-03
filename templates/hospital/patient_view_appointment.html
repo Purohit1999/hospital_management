@@ -2,44 +2,32 @@
 {% block content %}
 
 <head>
-  <!-- Bootstrap 4 & Font Awesome for cleaner modern UI -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    /* Page-specific styling */
-    h4 {
-      text-align: center;
-      margin: 30px 0;
-      color: #007bff;
-    }
-
-    .table {
-      background-color: white;
+    .card {
+      margin-top: 50px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
     }
 
     .status-confirmed {
       color: #fff;
-      background-color: #007bff;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.9em;
+      background-color: #28a745;
+      padding: 5px 12px;
+      border-radius: 20px;
     }
 
     .status-pending {
       color: #fff;
-      background-color: #28a745;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.9em;
+      background-color: #ffc107;
+      padding: 5px 12px;
+      border-radius: 20px;
     }
 
     .cancel-button {
       font-size: 0.85em;
       color: white;
       background-color: #dc3545;
-      padding: 3px 10px;
+      padding: 5px 12px;
       border-radius: 10px;
       text-decoration: none;
     }
@@ -47,29 +35,12 @@
     .cancel-button:hover {
       background-color: #bd2130;
     }
-
-    .card {
-      margin-top: 50px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    @media only screen and (max-width: 600px) {
-      h4 {
-        font-size: 1.2rem;
-      }
-
-      .table th,
-      .table td {
-        font-size: 0.9rem;
-      }
-    }
   </style>
 </head>
 
-<!-- 🗓️ Patient Appointment List -->
-<div class="container">
+<div class="container mt-4">
   <div class="card">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-primary text-white text-center">
       <h4>Your Upcoming & Past Appointments</h4>
     </div>
     <div class="card-body">
@@ -77,11 +48,11 @@
         <table class="table table-hover table-bordered">
           <thead class="thead-light">
             <tr>
-              <th>Doctor Name</th>
+              <th>Doctor</th>
               <th>Description</th>
               <th>Date</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -113,14 +84,12 @@
           </tbody>
         </table>
       </div>
+
+      <div class="text-center mt-4">
+        <a href="{% url 'patient-dashboard' %}" class="btn btn-outline-primary">← Back to Dashboard</a>
+      </div>
     </div>
   </div>
 </div>
-
-<!--
-  🛠 Developed by: Param
-  📘 Facebook: fb.com/
-  📺 YouTube: youtube.com/
--->
 
 {% endblock content %}

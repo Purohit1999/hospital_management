@@ -1,30 +1,43 @@
-{% extends 'hospital/homebase.html' %}
-
+{% extends 'hospital/patient_base.html' %}
+{% load static %}
 {% block content %}
-<div class="container my-5">
-  <h2 class="text-center mb-4">Upcoming Appointments</h2>
 
+<div class="container py-5">
+
+  <!-- Header and Navigation -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">Upcoming Appointments</h2>
+    <a href="{% url 'patient-dashboard' %}" class="btn btn-outline-primary">
+      ← Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Appointments Grid -->
   <div class="row">
     {% for appt in appointments %}
       <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
-        <div class="card mb-4 shadow-sm w-100">
+        <div class="card mb-4 shadow-sm w-100 border-0">
           <div class="card-body">
-            <h5 class="card-title">{{ appt.patient.name }}</h5>
+            <h5 class="card-title text-success">
+              Patient: {{ appt.patient.name }}
+            </h5>
             <h6 class="card-subtitle mb-2 text-muted">
               With Dr. {{ appt.doctor.name }}
             </h6>
 
-            <p class="card-text">
+            <p class="mb-2">
               <strong>Date & Time:</strong><br>
-              <time datetime="{{ appt.date_time }}">{{ appt.date_time|date:"M d, Y H:i" }}</time><br>
+              <time datetime="{{ appt.date_time }}">{{ appt.date_time|date:"M d, Y H:i" }}</time>
+            </p>
 
+            <p class="mb-0">
               <strong>Status:</strong>
               {% if appt.status == 'confirmed' %}
-                <span class="badge bg-success text-white">Confirmed</span>
+                <span class="badge bg-success">Confirmed</span>
               {% elif appt.status == 'pending' %}
                 <span class="badge bg-warning text-dark">Pending</span>
               {% elif appt.status == 'completed' %}
-                <span class="badge bg-secondary text-white">Completed</span>
+                <span class="badge bg-secondary">Completed</span>
               {% else %}
                 <span class="badge bg-info text-dark">{{ appt.status|title }}</span>
               {% endif %}
@@ -34,11 +47,12 @@
       </div>
     {% empty %}
       <div class="col-12">
-        <div class="alert alert-warning text-center">
-          No upcoming appointments.
+        <div class="alert alert-warning text-center mt-4">
+          No upcoming appointments found.
         </div>
       </div>
     {% endfor %}
   </div>
 </div>
+
 {% endblock %}

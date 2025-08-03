@@ -77,6 +77,8 @@ urlpatterns = [
     path('appointments/', views.list_appointments, name='appointments'),
     path('appointments/<int:pk>/', views.appointment_detail, name='appointment_detail'),
     path('patient-book-appointment/', views.patient_book_appointment_view, name='patient-book-appointment'),
+    path('patient-appointments/', views.patient_appointment_list_view, name='patient-appointment-list'),
+
 ]
 
 # Serve media files during development

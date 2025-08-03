@@ -288,7 +288,9 @@ def admin_discharge_patient_view(request):
     return render(request, 'hospital/admin_discharge_patient.html', {'patients': patients})
 
 # ---------------- APPOINTMENTS ----------------
-@login_required
+
+@login_required(login_url='patientlogin')
+@user_passes_test(lambda u: u.groups.filter(name='PATIENT').exists())
 def patient_book_appointment_view(request):
     patient = Patient.objects.filter(user=request.user).first()
     if not patient:
@@ -301,25 +303,40 @@ def patient_book_appointment_view(request):
             appointment.created_by = request.user
             appointment.updated_by = request.user
             appointment.save()
-            return redirect('patient-view-appointment')
+            return redirect('patient-appointment-list')  # Redirect to the new view
     else:
         form = AppointmentForm()
     return render(request, 'hospital/patient_book_appointment.html', {'form': form})
+
+
+@login_required(login_url='patientlogin')
+@user_passes_test(lambda u: u.groups.filter(name='PATIENT').exists())
+def patient_appointment_list_view(request):
+    patient = Patient.objects.get(user=request.user)
+    appointments = Appointment.objects.filter(patient=patient).order_by('-date_time')
+    return render(request, 'hospital/patient_appointment_list.html', {'appointments': appointments})
+
+
+# ---------------- ADMIN / OTHER VIEWS ----------------
 
 def list_appointments(request):
     appointments = Appointment.objects.select_related('patient', 'doctor').filter(date_time__gte=timezone.now())
     return render(request, 'appointments/list.html', {'appointments': appointments})
 
+
 def appointment_detail(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     return render(request, 'appointments/detail.html', {'appointment': appointment})
+
 
 def admin_view_appointment(request):
     appointments = Appointment.objects.select_related('doctor__user', 'patient__user').all()
     return render(request, 'hospital/admin_view_appointment.html', {'appointments': appointments})
 
+
 def admin_appointment_view(request):
     return render(request, 'hospital/admin_appointment.html')
+
 
 def admin_approve_appointment_view(request):
     return render(request, 'hospital/admin_approve_appointment.html')
