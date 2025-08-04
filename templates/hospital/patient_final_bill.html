@@ -2,179 +2,71 @@
 {% load static %}
 {% block content %}
 
-<head>
-  <meta charset="utf-8">
-  <title>Final Invoice - Patient Discharge Summary (UK)</title>
-  <style>
-    .invoice-box {
-      max-width: 900px;
-      margin: auto;
-      padding: 30px;
-      border: 1px solid #ccc;
-      box-shadow: 0 0 15px rgba(0, 0, 0, .1);
-      font-size: 16px;
-      line-height: 24px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
-      background-color: #fff;
-    }
+<div class="container my-5" id="invoice-box">
+  <div class="card shadow">
+    <div class="card-header bg-success text-white text-center">
+      <h4>Final Invoice - Patient Discharge Summary</h4>
+    </div>
+    <div class="card-body">
 
-    .invoice-box table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h5>Hospital Management (UK)</h5>
+          <p><strong>Patient:</strong> {{ name }}</p>
+          <p><strong>Mobile:</strong> {{ mobile }}</p>
+          <p><strong>Address:</strong> {{ address }}</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p><strong>Doctor:</strong> {{ assignedDoctorName }}</p>
+          <p><strong>Admit Date:</strong> {{ admitDate }}</p>
+          <p><strong>Discharge Date:</strong> {{ todayDate }}</p>
+          <p><strong>Total Days:</strong> {{ day }}</p>
+        </div>
+      </div>
 
-    .invoice-box table td {
-      padding: 10px;
-      vertical-align: top;
-    }
+      <hr>
+      <h5>Symptoms</h5>
+      <p>{{ symptoms }}</p>
 
-    .invoice-box .title img {
-      max-width: 100px;
-    }
-
-    .invoice-box table tr.heading td {
-      background: #f0f0f0;
-      border-bottom: 1px solid #bbb;
-      font-weight: bold;
-    }
-
-    .invoice-box table tr.item td {
-      border-bottom: 1px solid #eee;
-    }
-
-    .invoice-box table tr.total td {
-      border-top: 2px solid #eee;
-      font-weight: bold;
-    }
-
-    .download-print {
-      text-align: center;
-      margin-top: 30px;
-    }
-
-    .download-print a,
-    .download-print button {
-      display: inline-block;
-      background-color: #007bff;
-      color: white;
-      padding: 10px 25px;
-      margin: 10px;
-      border: none;
-      border-radius: 4px;
-      text-decoration: none;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .download-print a:hover,
-    .download-print button:hover {
-      background-color: #0056b3;
-    }
-
-    @media (max-width: 768px) {
-      .invoice-box {
-        font-size: 14px;
-        padding: 20px;
-      }
-
-      .download-print a,
-      .download-print button {
-        width: 100%;
-        margin: 10px 0;
-      }
-    }
-  </style>
-</head>
-
-<br><br><br>
-
-<!-- Final Invoice -->
-<div class="invoice-box" id="invoice-box">
-  <table>
-    <!-- Header with hospital name and dates -->
-    <tr class="top">
-      <td colspan="2">
-        <table>
+      <h5 class="mt-4">Billing Breakdown</h5>
+      <table class="table table-bordered">
+        <thead class="table-secondary">
           <tr>
-            <td class="title">
-              <h2>Hospital Management (UK)</h2>
-            </td>
-            <td style="text-align:right;">
-              <strong>Admission Date:</strong> {{ admitDate }}<br>
-              <strong>Discharge Date:</strong> {{ todayDate }}<br>
-              <strong>Total Days:</strong> {{ day }}
-            </td>
+            <th>Service</th>
+            <th>Cost (£)</th>
           </tr>
-        </table>
-      </td>
-    </tr>
-
-    <!-- Patient and Doctor Info -->
-    <tr class="information">
-      <td colspan="2">
-        <table>
+        </thead>
+        <tbody>
           <tr>
-            <td>
-              <strong>Patient Name:</strong> {{ name }}<br>
-              <strong>Mobile:</strong> {{ mobile }}<br>
-              <strong>Address:</strong> {{ address }}
-            </td>
-            <td>
-              <strong>Consultant:</strong> {{ assignedDoctorName }}
-            </td>
+            <td>Room Charges ({{ day }} days)</td>
+            <td>£{{ roomCharge }}</td>
           </tr>
-        </table>
-      </td>
-    </tr>
+          <tr>
+            <td>Doctor Consultation Fee</td>
+            <td>£{{ doctorFee }}</td>
+          </tr>
+          <tr>
+            <td>Medicine Cost</td>
+            <td>£{{ medicineCost }}</td>
+          </tr>
+          <tr>
+            <td>Other Charges</td>
+            <td>£{{ OtherCharge }}</td>
+          </tr>
+          <tr class="table-success">
+            <td><strong>Total Due</strong></td>
+            <td><strong>£{{ total }}</strong></td>
+          </tr>
+        </tbody>
+      </table>
 
-    <!-- Illness/Symptoms -->
-    <tr class="heading">
-      <td>Diagnosis & Symptoms</td>
-      <td></td>
-    </tr>
-    <tr class="item">
-      <td colspan="2">{{ symptoms }}</td>
-    </tr>
+      <div class="text-center mt-4">
+        <a href="{% url 'download-pdf' patientId %}" class="btn btn-primary">Download PDF</a>
+        <button onclick="printInvoice()" class="btn btn-secondary">Print Invoice</button>
+      </div>
 
-    <!-- Billing Breakdown -->
-    <tr class="heading">
-      <td>Service</td>
-      <td>Cost (£)</td>
-    </tr>
-
-    <tr class="item">
-      <td>Room Charges ({{ day }} days)</td>
-      <td>£{{ roomCharge }}</td>
-    </tr>
-
-    <tr class="item">
-      <td>Doctor’s Consultation Fee</td>
-      <td>£{{ doctorFee }}</td>
-    </tr>
-
-    <tr class="item">
-      <td>Medication & Prescriptions</td>
-      <td>£{{ medicineCost }}</td>
-    </tr>
-
-    <tr class="item">
-      <td>Other Charges</td>
-      <td>£{{ OtherCharge }}</td>
-    </tr>
-
-    <!-- Total Amount -->
-    <tr class="total">
-      <td></td>
-      <td>Total Due: <strong>£{{ total }}</strong></td>
-    </tr>
-  </table>
-</div>
-
-<!-- PDF download and print option -->
-<div class="download-print">
-  <a href="{% url 'download-pdf' patientId %}">Download PDF</a>
-  <button onclick="printInvoice()">Print Invoice</button>
+    </div>
+  </div>
 </div>
 
 <script>

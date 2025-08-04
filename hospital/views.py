@@ -452,24 +452,75 @@ def doctor_search_patient_view(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def discharge_patient_view(request, pk):
+def generate_patient_bill_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
 
     if hasattr(patient, 'dischargedetails'):
-        messages.warning(request, "Patient already discharged.")
-        return redirect('admin-discharge-patient')
+        messages.warning(request, "⚠️ Patient already discharged.")
+        return redirect('admin-view-patient')
 
-    discharge = DischargeDetails.objects.create(
-        patient=patient,
-        doctor=patient.assignedDoctorId,
-        admission_date=timezone.now().date(),  # Corrected field
-        discharge_date=timezone.now().date(),
-        summary=f"Discharged due to recovery from symptoms: {patient.symptoms}",
-        room_charge=5000,
-        doctor_fee=3000,
-        medicine_cost=2000,
-        other_charge=1000,
-        total=5000 + 3000 + 2000 + 1000
-    )
-    messages.success(request, "Patient discharged successfully.")
-    return redirect('admin-discharge-patient')
+    admit_date = timezone.now().date()
+    today = timezone.now().date()
+    total_days = 1
+
+    return render(request, 'hospital/patient_generate_bill.html', {
+        'name': f"{patient.user.first_name} {patient.user.last_name}",
+        'mobile': patient.mobile,
+        'address': patient.address,
+        'symptoms': patient.symptoms,
+        'assignedDoctorName': patient.assignedDoctorId.user.get_full_name() if patient.assignedDoctorId else "N/A",
+        'admitDate': admit_date,
+        'todayDate': today,
+        'day': total_days,
+        'patientId': patient.id
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def discharge_patient_view(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+
+    if request.method == 'POST':
+        admit_date = timezone.now().date()
+        discharge_date = timezone.now().date()
+        total_days = 1
+
+        room_charge = int(request.POST.get('roomCharge', 0)) * total_days
+        doctor_fee = int(request.POST.get('doctorFee', 0))
+        medicine_cost = int(request.POST.get('medicineCost', 0))
+        other_charge = int(request.POST.get('OtherCharge', 0))
+        total = room_charge + doctor_fee + medicine_cost + other_charge
+
+        DischargeDetails.objects.create(
+            patient=patient,
+            doctor=patient.assignedDoctorId,
+            admission_date=admit_date,
+            discharge_date=discharge_date,
+            summary=f"Discharged due to recovery from symptoms: {patient.symptoms}",
+            room_charge=room_charge,
+            doctor_fee=doctor_fee,
+            medicine_cost=medicine_cost,
+            other_charge=other_charge,
+            total=total
+        )
+
+        return render(request, 'hospital/final_invoice.html', {
+            'name': f"{patient.user.first_name} {patient.user.last_name}",
+            'mobile': patient.mobile,
+            'address': patient.address,
+            'symptoms': patient.symptoms,
+            'assignedDoctorName': patient.assignedDoctorId.user.get_full_name() if patient.assignedDoctorId else "N/A",
+            'admitDate': admit_date,
+            'todayDate': discharge_date,
+            'day': total_days,
+            'roomCharge': room_charge,
+            'doctorFee': doctor_fee,
+            'medicineCost': medicine_cost,
+            'OtherCharge': other_charge,
+            'total': total,
+            'patientId': patient.id
+        })
+
+    messages.error(request, "❗Invalid request method.")
+    return redirect('admin-view-patient')

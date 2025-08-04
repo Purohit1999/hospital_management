@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.views import LoginView, LogoutView  
+from django.contrib.auth.views import LoginView, LogoutView
 from hospital import views
 
 urlpatterns = [
@@ -29,7 +29,7 @@ urlpatterns = [
     path('doctorlogin/', views.doctor_login_view, name='doctorlogin'),
     path('patientlogin/', LoginView.as_view(template_name='hospital/patientlogin.html'), name='patientlogin'),
     path('afterlogin/', views.afterlogin_view, name='afterlogin'),
-    path('logout/', LogoutView.as_view(), name='logout'),  
+    path('logout/', LogoutView.as_view(), name='logout'),
 
     # Dashboards
     path('admin-dashboard/', views.admin_dashboard_view, name='admin-dashboard'),
@@ -40,6 +40,7 @@ urlpatterns = [
     path('doctor-view-patient/', views.doctor_view_patient_view, name='doctor-view-patient'),
     path('doctor-view-appointment/', views.doctor_view_appointment_view, name='doctor-view-appointment'),
     path('doctor-search-patient/', views.doctor_search_patient_view, name='doctor-search-patient'),
+    path('doctor-view-discharge-patient/', views.doctor_view_discharge_patient_view, name='doctor-view-discharge-patient'),
 
     # Admin - Doctor Management
     path('admin-doctor/', views.admin_doctor_view, name='admin-doctor'),
@@ -51,21 +52,22 @@ urlpatterns = [
     path('reject-doctor/<int:pk>/', views.reject_doctor_view, name='reject-doctor'),
     path('edit-doctor/<int:pk>/', views.edit_doctor_view, name='edit-doctor'),
     path('delete-doctor/<int:pk>/', views.delete_doctor_view, name='delete-doctor-from-hospital'),
-    path('edit-doctor/<int:pk>/', views.edit_doctor_view, name='edit-doctor'),
 
-
-    # Admin - Patient Management
+        # Admin - Patient Management
     path('admin-patient/', views.admin_patient_view, name='admin-patient'),
     path('admin-view-patient/', views.admin_view_patient_view, name='admin-view-patient'),
     path('admin-add-patient/', views.admin_add_patient_view, name='admin-add-patient'),
     path('admin-approve-patient/', views.admin_approve_patient_view, name='admin-approve-patient'),
-    path('doctor-view-discharge-patient/', views.doctor_view_discharge_patient_view, name='doctor-view-discharge-patient'),
     path('approve-patient/<int:pk>/', views.approve_patient_view, name='approve-patient'),
     path('reject-patient/<int:pk>/', views.reject_patient_view, name='reject-patient'),
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
     path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),
     path('patient/discharge-summary/', views.patient_discharge_summary_view, name='patient-discharge-summary'),
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
+
+    # Admin - Billing & Invoice Generation
+    path('generate-bill/<int:pk>/', views.generate_patient_bill_view, name='generate-bill'),
+    path('download-pdf/<int:patientId>/', views.download_pdf_view, name='download-pdf'),
 
     # Admin - Appointment Management
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
@@ -78,7 +80,6 @@ urlpatterns = [
     path('appointments/<int:pk>/', views.appointment_detail, name='appointment_detail'),
     path('patient-book-appointment/', views.patient_book_appointment_view, name='patient-book-appointment'),
     path('patient-appointments/', views.patient_appointment_list_view, name='patient-appointment-list'),
-
 ]
 
 # Serve media files during development
