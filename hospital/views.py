@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, User
 from django.db.models import Q
 from django.http import Http404
+from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import LogoutView
@@ -273,11 +274,18 @@ def reject_patient_view(request, pk):
     return redirect('admin-approve-patient')
 
 # ---------------- DISCHARGE PATIENT ----------------
-def discharge_patient_view(request, pk):
-    patient = get_object_or_404(Patient, pk=pk)
-    patient.status = True
-    patient.save()
-    return redirect('admin-dashboard')
+@login_required
+def patient_discharge_summary_view(request):
+    patient = get_object_or_404(Patient, user=request.user)
+    try:
+        discharge = DischargeDetails.objects.get(patient=patient)
+    except DischargeDetails.DoesNotExist:
+        discharge = None
+
+    return render(request, 'hospital/patient_discharge_summary.html', {
+        'patient': patient,
+        'discharge': discharge,
+    })
 
 def admin_approve_patient_view(request):
     patients = Patient.objects.filter(dischargedetails__isnull=True)
@@ -303,7 +311,7 @@ def patient_book_appointment_view(request):
             appointment.created_by = request.user
             appointment.updated_by = request.user
             appointment.save()
-            return redirect('patient-appointment-list')  # Redirect to the new view
+            return redirect('patient-appointment-list')
     else:
         form = AppointmentForm()
     return render(request, 'hospital/patient_book_appointment.html', {'form': form})
@@ -314,8 +322,7 @@ def patient_book_appointment_view(request):
 def patient_appointment_list_view(request):
     patient = Patient.objects.get(user=request.user)
     appointments = Appointment.objects.filter(patient=patient).order_by('-date_time')
-    return render(request, 'hospital/patient_appointment_list.html', {'appointments': appointments})
-
+    return render(request, 'appointments/list.html', {'appointments': appointments})  # ✅ Correct path
 
 # ---------------- ADMIN / OTHER VIEWS ----------------
 
@@ -442,3 +449,27 @@ def doctor_search_patient_view(request):
     ).distinct()
 
     return render(request, 'hospital/doctor_view_patient.html', {'patients': patients})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def discharge_patient_view(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+
+    if hasattr(patient, 'dischargedetails'):
+        messages.warning(request, "Patient already discharged.")
+        return redirect('admin-discharge-patient')
+
+    discharge = DischargeDetails.objects.create(
+        patient=patient,
+        doctor=patient.assignedDoctorId,
+        admission_date=timezone.now().date(),  # Corrected field
+        discharge_date=timezone.now().date(),
+        summary=f"Discharged due to recovery from symptoms: {patient.symptoms}",
+        room_charge=5000,
+        doctor_fee=3000,
+        medicine_cost=2000,
+        other_charge=1000,
+        total=5000 + 3000 + 2000 + 1000
+    )
+    messages.success(request, "Patient discharged successfully.")
+    return redirect('admin-discharge-patient')

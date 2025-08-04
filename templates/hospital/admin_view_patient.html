@@ -70,6 +70,7 @@
             <th>Address</th>
             <th>Update</th>
             <th>Delete</th>
+            <th>Discharge</th> <!-- New column -->
           </tr>
         </thead>
         <tbody>
@@ -96,10 +97,15 @@
                 <i class="fas fa-trash-alt"></i>
               </a>
             </td>
+            <td>
+              <a class="btn btn-warning btn-sm" href="{% url 'discharge-patient' pk=p.id %}" title="Discharge Patient">
+                <i class="fas fa-sign-out-alt"></i>
+              </a>
+            </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="7" class="text-center text-muted">No patient records available.</td>
+            <td colspan="8" class="text-center text-muted">No patient records available.</td>
           </tr>
           {% endfor %}
         </tbody>

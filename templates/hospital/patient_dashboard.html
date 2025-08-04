@@ -9,7 +9,7 @@
     font-weight: 600;
     color: #007bff;
     text-align: center;
-    margin-top: 30px;
+    margin-bottom: 10px;
   }
 
   .dashboard-subtext {
@@ -47,65 +47,63 @@
   }
 </style>
 
-<div class="container-fluid px-4 py-4">
-  <h2 class="dashboard-heading">Welcome to Your Patient Dashboard</h2>
-  <p class="dashboard-subtext">Access your appointment details, doctor information, and treatment history with ease.</p>
+<h2 class="dashboard-heading">Welcome to Your Patient Dashboard</h2>
+<p class="dashboard-subtext">Access your appointment details, doctor information, and treatment history with ease.</p>
 
-  <div class="row g-3">
-    <div class="col-lg-4 col-md-6">
-      <div class="card-box bg-danger">
-        <i class="bi bi-person-circle"></i>
-        Doctor Name
-        <div>{{ doctor.user.get_full_name|default:"-" }}</div>
-      </div>
-    </div>
-
-    <div class="col-lg-4 col-md-6">
-      <div class="card-box bg-success">
-        <i class="bi bi-info-circle"></i>
-        Symptoms
-        <div>{{ patient.symptoms|default:"-" }}</div>
-      </div>
-    </div>
-
-    <div class="col-lg-4 col-md-6">
-      <div class="card-box bg-info">
-        <i class="bi bi-telephone"></i>
-        Doctor Mobile
-        <div>{{ doctor.mobile|default:"-" }}</div>
-      </div>
-    </div>
-
-    <div class="col-lg-4 col-md-6">
-      <div class="card-box bg-primary">
-        <i class="bi bi-geo-alt"></i>
-        Doctor Address
-        <div>{{ doctor.address|default:"-" }}</div>
-      </div>
-    </div>
-
-    <div class="col-lg-4 col-md-6">
-      <div class="card-box bg-success">
-        <i class="bi bi-building"></i>
-        Department
-        <div>{{ doctor.department|default:"-" }}</div>
-      </div>
-    </div>
-
-    <div class="col-lg-4 col-md-6">
-      <div class="card-box bg-danger">
-        <i class="bi bi-calendar-check"></i>
-        Admit Date
-        <div>{{ patient.created_at|date:"d M Y"|default:"-" }}</div>
-      </div>
+<div class="row g-3">
+  <div class="col-lg-4 col-md-6">
+    <div class="card-box bg-danger">
+      <i class="bi bi-person-circle"></i>
+      Doctor Name
+      <div>{{ doctor.user.get_full_name|default:"-" }}</div>
     </div>
   </div>
 
-  <div class="btn-appointment">
-    <a href="{% url 'patient-book-appointment' %}" class="btn btn-outline-primary btn-lg">
-      Book New Appointment
-    </a>
+  <div class="col-lg-4 col-md-6">
+    <div class="card-box bg-success">
+      <i class="bi bi-info-circle"></i>
+      Symptoms
+      <div>{{ patient.symptoms|default:"-" }}</div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-md-6">
+    <div class="card-box bg-info">
+      <i class="bi bi-telephone"></i>
+      Doctor Mobile
+      <div>{{ doctor.mobile|default:"-" }}</div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-md-6">
+    <div class="card-box bg-primary">
+      <i class="bi bi-geo-alt"></i>
+      Doctor Address
+      <div>{{ doctor.address|default:"-" }}</div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-md-6">
+    <div class="card-box bg-success">
+      <i class="bi bi-building"></i>
+      Department
+      <div>{{ doctor.department|default:"-" }}</div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-md-6">
+    <div class="card-box bg-danger">
+      <i class="bi bi-calendar-check"></i>
+      Admit Date
+      <div>{{ patient.created_at|date:"d M Y"|default:"-" }}</div>
+    </div>
   </div>
 </div>
 
-{% endblock content %}
+<div class="btn-appointment">
+  <a href="{% url 'patient-book-appointment' %}" class="btn btn-outline-primary btn-lg">
+    Book New Appointment
+  </a>
+</div>
+
+{% endblock %}

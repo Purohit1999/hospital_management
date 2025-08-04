@@ -64,9 +64,9 @@ urlpatterns = [
     path('reject-patient/<int:pk>/', views.reject_patient_view, name='reject-patient'),
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
     path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),
+    path('patient/discharge-summary/', views.patient_discharge_summary_view, name='patient-discharge-summary'),
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
-    path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
-    
+
     # Admin - Appointment Management
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
     path('admin-view-appointment/', views.admin_view_appointment, name='admin-view-appointment'),

@@ -1,5 +1,5 @@
-<!DOCTYPE html>
 {% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -14,66 +14,13 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
 
-    .container-fluid {
+    .content-wrapper {
       flex: 1;
-    }
-
-    .sidebar {
-      background: #0bab64;
-      color: white;
-      min-height: 100vh;
-      padding: 20px 0;
-    }
-
-    .sidebar .avatar {
-      text-align: center;
-    }
-
-    .sidebar .avatar img {
-      width: 70px;
-      border-radius: 50%;
-      margin-bottom: 10px;
-    }
-
-    .sidebar ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    .sidebar ul li a {
-      color: white;
-      display: block;
-      padding: 10px 20px;
-      text-decoration: none;
-    }
-
-    .sidebar ul li a:hover,
-    .sidebar ul li a.active {
-      background: rgba(255, 255, 255, 0.2);
-      font-weight: bold;
-    }
-
-    .main-content {
-      padding-top: 60px;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        position: relative;
-        width: 100%;
-        min-height: auto;
-      }
-
-      .main-content {
-        margin-left: 0 !important;
-      }
     }
 
     footer {
@@ -81,7 +28,6 @@
       color: white;
       text-align: center;
       padding: 15px 0;
-      margin-top: auto;
     }
 
     .fa {
@@ -103,47 +49,37 @@
 </head>
 
 <body>
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar -->
-      <nav class="col-md-3 col-lg-2 sidebar d-md-block position-fixed">
-        <div class="avatar">
-          {% if patient.profile_pic %}
-            <img src="{{ patient.profile_pic.url }}" alt="Patient Pic">
-          {% else %}
-            <img src="{% static 'images/default-avatar.png' %}" alt="Default Patient">
-          {% endif %}
-          <h6 class="mt-2">Patient</h6>
-          <h5>{{ request.user.first_name }}</h5>
-        </div>
-        <ul class="mt-4">
-          <li><a href="{% url 'patient-dashboard' %}" class="{% if request.resolver_match.url_name == 'patient-dashboard' %}active{% endif %}">Dashboard</a></li>
-          <li><a href="{% url 'patient-book-appointment' %}" class="{% if request.resolver_match.url_name == 'patient-book-appointment' %}active{% endif %}">Book Appointment</a></li>
-          <li><a href="{% url 'appointments' %}" class="{% if request.resolver_match.url_name == 'appointments' %}active{% endif %}">Doctors</a></li>
-          <li><a href="{% url 'discharge-patient' pk=request.user.id %}" class="{% if request.resolver_match.url_name == 'discharge-patient' %}active{% endif %}">Discharge</a></li>
-        </ul>
-      </nav>
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="{% url 'patient-dashboard' %}">
+        <i class="fa-solid fa-hospital-user me-2"></i> Hospital Management
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#patientNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-      <!-- Main content -->
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content offset-md-3">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-          <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="{% url 'patient-dashboard' %}">
-              <i class="fa-solid fa-hospital-user me-2"></i> Hospital Management
-            </a>
-            <form method="post" action="{% url 'logout' %}" class="d-flex ms-auto">
+      <div class="collapse navbar-collapse" id="patientNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'patient-dashboard' %}active{% endif %}" href="{% url 'patient-dashboard' %}">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'patient-book-appointment' %}active{% endif %}" href="{% url 'patient-book-appointment' %}">Book Appointment</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'patient-appointment-list' %}active{% endif %}" href="{% url 'patient-appointment-list' %}">Appointments</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'patient-discharge-summary' %}active{% endif %}" href="{% url 'patient-discharge-summary' %}">Discharge</a></li>
+          <li class="nav-item">
+            <form method="post" action="{% url 'logout' %}" class="d-inline">
               {% csrf_token %}
-              <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+              <button type="submit" class="btn btn-outline-light btn-sm ms-3">Logout</button>
             </form>
-          </div>
-        </nav>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-        <!-- Page content -->
-        <div class="pt-3 pb-5">
-          {% block content %}{% endblock %}
-        </div>
-      </main>
+  <!-- Main Content -->
+  <div class="content-wrapper">
+    <div class="container py-4">
+      {% block content %}{% endblock %}
     </div>
   </div>
 
