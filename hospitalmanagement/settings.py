@@ -96,6 +96,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = MEDIA_ROOT
 
 # AUTH REDIRECTS
+LOGIN_URL = '/adminlogin/'
 LOGIN_REDIRECT_URL = '/afterlogin/'    # After successful login
 LOGOUT_REDIRECT_URL = '/'              # ✅ Redirect to home after logout
 

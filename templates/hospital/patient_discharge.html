@@ -2,178 +2,93 @@
 {% load static %}
 {% block content %}
 
-<head>
-  <meta charset="utf-8">
-  <title>Patient Discharge Summary</title>
-  <style>
-    .invoice-box {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 30px;
-      border: 1px solid #eee;
-      box-shadow: 0 0 15px rgba(0, 0, 0, .1);
-      font-size: 16px;
-      line-height: 24px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #555;
-      background-color: #fff;
-    }
+<div class="container">
+  {% if discharges %}
+    {% for discharge in discharges %}
+      <div class="invoice-box" id="invoice-box-{{ forloop.counter }}">
+        <table>
+          <tr class="top">
+            <td colspan="2">
+              <table>
+                <tr>
+                  <td class="title">
+                    <img src="{% static 'images/hospital-logo.png' %}" alt="Hospital Logo">
+                  </td>
+                  <td style="text-align:right;">
+                    <strong>Admit Date:</strong> {{ discharge.admission_date }}<br>
+                    <strong>Release Date:</strong> {{ discharge.discharge_date }}<br>
+                    <strong>Days Spent:</strong> {{ discharge.days_spent }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-    .invoice-box table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+          <tr class="information">
+            <td colspan="2">
+              <table>
+                <tr>
+                  <td>
+                    <strong>Patient Name:</strong> {{ patient.user.get_full_name }}<br>
+                    <strong>Mobile:</strong> {{ patient.mobile }}<br>
+                    <strong>Address:</strong> {{ patient.address }}
+                  </td>
+                  <td>
+                    <strong>Doctor:</strong> {{ discharge.doctor.user.get_full_name }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-    .invoice-box td {
-      padding: 10px;
-      vertical-align: top;
-    }
+          <tr class="heading">
+            <td>Disease and Symptoms</td>
+            <td></td>
+          </tr>
+          <tr class="item">
+            <td colspan="2">{{ patient.symptoms }}</td>
+          </tr>
 
-    .invoice-box .title img {
-      max-width: 100px;
-    }
+          <tr class="heading">
+            <td>Item</td>
+            <td>Price (₹)</td>
+          </tr>
+          <tr class="item">
+            <td>Room Charge</td>
+            <td>{{ discharge.room_charge|floatformat:2 }}</td>
+          </tr>
+          <tr class="item">
+            <td>Doctor Fee</td>
+            <td>{{ discharge.doctor_fee|floatformat:2 }}</td>
+          </tr>
+          <tr class="item">
+            <td>Medicine Cost</td>
+            <td>{{ discharge.medicine_cost|floatformat:2 }}</td>
+          </tr>
+          <tr class="item">
+            <td>Other Charges</td>
+            <td>{{ discharge.other_charge|floatformat:2 }}</td>
+          </tr>
+          <tr class="total">
+            <td></td>
+            <td>Total: ₹ {{ discharge.total|floatformat:2 }}</td>
+          </tr>
+        </table>
 
-    .invoice-box table tr.heading td {
-      background: #f7f7f7;
-      border-bottom: 1px solid #ddd;
-      font-weight: bold;
-    }
-
-    .invoice-box table tr.item td {
-      border-bottom: 1px solid #eee;
-    }
-
-    .invoice-box table tr.total td {
-      border-top: 2px solid #eee;
-      font-weight: bold;
-    }
-
-    .download-print {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .download-print a,
-    .download-print button {
-      background-color: #007bff;
-      color: white;
-      padding: 8px 20px;
-      margin: 5px;
-      border: none;
-      border-radius: 4px;
-      text-decoration: none;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .download-print a:hover,
-    .download-print button:hover {
-      background-color: #0056b3;
-    }
-
-    .not-discharged {
-      text-align: center;
-      margin: 100px auto;
-      font-size: 18px;
-      color: #444;
-    }
-
-    @media (max-width: 768px) {
-      .invoice-box {
-        font-size: 14px;
-        padding: 20px;
-      }
-    }
-  </style>
-</head>
-
-<br><br><br>
-
-{% if discharges %}
-  {% for discharge in discharges %}
-    <div class="invoice-box" id="invoice-box-{{ forloop.counter }}">
-      <table>
-        <tr class="top">
-          <td colspan="2">
-            <table>
-              <tr>
-                <td class="title">
-                  <img src="{% static 'images/hospital-logo.png' %}" alt="Hospital Logo">
-                </td>
-                <td style="text-align:right;">
-                  <strong>Admit Date:</strong> {{ discharge.admission_date }}<br>
-                  <strong>Release Date:</strong> {{ discharge.discharge_date }}<br>
-                  <strong>Days Spent:</strong> {{ discharge.days_spent }}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr class="information">
-          <td colspan="2">
-            <table>
-              <tr>
-                <td>
-                  <strong>Patient Name:</strong> {{ patient.user.get_full_name }}<br>
-                  <strong>Mobile:</strong> {{ patient.mobile }}<br>
-                  <strong>Address:</strong> {{ patient.address }}
-                </td>
-                <td>
-                  <strong>Doctor:</strong> {{ discharge.doctor.user.get_full_name }}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr class="heading">
-          <td>Disease and Symptoms</td>
-          <td></td>
-        </tr>
-        <tr class="item">
-          <td colspan="2">{{ patient.symptoms }}</td>
-        </tr>
-
-        <tr class="heading">
-          <td>Item</td>
-          <td>Price (₹)</td>
-        </tr>
-        <tr class="item">
-          <td>Room Charge</td>
-          <td>{{ discharge.room_charge|floatformat:2 }}</td>
-        </tr>
-        <tr class="item">
-          <td>Doctor Fee</td>
-          <td>{{ discharge.doctor_fee|floatformat:2 }}</td>
-        </tr>
-        <tr class="item">
-          <td>Medicine Cost</td>
-          <td>{{ discharge.medicine_cost|floatformat:2 }}</td>
-        </tr>
-        <tr class="item">
-          <td>Other Charges</td>
-          <td>{{ discharge.other_charge|floatformat:2 }}</td>
-        </tr>
-        <tr class="total">
-          <td></td>
-          <td>Total: ₹ {{ discharge.total|floatformat:2 }}</td>
-        </tr>
-      </table>
-
-      <div class="download-print">
-  <a href="{% url 'download-pdf' patient.id %}?discharge_id={{ discharge.id }}" title="Download PDF">Download PDF</a>
-  <button onclick="printInvoice('{{ forloop.counter }}')">Print Invoice</button>
+        <div class="download-print">
+          <a href="{% url 'download-pdf' patient.id %}?discharge_id={{ discharge.id }}" title="Download PDF">Download PDF</a>
+          <button onclick="printInvoice('{{ forloop.counter }}')">Print Invoice</button>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="not-discharged">
+      <h4>You are not yet discharged from the hospital.</h4>
+      <p>Your treatment is still ongoing.</p>
+      <p>Once discharged, you can view and download your invoices here.</p>
+    </div>
+  {% endif %}
 </div>
- 
-  {% endfor %}
-{% else %}
-  <div class="not-discharged">
-    <h4>You are not yet discharged from the hospital.</h4>
-    <p>Your treatment is still ongoing.</p>
-    <p>Once discharged, you can view and download your invoices here.</p>
-  </div>
-{% endif %}
 
 <script>
   function printInvoice(id) {
@@ -188,6 +103,4 @@
   }
 </script>
 
-<br><br><br>
-
-{% endblock content %}
+{% endblock %}

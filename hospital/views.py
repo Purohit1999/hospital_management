@@ -498,8 +498,10 @@ def safe_float(value):
     try:
         return float(value)
     except (ValueError, TypeError):
-        return 0.0 
-    
+        return 0.0
+
+
+# View to discharge patient and show final bill in browser
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def discharge_patient_view(request, pk):
@@ -536,8 +538,8 @@ def discharge_patient_view(request, pk):
             'address': patient.address,
             'symptoms': patient.symptoms,
             'assignedDoctorName': patient.assignedDoctorId.user.get_full_name() if patient.assignedDoctorId else "N/A",
-            'admitDate': admit_date,
-            'todayDate': discharge_date,
+            'admitDate': admit_date.strftime('%Y-%m-%d'),
+            'todayDate': discharge_date.strftime('%Y-%m-%d'),
             'day': int(total_days),
             'roomCharge': room_charge,
             'doctorFee': doctor_fee,
@@ -555,6 +557,7 @@ def discharge_patient_view(request, pk):
     })
 
 
+# View to download invoice PDF (admin only)
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def download_pdf_view(request, patientId):
@@ -565,7 +568,7 @@ def download_pdf_view(request, patientId):
         messages.error(request, "Discharge details not found.")
         return redirect('admin-view-patient')
 
-    # 🗓 Retrieve and sanitize dates
+    # 🗓 Convert dates if they are strings
     admit_date = discharge.admission_date
     discharge_date = discharge.discharge_date
 
@@ -583,7 +586,7 @@ def download_pdf_view(request, patientId):
             messages.error(request, "Invalid discharge date format.")
             return redirect('admin-view-patient')
 
-    # 📆 Calculate stay duration
+    # Calculate total stay duration
     try:
         total_days = (discharge_date - admit_date).days
         if total_days <= 0:
@@ -592,27 +595,24 @@ def download_pdf_view(request, patientId):
         messages.error(request, f"Error calculating stay duration: {str(e)}")
         return redirect('admin-view-patient')
 
-    # 📄 Prepare context for PDF (CORRECT INDENTATION!)
+    # Context for rendering template
     context = {
-    'name': f"{patient.user.first_name} {patient.user.last_name}",
-    'mobile': str(patient.mobile),
-    'address': str(patient.address),
-    'symptoms': str(patient.symptoms),
-    'assignedDoctorName': str(patient.assignedDoctorId.user.get_full_name() if patient.assignedDoctorId else "N/A"),
-    'admitDate': admit_date.strftime('%Y-%m-%d'),
-    'todayDate': discharge_date.strftime('%Y-%m-%d'),
-    'day': int(total_days),
-    'roomCharge': safe_float(discharge.room_charge),
-    'doctorFee': safe_float(discharge.doctor_fee),
-    'medicineCost': safe_float(discharge.medicine_cost),
-    'OtherCharge': safe_float(discharge.other_charge),
-    'total': safe_float(discharge.total),
-    'patientId': int(patientId)
-}
+        'name': f"{patient.user.first_name} {patient.user.last_name}",
+        'mobile': str(patient.mobile),
+        'address': str(patient.address),
+        'symptoms': str(patient.symptoms),
+        'assignedDoctorName': str(patient.assignedDoctorId.user.get_full_name() if patient.assignedDoctorId else "N/A"),
+        'admitDate': admit_date.strftime('%Y-%m-%d'),
+        'todayDate': discharge_date.strftime('%Y-%m-%d'),
+        'day': int(total_days),
+        'roomCharge': safe_float(discharge.room_charge),
+        'doctorFee': safe_float(discharge.doctor_fee),
+        'medicineCost': safe_float(discharge.medicine_cost),
+        'OtherCharge': safe_float(discharge.other_charge),
+        'total': safe_float(discharge.total),
+        'patientId': int(patientId)
+    }
 
-    # ✅ Optional debug log
-    for key, val in context.items():
-        print(f"{key}: {val} ({type(val).__name__})")
 
     # 🖨️ Generate PDF
     template = get_template('hospital/patient_final_bill.html')
