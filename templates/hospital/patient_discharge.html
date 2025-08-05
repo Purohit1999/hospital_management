@@ -1,16 +1,14 @@
 {% extends 'hospital/patient_base.html' %}
 {% load static %}
-
 {% block content %}
 
 <head>
   <meta charset="utf-8">
-  <title>Patient Discharge Invoice</title>
-
+  <title>Patient Discharge Summary</title>
   <style>
     .invoice-box {
       max-width: 900px;
-      margin: auto;
+      margin: 40px auto;
       padding: 30px;
       border: 1px solid #eee;
       box-shadow: 0 0 15px rgba(0, 0, 0, .1);
@@ -23,7 +21,6 @@
 
     .invoice-box table {
       width: 100%;
-      text-align: left;
       border-collapse: collapse;
     }
 
@@ -53,22 +50,20 @@
 
     .download-print {
       text-align: center;
-      margin-top: 30px;
+      margin-top: 20px;
     }
 
     .download-print a,
     .download-print button {
-      display: inline-block;
       background-color: #007bff;
       color: white;
-      padding: 10px 25px;
-      margin: 0 10px;
+      padding: 8px 20px;
+      margin: 5px;
       border: none;
       border-radius: 4px;
       text-decoration: none;
-      font-size: 16px;
+      font-size: 14px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
 
     .download-print a:hover,
@@ -78,7 +73,7 @@
 
     .not-discharged {
       text-align: center;
-      margin-top: 100px;
+      margin: 100px auto;
       font-size: 18px;
       color: #444;
     }
@@ -88,133 +83,111 @@
         font-size: 14px;
         padding: 20px;
       }
-
-      .download-print a,
-      .download-print button {
-        display: block;
-        width: 100%;
-        margin: 10px auto;
-      }
     }
   </style>
 </head>
 
 <br><br><br>
 
-{% if is_discharged %}
-<!-- Invoice Box -->
-<div class="invoice-box" id="invoice-box">
-  <table>
-    <!-- Invoice Header with Logo and Dates -->
-    <tr class="top">
-      <td colspan="2">
-        <table>
-          <tr>
-            <td class="title">
-              <!-- Optional Logo (Replace path if needed) -->
-              <img src="{% static 'images/hospital-logo.png' %}" alt="Hospital Logo">
-            </td>
-            <td style="text-align:right;">
-              <strong>Admit Date:</strong> {{ admitDate }}<br>
-              <strong>Release Date:</strong> {{ releaseDate }}<br>
-              <strong>Days Spent:</strong> {{ daySpent }}
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
+{% if discharges %}
+  {% for discharge in discharges %}
+    <div class="invoice-box" id="invoice-box-{{ forloop.counter }}">
+      <table>
+        <tr class="top">
+          <td colspan="2">
+            <table>
+              <tr>
+                <td class="title">
+                  <img src="{% static 'images/hospital-logo.png' %}" alt="Hospital Logo">
+                </td>
+                <td style="text-align:right;">
+                  <strong>Admit Date:</strong> {{ discharge.admission_date }}<br>
+                  <strong>Release Date:</strong> {{ discharge.discharge_date }}<br>
+                  <strong>Days Spent:</strong> {{ discharge.days_spent }}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-    <!-- Patient & Doctor Info -->
-    <tr class="information">
-      <td colspan="2">
-        <table>
-          <tr>
-            <td>
-              <strong>Patient Name:</strong> {{ patientName }}<br>
-              <strong>Mobile:</strong> {{ mobile }}<br>
-              <strong>Address:</strong> {{ address }}
-            </td>
-            <td>
-              <strong>Doctor:</strong> {{ assignedDoctorName }}
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
+        <tr class="information">
+          <td colspan="2">
+            <table>
+              <tr>
+                <td>
+                  <strong>Patient Name:</strong> {{ patient.user.get_full_name }}<br>
+                  <strong>Mobile:</strong> {{ patient.mobile }}<br>
+                  <strong>Address:</strong> {{ patient.address }}
+                </td>
+                <td>
+                  <strong>Doctor:</strong> {{ discharge.doctor.user.get_full_name }}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-    <!-- Symptoms -->
-    <tr class="heading">
-      <td>Disease and Symptoms</td>
-      <td></td>
-    </tr>
-    <tr class="item">
-      <td colspan="2">{{ symptoms }}</td>
-    </tr>
+        <tr class="heading">
+          <td>Disease and Symptoms</td>
+          <td></td>
+        </tr>
+        <tr class="item">
+          <td colspan="2">{{ patient.symptoms }}</td>
+        </tr>
 
-    <!-- Billing Items -->
-    <tr class="heading">
-      <td>Item</td>
-      <td>Price (₹)</td>
-    </tr>
+        <tr class="heading">
+          <td>Item</td>
+          <td>Price (₹)</td>
+        </tr>
+        <tr class="item">
+          <td>Room Charge</td>
+          <td>{{ discharge.room_charge|floatformat:2 }}</td>
+        </tr>
+        <tr class="item">
+          <td>Doctor Fee</td>
+          <td>{{ discharge.doctor_fee|floatformat:2 }}</td>
+        </tr>
+        <tr class="item">
+          <td>Medicine Cost</td>
+          <td>{{ discharge.medicine_cost|floatformat:2 }}</td>
+        </tr>
+        <tr class="item">
+          <td>Other Charges</td>
+          <td>{{ discharge.other_charge|floatformat:2 }}</td>
+        </tr>
+        <tr class="total">
+          <td></td>
+          <td>Total: ₹ {{ discharge.total|floatformat:2 }}</td>
+        </tr>
+      </table>
 
-    <tr class="item">
-      <td>Room Charge ({{ daySpent }} Days)</td>
-      <td>{{ roomCharge }}</td>
-    </tr>
-
-    <tr class="item">
-      <td>Doctor Fee</td>
-      <td>{{ doctorFee }}</td>
-    </tr>
-
-    <tr class="item">
-      <td>Medicine Cost</td>
-      <td>{{ medicineCost }}</td>
-    </tr>
-
-    <tr class="item">
-      <td>Other Charges</td>
-      <td>{{ OtherCharge }}</td>
-    </tr>
-
-    <!-- Total -->
-    <tr class="total">
-      <td></td>
-      <td>Total: ₹ {{ total }}</td>
-    </tr>
-  </table>
+      <div class="download-print">
+  <a href="{% url 'download-pdf' patient.id %}?discharge_id={{ discharge.id }}" title="Download PDF">Download PDF</a>
+  <button onclick="printInvoice('{{ forloop.counter }}')">Print Invoice</button>
 </div>
-
-<!-- Action Buttons -->
-<div class="download-print">
-  <!-- Download PDF Button -->
-  <a href="{% url 'download-pdf' patientId %}" title="Download Invoice">Download PDF</a>
-
-  <!-- Print Invoice Button -->
-  <button onclick="printInvoice()">Print Invoice</button>
-</div>
+ 
+  {% endfor %}
+{% else %}
+  <div class="not-discharged">
+    <h4>You are not yet discharged from the hospital.</h4>
+    <p>Your treatment is still ongoing.</p>
+    <p>Once discharged, you can view and download your invoices here.</p>
+  </div>
+{% endif %}
 
 <script>
-  // Print only the invoice area
-  function printInvoice() {
-    var printContents = document.getElementById("invoice-box").innerHTML;
-    var originalContents = document.body.innerHTML;
+  function printInvoice(id) {
+    const invoiceBox = document.getElementById("invoice-box-" + id);
+    const printContents = invoiceBox.innerHTML;
+    const originalContents = document.body.innerHTML;
+
     document.body.innerHTML = printContents;
     window.print();
     document.body.innerHTML = originalContents;
-    window.location.reload();  // reload to restore JS/CSS
+    window.location.reload();
   }
 </script>
 
-{% else %}
-<!-- If not yet discharged -->
-<div class="not-discharged">
-  <h4>You are not yet discharged from the hospital.</h4>
-  <p>Your treatment is still ongoing.</p>
-  <p>Once discharged, you can view and download your invoice here.</p>
-</div>
-{% endif %}
-
-<br><br><br><br><br>
+<br><br><br>
 
 {% endblock content %}

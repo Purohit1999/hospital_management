@@ -66,8 +66,10 @@ urlpatterns = [
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
 
     # Admin - Billing & Invoice Generation
+    # Admin - Billing & Invoice Generation
     path('generate-bill/<int:pk>/', views.generate_patient_bill_view, name='generate-bill'),
     path('download-pdf/<int:patientId>/', views.download_pdf_view, name='download-pdf'),
+
 
     # Admin - Appointment Management
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),

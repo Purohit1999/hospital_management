@@ -2,70 +2,131 @@
 {% load static %}
 {% block content %}
 
-<div class="container my-5" id="invoice-box">
-  <div class="card shadow">
-    <div class="card-header bg-success text-white text-center">
-      <h4>Final Invoice - Patient Discharge Summary</h4>
+<style>
+  .invoice-container {
+    max-width: 800px;
+    margin: 40px auto;
+    font-family: Arial, sans-serif;
+    color: #000;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 20px;
+    border: 1px solid #ddd;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .table th, .table td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .table th {
+    background-color: #eee;
+  }
+
+  .total-row td {
+    font-weight: bold;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .btn-group {
+    margin-top: 30px;
+    text-align: center;
+  }
+
+  .btn-group a, .btn-group button {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 5px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 3px;
+  }
+
+  .btn-group button {
+    background-color: #6c757d;
+  }
+</style>
+
+<div class="invoice-container" id="invoice-box">
+  <div class="header">
+    <h2>Final Invoice - Patient Discharge Summary</h2>
+  </div>
+
+  <div class="row">
+    <div>
+      <p><strong>Hospital:</strong> Hospital Management (UK)</p>
+      <p><strong>Patient:</strong> {{ name }}</p>
+      <p><strong>Mobile:</strong> {{ mobile }}</p>
+      <p><strong>Address:</strong> {{ address }}</p>
     </div>
-    <div class="card-body">
-
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <h5>Hospital Management (UK)</h5>
-          <p><strong>Patient:</strong> {{ name }}</p>
-          <p><strong>Mobile:</strong> {{ mobile }}</p>
-          <p><strong>Address:</strong> {{ address }}</p>
-        </div>
-        <div class="col-md-6 text-md-end">
-          <p><strong>Doctor:</strong> {{ assignedDoctorName }}</p>
-          <p><strong>Admit Date:</strong> {{ admitDate }}</p>
-          <p><strong>Discharge Date:</strong> {{ todayDate }}</p>
-          <p><strong>Total Days:</strong> {{ day }}</p>
-        </div>
-      </div>
-
-      <hr>
-      <h5>Symptoms</h5>
-      <p>{{ symptoms }}</p>
-
-      <h5 class="mt-4">Billing Breakdown</h5>
-      <table class="table table-bordered">
-        <thead class="table-secondary">
-          <tr>
-            <th>Service</th>
-            <th>Cost (£)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Room Charges ({{ day }} days)</td>
-            <td>£{{ roomCharge }}</td>
-          </tr>
-          <tr>
-            <td>Doctor Consultation Fee</td>
-            <td>£{{ doctorFee }}</td>
-          </tr>
-          <tr>
-            <td>Medicine Cost</td>
-            <td>£{{ medicineCost }}</td>
-          </tr>
-          <tr>
-            <td>Other Charges</td>
-            <td>£{{ OtherCharge }}</td>
-          </tr>
-          <tr class="table-success">
-            <td><strong>Total Due</strong></td>
-            <td><strong>£{{ total }}</strong></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="text-center mt-4">
-        <a href="{% url 'download-pdf' patientId %}" class="btn btn-primary">Download PDF</a>
-        <button onclick="printInvoice()" class="btn btn-secondary">Print Invoice</button>
-      </div>
-
+    <div>
+      <p><strong>Doctor:</strong> {{ assignedDoctorName }}</p>
+      <p><strong>Admit Date:</strong> {{ admitDate }}</p>
+      <p><strong>Discharge Date:</strong> {{ todayDate }}</p>
+      <p><strong>Total Days:</strong> {{ day }}</p>
     </div>
+  </div>
+
+  <h4>Symptoms</h4>
+  <p>{{ symptoms }}</p>
+
+  <h4>Billing Breakdown</h4>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Cost (£)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Room Charges ({{ day }} days)</td>
+        <td>{{ roomCharge }}</td>
+      </tr>
+      <tr>
+        <td>Doctor Consultation Fee</td>
+        <td>{{ doctorFee }}</td>
+      </tr>
+      <tr>
+        <td>Medicine Cost</td>
+        <td>{{ medicineCost }}</td>
+      </tr>
+      <tr>
+        <td>Other Charges</td>
+        <td>{{ OtherCharge }}</td>
+      </tr>
+      <tr class="total-row">
+        <td>Total Due</td>
+        <td>{{ total }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="btn-group">
+    <a href="{% url 'download-pdf' patientId %}" class="btn">Download PDF</a>
+    <button onclick="printInvoice()">Print Invoice</button>
   </div>
 </div>
 
