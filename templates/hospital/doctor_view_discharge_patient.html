@@ -13,7 +13,7 @@
       {% if discharged_patients %}
       <div class="table-responsive">
         <table class="table table-bordered table-hover table-striped">
-          <thead class="thead-dark">
+          <thead class="thead-dark text-center">
             <tr>
               <th>Patient Name</th>
               <th>Admission Date</th>
@@ -31,17 +31,17 @@
           <tbody>
             {% for discharge in discharged_patients %}
             <tr>
-              <td>{{ discharge.patient.get_name }}</td>
+              <td>{{ discharge.patient.user.get_full_name }}</td>
               <td>{{ discharge.admission_date }}</td>
               <td>{{ discharge.discharge_date }}</td>
               <td>{{ discharge.patient.symptoms }}</td>
               <td>{{ discharge.patient.mobile }}</td>
               <td>{{ discharge.patient.address }}</td>
-              <td>{{ discharge.doctor_fee }}</td>
-              <td>{{ discharge.medicine_cost }}</td>
-              <td>{{ discharge.room_charge }}</td>
-              <td>{{ discharge.other_charge }}</td>
-              <td class="font-weight-bold text-success">{{ discharge.total }}</td>
+              <td>£ {{ discharge.doctor_fee|floatformat:2 }}</td>
+              <td>£ {{ discharge.medicine_cost|floatformat:2 }}</td>
+              <td>£ {{ discharge.room_charge|floatformat:2 }}</td>
+              <td>£ {{ discharge.other_charge|floatformat:2 }}</td>
+              <td class="font-weight-bold text-success">£ {{ discharge.total|floatformat:2 }}</td>
             </tr>
             {% endfor %}
           </tbody>

@@ -14,18 +14,14 @@
   <style>
     html, body {
       height: 100%;
-      display: flex;
-      flex-direction: column;
     }
 
     body {
       padding-left: 240px;
-    }
-
-    main {
-      flex: 1;
+      margin: 0;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
     }
 
     nav.menu {
@@ -40,12 +36,16 @@
 
     .avatar {
       text-align: center;
+      padding: 10px;
     }
 
     .avatar img {
       width: 80px;
+      height: 80px;
       border-radius: 50%;
+      object-fit: cover;
       margin-bottom: 10px;
+      border: 2px solid white;
     }
 
     nav.menu ul {
@@ -67,12 +67,21 @@
       background-color: rgba(0, 0, 0, 0.1);
     }
 
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container-fluid {
+      flex: 1;
+    }
+
     footer {
       background-color: black;
       color: white;
       text-align: center;
       padding: 20px 0;
-      margin-top: auto;
     }
 
     footer .fa {
@@ -95,6 +104,10 @@
     .fa:hover {
       opacity: 0.8;
       text-decoration: none;
+    }
+
+    .pt-fixed-adjust {
+      padding-top: 80px; /* To avoid overlap with navbar */
     }
   </style>
 </head>
@@ -119,8 +132,8 @@
   </ul>
 </nav>
 
-<!-- Main -->
-<main>
+<!-- Main Content -->
+<main class="d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top" style="left: 240px;">
     <div class="container-fluid">
       <a href="{% url 'doctor-dashboard' %}" class="navbar-brand">Hospital Management</a>
@@ -137,16 +150,17 @@
     </div>
   </nav>
 
-  <div class="container-fluid pt-5 mt-3">
+  <div class="container-fluid pt-fixed-adjust">
     {% block content %}{% endblock %}
   </div>
 
+  <!-- Shared Footer -->
   <footer>
     <p>
-      <a href="https://facebook.com/Param.Paramp/" class="fa fa-facebook"></a>
-      <a href="https://api.whatsapp.com/send?phone=919572181024" class="fa fa-whatsapp"></a>
-      <a href="https://instagram.com/Param.Paramp" class="fa fa-instagram"></a>
-      <a href="https://twitter.com/Paramkumar1503" class="fa fa-twitter"></a>
+      <a href="https://facebook.com/Param.Paramp/" class="fa fa-facebook" target="_blank"></a>
+      <a href="https://api.whatsapp.com/send?phone=919572181024" class="fa fa-whatsapp" target="_blank"></a>
+      <a href="https://instagram.com/Param.Paramp" class="fa fa-instagram" target="_blank"></a>
+      <a href="https://twitter.com/Paramkumar1503" class="fa fa-twitter" target="_blank"></a>
     </p>
     <p>&copy; 2025 Param | Made in UK</p>
   </footer>

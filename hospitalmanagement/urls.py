@@ -68,14 +68,13 @@ urlpatterns = [
     # Admin - Billing & Invoice Generation
     # Admin - Billing & Invoice Generation
     path('generate-bill/<int:pk>/', views.generate_patient_bill_view, name='generate-bill'),
-    path('download-pdf/<int:patientId>/', views.download_pdf_view, name='download-pdf'),
-
-
+    
     # Admin - Appointment Management
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
     path('admin-view-appointment/', views.admin_view_appointment, name='admin-view-appointment'),
     path('admin-add-appointment/', views.admin_add_appointment_view, name='admin-add-appointment'),
     path('admin-approve-appointment/', views.admin_approve_appointment_view, name='admin-approve-appointment'),
+    path('admin-discharge-patient/', views.admin_discharge_patient_view, name='admin-discharge-patient'),
 
     # Public/Patient Appointments
     path('appointments/', views.list_appointments, name='appointments'),

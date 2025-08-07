@@ -2,82 +2,119 @@
 {% load static %}
 {% block content %}
 
-<div class="container">
+<style>
+  .invoice-box {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+  }
+
+  .invoice-box h5 {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+  }
+
+  .table td,
+  .table th {
+    vertical-align: middle;
+  }
+
+  .btn {
+    min-width: 130px;
+  }
+
+  @media (max-width: 576px) {
+    .invoice-box {
+      padding: 15px;
+    }
+
+    .text-end {
+      text-align: left !important;
+    }
+
+    .btn {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+
+  .not-discharged {
+    text-align: center;
+    margin: 100px auto;
+    font-size: 18px;
+    color: #444;
+  }
+</style>
+
+<div class="container mt-5">
   {% if discharges %}
     {% for discharge in discharges %}
       <div class="invoice-box" id="invoice-box-{{ forloop.counter }}">
-        <table>
-          <tr class="top">
-            <td colspan="2">
-              <table>
-                <tr>
-                  <td class="title">
-                    <img src="{% static 'images/hospital-logo.png' %}" alt="Hospital Logo">
-                  </td>
-                  <td style="text-align:right;">
-                    <strong>Admit Date:</strong> {{ discharge.admission_date }}<br>
-                    <strong>Release Date:</strong> {{ discharge.discharge_date }}<br>
-                    <strong>Days Spent:</strong> {{ discharge.days_spent }}
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+        <div class="row">
+          <div class="col-md-6">
+            <img src="{% static 'images/hospital-logo.png' %}" alt="Hospital Logo" style="max-width: 120px;">
+          </div>
+          <div class="col-md-6 text-end">
+            <p><strong>Admit Date:</strong> {{ discharge.admission_date }}</p>
+            <p><strong>Release Date:</strong> {{ discharge.discharge_date }}</p>
+            <p><strong>Days Spent:</strong> {{ discharge.days_spent }}</p>
+          </div>
+        </div>
 
-          <tr class="information">
-            <td colspan="2">
-              <table>
-                <tr>
-                  <td>
-                    <strong>Patient Name:</strong> {{ patient.user.get_full_name }}<br>
-                    <strong>Mobile:</strong> {{ patient.mobile }}<br>
-                    <strong>Address:</strong> {{ patient.address }}
-                  </td>
-                  <td>
-                    <strong>Doctor:</strong> {{ discharge.doctor.user.get_full_name }}
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+        <div class="row mt-3">
+          <div class="col-md-6">
+            <p><strong>Patient Name:</strong> {{ patient.user.get_full_name }}</p>
+            <p><strong>Mobile:</strong> {{ patient.mobile }}</p>
+            <p><strong>Address:</strong> {{ patient.address }}</p>
+          </div>
+          <div class="col-md-6 text-end">
+            <p><strong>Doctor:</strong> {{ discharge.doctor.user.get_full_name }}</p>
+          </div>
+        </div>
 
-          <tr class="heading">
-            <td>Disease and Symptoms</td>
-            <td></td>
-          </tr>
-          <tr class="item">
-            <td colspan="2">{{ patient.symptoms }}</td>
-          </tr>
+        <hr>
 
-          <tr class="heading">
-            <td>Item</td>
-            <td>Price (₹)</td>
-          </tr>
-          <tr class="item">
-            <td>Room Charge</td>
-            <td>{{ discharge.room_charge|floatformat:2 }}</td>
-          </tr>
-          <tr class="item">
-            <td>Doctor Fee</td>
-            <td>{{ discharge.doctor_fee|floatformat:2 }}</td>
-          </tr>
-          <tr class="item">
-            <td>Medicine Cost</td>
-            <td>{{ discharge.medicine_cost|floatformat:2 }}</td>
-          </tr>
-          <tr class="item">
-            <td>Other Charges</td>
-            <td>{{ discharge.other_charge|floatformat:2 }}</td>
-          </tr>
-          <tr class="total">
-            <td></td>
-            <td>Total: ₹ {{ discharge.total|floatformat:2 }}</td>
-          </tr>
+        <h5>Disease and Symptoms</h5>
+        <p>{{ patient.symptoms }}</p>
+
+        <h5 class="mt-4">Billing Details</h5>
+        <table class="table table-bordered mt-2">
+          <thead class="table-light">
+            <tr>
+              <th>Item</th>
+              <th>Price (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Room Charge</td>
+              <td>{{ discharge.room_charge|floatformat:2 }}</td>
+            </tr>
+            <tr>
+              <td>Doctor Fee</td>
+              <td>{{ discharge.doctor_fee|floatformat:2 }}</td>
+            </tr>
+            <tr>
+              <td>Medicine Cost</td>
+              <td>{{ discharge.medicine_cost|floatformat:2 }}</td>
+            </tr>
+            <tr>
+              <td>Other Charges</td>
+              <td>{{ discharge.other_charge|floatformat:2 }}</td>
+            </tr>
+            <tr class="table-active">
+              <td><strong>Total</strong></td>
+              <td><strong>₹ {{ discharge.total|floatformat:2 }}</strong></td>
+            </tr>
+          </tbody>
         </table>
 
-        <div class="download-print">
-          <a href="{% url 'download-pdf' patient.id %}?discharge_id={{ discharge.id }}" title="Download PDF">Download PDF</a>
-          <button onclick="printInvoice('{{ forloop.counter }}')">Print Invoice</button>
+        <div class="text-center mt-4">
+          <button onclick="printInvoice('{{ forloop.counter }}')" class="btn btn-secondary">Print Invoice</button>
         </div>
       </div>
     {% endfor %}
@@ -85,7 +122,7 @@
     <div class="not-discharged">
       <h4>You are not yet discharged from the hospital.</h4>
       <p>Your treatment is still ongoing.</p>
-      <p>Once discharged, you can view and download your invoices here.</p>
+      <p>Once discharged, you can view and print your invoices here.</p>
     </div>
   {% endif %}
 </div>
@@ -99,7 +136,7 @@
     document.body.innerHTML = printContents;
     window.print();
     document.body.innerHTML = originalContents;
-    window.location.reload();
+    window.location.reload(); 
   }
 </script>
 
