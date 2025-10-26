@@ -13,7 +13,11 @@ MEDIA_ROOT   = BASE_DIR / 'media'        # Where uploaded files are stored
 # SECURITY SETTINGS
 SECRET_KEY = 'hpbv()ep00boce&o0w7z1h)st148(*m@6@-rk$nn)(n9ojj4c0'  # ⚠️ Replace this before production
 DEBUG = True  # ⚠️ Set to False in production
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com'
+]
 
 # APPLICATIONS
 INSTALLED_APPS = [
