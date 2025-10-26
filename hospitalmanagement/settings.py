@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url 
 
 # BASE DIRECTORY of the Django project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,13 +12,14 @@ STATIC_ROOT  = BASE_DIR / 'staticfiles'  # Used for collectstatic in production
 MEDIA_ROOT   = BASE_DIR / 'media'        # Where uploaded files are stored
 
 # SECURITY SETTINGS
-SECRET_KEY = 'hpbv()ep00boce&o0w7z1h)st148(*m@6@-rk$nn)(n9ojj4c0'  # ⚠️ Replace this before production
-DEBUG = True  # ⚠️ Set to False in production
+SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')  # ← use env on Render
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.onrender.com'
-]
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # APPLICATIONS
 INSTALLED_APPS = [
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← add this
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -45,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 # URL & WSGI
 ROOT_URLCONF = 'hospitalmanagement.urls'
@@ -69,11 +73,12 @@ TEMPLATES = [
 
 # DATABASE (SQLite - for development)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
 }
+
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
@@ -92,12 +97,19 @@ USE_TZ = True
 
 # STATIC FILES
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [STATIC_DIR]        # For development
-STATIC_ROOT = STATIC_ROOT              # For collectstatic (production)
+STATIC_DIR = BASE_DIR / 'static'
+STATICFILES_DIRS = [STATIC_DIR] if STATIC_DIR.exists() else []
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# MEDIA FILES
 MEDIA_URL = '/media/'
-MEDIA_ROOT = MEDIA_ROOT
+MEDIA_ROOT = BASE_DIR / 'media'
+
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    }
+}
+
 
 # AUTH REDIRECTS
 LOGIN_URL = '/adminlogin/'
