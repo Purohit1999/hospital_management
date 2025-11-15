@@ -1,53 +1,4 @@
-{% extends "hospital/base.html" %}
-{% load static %}
-
-{% block content %}
-<div class="container mt-5">
-
-  <!-- Hero Section -->
-  <div class="row align-items-center mb-5">
-    <div class="col-md-6">
-      <h1 class="display-5 fw-bold mb-3">Welcome to Hospital Management</h1>
-      <p class="lead">
-        Manage patients, doctors, appointments, and billing in one simple, integrated system.
-      </p>
-      <a href="{% url 'adminlogin' %}" class="btn btn-primary btn-lg me-2">Admin Login</a>
-      <a href="{% url 'doctorlogin' %}" class="btn btn-outline-light btn-lg me-2">Doctor Login</a>
-      <a href="{% url 'patientlogin' %}" class="btn btn-outline-light btn-lg">Patient Login</a>
-    </div>
-    <div class="col-md-6 text-center">
-      <!-- You can replace this with a real image -->
-      <img src="{% static 'images/hospital-hero.png' %}" alt="Hospital Illustration"
-           class="img-fluid rounded shadow-sm"
-           onerror="this.style.display='none';">
-    </div>
-  </div>
-
-  <!-- Features Section -->
-  <div class="row text-center">
-    <div class="col-md-4 mb-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Patient Management</h5>
-          <p class="card-text">
-            Register, update, and track patient details, medical history, and discharge summaries.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Doctor & Appointment Scheduling</h5>
-          <p class="card-text">
-            Assign doctors, manage schedules, and approve appointments with ease.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4 mb-4">{% extends "hospital/homebase.html" %}
+{% extends "hospital/homebase.html" %}
 {% load static %}
 
 {% block content %}
@@ -88,7 +39,7 @@
     <div class="col-md-4 mb-4">
       <div class="card h-100 shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">Doctor & Appointment Scheduling</h5>
+          <h5 class="card-title">Doctor &amp; Appointments</h5>
           <p class="card-text">
             Assign doctors, manage schedules, and approve appointments with ease.
           </p>
@@ -99,21 +50,7 @@
     <div class="col-md-4 mb-4">
       <div class="card h-100 shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">Billing & Discharge</h5>
-          <p class="card-text">
-            Generate patient bills, calculate charges, and manage discharge summaries efficiently.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-{% endblock %}
-
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Billing & Discharge</h5>
+          <h5 class="card-title">Billing &amp; Discharge</h5>
           <p class="card-text">
             Generate patient bills, calculate charges, and manage discharge summaries efficiently.
           </p>
