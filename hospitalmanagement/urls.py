@@ -3,8 +3,9 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LoginView
+
 from hospital import views
-from hospital.views import CustomLogoutView
+
 
 urlpatterns = [
     # Admin site
@@ -37,8 +38,8 @@ urlpatterns = [
     # After login
     path('afterlogin/', views.afterlogin_view, name='afterlogin'),
 
-    # Logout — using your CustomLogoutView (correct)
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
+    # Logout — use CustomLogoutView defined in hospital.views
+    path('logout/', views.CustomLogoutView.as_view(), name='logout'),
 
     # Dashboards
     path('admin-dashboard/', views.admin_dashboard_view, name='admin-dashboard'),
@@ -74,6 +75,7 @@ urlpatterns = [
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
     path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),
 
+    # Patient discharge summary + discharge action
     path('patient/discharge-summary/', views.patient_discharge_summary_view, name='patient-discharge-summary'),
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
 
