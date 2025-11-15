@@ -2,20 +2,20 @@
    Global Layout / Typography
 ---------------------------------- */
 
-/* Basic body defaults */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Let <main> grow naturally – footer is handled by layout */
-main {
-  min-height: calc(100vh - 140px); /* approx. navbar + footer height */
-}
-
 html,
 body {
   height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #ffffff;
+}
+
+/* main area – navbar + footer approx 140px total */
+main {
+  min-height: calc(100vh - 140px);
 }
 
 /* ----------------------------------
@@ -291,9 +291,12 @@ body {
    Home Page Hero + Feature Cards
 ---------------------------------- */
 
-/* Hero section with dark overlay and centered white text */
+/* Hero section with overlay and centered content */
 .home-hero {
   position: relative;
+  min-height: 70vh;            /* show most of hero on 100% zoom */
+  display: flex;
+  align-items: center;
   padding: 6rem 0 4rem;
   background-size: cover;
   background-position: center;
@@ -301,7 +304,7 @@ body {
   color: #ffffff;
 }
 
-/* dark overlay so white text is readable */
+/* dark overlay so text is readable */
 .home-hero::before {
   content: '';
   position: absolute;
@@ -309,14 +312,14 @@ body {
   background: rgba(0, 0, 0, 0.55);
 }
 
-/* keep text above overlay */
+/* content sits above overlay */
 .home-hero .hero-content {
   position: relative;
   z-index: 1;
   text-align: center;
 }
 
-/* force all hero text to be white */
+/* force hero text to white */
 .home-hero .hero-content h1,
 .home-hero .hero-content p,
 .home-hero .hero-content a,
@@ -324,17 +327,29 @@ body {
   color: #ffffff !important;
 }
 
+/* Feature cards styling */
 .feature-card {
-  border: none;
   border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  background-color: #ffffff;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.10);
+  border-color: #0d6efd;
 }
 
 .feature-card .card-title {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 .feature-card .card-text {
   font-size: 0.95rem;
+  color: #4b5563;
 }
 
 .hero-illustration {
