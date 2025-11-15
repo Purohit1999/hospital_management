@@ -18,7 +18,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
 
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+# 🔧 TEMP: Force DEBUG=True so we can see full error page on Heroku.
+# After fixing the 500 error, change this back to the env-based version:
+# DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = True
 
 # ✔ ALLOWED_HOSTS — LOCAL + HEROKU APPS
 ALLOWED_HOSTS = [
@@ -138,7 +141,7 @@ STATICFILES_DIRS = [STATIC_DIR] if STATIC_DIR.exists() else []
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = MEDIA_ROOT
+MEDIA_ROOT = MEDIA_ROOT  # uses BASE_DIR / 'media' defined above
 
 # WhiteNoise storage
 STORAGES = {
