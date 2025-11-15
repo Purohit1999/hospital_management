@@ -2,40 +2,45 @@ import os
 from pathlib import Path
 import dj_database_url
 
-# BASE DIRECTORY of the Django project
+# ─────────────────────────────────────────────
+# BASE DIRECTORY
+# ─────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Custom directory paths
+# Directories
 TEMPLATE_DIR = BASE_DIR / 'templates'
 STATIC_DIR = BASE_DIR / 'static'
-MEDIA_ROOT = BASE_DIR / 'media'        # Where uploaded files are stored
+MEDIA_ROOT = BASE_DIR / 'media'
 
-# ─────────────────────────────────────────────────────────────
-# SECURITY SETTINGS
-# ─────────────────────────────────────────────────────────────
-SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')  # ← use env on Render
+# ─────────────────────────────────────────────
+# SECURITY
+# ─────────────────────────────────────────────
 
-# DEBUG: False by default in production
+SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
+
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# ALLOWED_HOSTS: local + Render hostname if present
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# ✔ ALLOWED_HOSTS — LOCAL + HEROKU APPS
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'hospital-management-web.herokuapp.com',
+    'hospital-management-web-4963f51d811d.herokuapp.com',
+]
 
-RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+# ✔ CSRF Origins (MUST be full URLs)
+CSRF_TRUSTED_ORIGINS = [
+    'https://hospital-management-web.herokuapp.com',
+    'https://hospital-management-web-4963f51d811d.herokuapp.com',
+]
 
-# CSRF_TRUSTED_ORIGINS: must be full scheme+host, no wildcards
-CSRF_TRUSTED_ORIGINS = []
-if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
-
-# When behind Render's proxy
+# ✔ Needed for Heroku reverse proxy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
 # APPLICATIONS
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,19 +49,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-party apps
+    # Third-party
     'widget_tweaks',
 
     # Local apps
     'hospital',
 ]
 
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
 # MIDDLEWARE
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',   # static files on Heroku
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -65,24 +71,22 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# ─────────────────────────────────────────────────────────────
-# URL & WSGI
-# ─────────────────────────────────────────────────────────────
 ROOT_URLCONF = 'hospitalmanagement.urls'
 WSGI_APPLICATION = 'hospitalmanagement.wsgi.application'
 
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
 # TEMPLATES
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR],  # Custom templates directory
-        'APP_DIRS': True,        # Look inside app/templates folders
+        'DIRS': [TEMPLATE_DIR],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',  # Required for auth views
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -90,11 +94,10 @@ TEMPLATES = [
     },
 ]
 
-# ─────────────────────────────────────────────────────────────
-# DATABASE
-# Uses SQLite by default; switches to DATABASE_URL (Postgres on Render)
-# if that environment variable is set.
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+# DATABASE — SQLite local, PostgreSQL on Heroku
+# ─────────────────────────────────────────────
+
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
@@ -102,9 +105,10 @@ DATABASES = {
     )
 }
 
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
 # PASSWORD VALIDATION
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -112,54 +116,59 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
 # INTERNATIONALIZATION
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+
 LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'Europe/London'
 USE_I18N = True
 USE_TZ = True
 
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
 # STATIC & MEDIA FILES
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+
 STATIC_URL = '/static/'
 
-# Where your app’s static files live in development
+# Where STATICFILES_DIRS exists in development
 STATICFILES_DIRS = [STATIC_DIR] if STATIC_DIR.exists() else []
 
-# Where collectstatic dumps files for production (served by WhiteNoise)
+# Where static files are collected for production (Heroku)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = MEDIA_ROOT
 
-# Django 4.2+ STORAGES configuration with WhiteNoise
+# WhiteNoise storage
 STORAGES = {
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     }
 }
 
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
 # AUTH REDIRECTS
-# ─────────────────────────────────────────────────────────────
-LOGIN_URL = '/adminlogin/'
-LOGIN_REDIRECT_URL = '/afterlogin/'    # After successful login
-LOGOUT_REDIRECT_URL = '/'              # Redirect to home after logout
+# ─────────────────────────────────────────────
 
-# ─────────────────────────────────────────────────────────────
-# EMAIL SETTINGS (For password reset, notifications, etc.)
-# ─────────────────────────────────────────────────────────────
+LOGIN_URL = '/adminlogin/'
+LOGIN_REDIRECT_URL = '/afterlogin/'
+LOGOUT_REDIRECT_URL = '/'
+
+# ─────────────────────────────────────────────
+# EMAIL SETTINGS (Used for notifications)
+# ─────────────────────────────────────────────
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'from@gmail.com'          # Replace with sender Gmail
-EMAIL_HOST_PASSWORD = 'your_app_password'   # Use Gmail App Password
-EMAIL_RECEIVING_USER = ['to@gmail.com']     # Replace with your receiving email
+EMAIL_HOST_USER = 'from@gmail.com'             # replace when needed
+EMAIL_HOST_PASSWORD = 'your_app_password'      # replace with Gmail App Password
+EMAIL_RECEIVING_USER = ['to@gmail.com']
 
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
 # DEFAULT FIELD TYPE
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
