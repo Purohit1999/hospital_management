@@ -3,22 +3,26 @@
 
 {% block content %}
 
-<!-- Hero Section -->
+<!-- HERO SECTION -->
 <section class="home-hero"
-         style="background-image: url('{% static "images/bg.jpeg" %}');">
+         style="background-image:
+                linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.4)),
+                url('{% static "images/patient.jpg" %}');">
   <div class="container hero-content">
     <div class="row justify-content-center">
-      <div class="col-lg-8">
+      <div class="col-lg-10 col-xl-8 text-center">
         <h1 class="display-4 fw-bold mb-3">
-          Compassionate Care, Exceptional Outcomes
+          Compassionate Care,<br>Exceptional Outcomes
         </h1>
         <p class="lead mb-4">
           Empowering healthier lives through trusted, patient-focused medical excellence.
         </p>
-        <p class="h5 fw-semibold mb-4">
+
+        <p class="mb-3 fw-semibold">
           Need Urgent Assistance?
         </p>
-        <a href="{% url 'contactus' %}" class="btn btn-outline-light btn-lg">
+
+        <a href="{% url 'adminlogin' %}" class="btn btn-outline-light btn-lg px-4">
           Schedule a Consultation Now
         </a>
       </div>
@@ -26,57 +30,67 @@
   </div>
 </section>
 
-<!-- Cards Section -->
-<section class="py-5 bg-white">
+<!-- FEATURE CARDS SECTION -->
+<section class="home-features py-5">
   <div class="container">
     <div class="row g-4">
-      <div class="col-md-3">
-        <div class="card shadow-sm text-center h-100 feature-card">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Doctor</h5>
-            <p class="card-text">
-              Access schedules, patients, and prescriptions with ease.
-            </p>
-            <a href="{% url 'doctorlogin' %}" class="btn btn-primary btn-sm">Go</a>
-          </div>
+
+      <!-- Doctor -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card feature-card feature-card-blue h-100 text-center p-4">
+          <h5 class="card-title mb-3">Doctor</h5>
+          <p class="card-text mb-4">
+            Access schedules, patients, and prescriptions with ease.
+          </p>
+          <a href="{% url 'doctorlogin' %}"
+             class="btn btn-outline-light btn-sm rounded-pill px-3">
+            Go
+          </a>
         </div>
       </div>
 
-      <div class="col-md-3">
-        <div class="card shadow-sm text-center h-100 feature-card">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Patient</h5>
-            <p class="card-text">
-              Book appointments, view bills, and track treatments.
-            </p>
-            <a href="{% url 'patientlogin' %}" class="btn btn-success btn-sm">Go</a>
-          </div>
+      <!-- Patient -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card feature-card feature-card-green h-100 text-center p-4">
+          <h5 class="card-title mb-3">Patient</h5>
+          <p class="card-text mb-4">
+            Book appointments, view bills, and track treatments.
+          </p>
+          <a href="{% url 'patientlogin' %}"
+             class="btn btn-outline-light btn-sm rounded-pill px-3">
+            Go
+          </a>
         </div>
       </div>
 
-      <div class="col-md-3">
-        <div class="card shadow-sm text-center h-100 feature-card">
-          <div class="card-body">
-            <h5 class="card-title mb-3">About Us</h5>
-            <p class="card-text">
-              Learn about our mission, team, and facilities.
-            </p>
-            <a href="{% url 'aboutus' %}" class="btn btn-warning btn-sm">Explore</a>
-          </div>
+      <!-- About Us -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card feature-card feature-card-yellow h-100 text-center p-4">
+          <h5 class="card-title mb-3">About Us</h5>
+          <p class="card-text mb-4">
+            Learn about our mission, team, and facilities.
+          </p>
+          <a href="{% url 'aboutus' %}"
+             class="btn btn-outline-light btn-sm rounded-pill px-3">
+            Explore
+          </a>
         </div>
       </div>
 
-      <div class="col-md-3">
-        <div class="card shadow-sm text-center h-100 feature-card">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Contact Us</h5>
-            <p class="card-text">
-              Reach out with queries or appointment requests.
-            </p>
-            <a href="{% url 'contactus' %}" class="btn btn-danger btn-sm">Contact</a>
-          </div>
+      <!-- Contact Us -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card feature-card feature-card-red h-100 text-center p-4">
+          <h5 class="card-title mb-3">Contact Us</h5>
+          <p class="card-text mb-4">
+            Reach out with queries or appointment requests.
+          </p>
+          <a href="{% url 'contactus' %}"
+             class="btn btn-outline-light btn-sm rounded-pill px-3">
+            Contact
+          </a>
         </div>
       </div>
+
     </div>
   </div>
 </section>

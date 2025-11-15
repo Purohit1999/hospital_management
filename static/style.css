@@ -13,9 +13,10 @@ body {
   background-color: #ffffff;
 }
 
-/* main area – navbar + footer approx 140px total */
+/* main area – add bottom padding so content never hugs footer */
 main {
-  min-height: calc(100vh - 140px);
+  min-height: calc(100vh - 140px);  /* approx navbar + footer */
+  padding-bottom: 3rem;
 }
 
 /* ----------------------------------
@@ -294,10 +295,10 @@ main {
 /* Hero section with overlay and centered content */
 .home-hero {
   position: relative;
-  min-height: 70vh;            /* show most of hero on 100% zoom */
+  min-height: 65vh;
   display: flex;
   align-items: center;
-  padding: 6rem 0 4rem;
+  padding: 6rem 0 5rem;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -319,7 +320,6 @@ main {
   text-align: center;
 }
 
-/* force hero text to white */
 .home-hero .hero-content h1,
 .home-hero .hero-content p,
 .home-hero .hero-content a,
@@ -327,32 +327,68 @@ main {
   color: #ffffff !important;
 }
 
-/* Feature cards styling */
-.feature-card {
-  border-radius: 1rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-  background-color: #ffffff;
+/* Features section background */
+.home-features {
+  background: #f3f4f6;
 }
 
+/* Feature cards styling */
+.feature-card {
+  border-radius: 1.4rem;
+  border: none;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.10);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  color: #ffffff;
+}
+
+/* Colour variations */
+.feature-card-blue {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.feature-card-green {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.feature-card-yellow {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.feature-card-red {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+/* Hover effect */
 .feature-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.10);
-  border-color: #0d6efd;
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.20);
+  filter: brightness(1.05);
 }
 
 .feature-card .card-title {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 600;
 }
 
 .feature-card .card-text {
-  font-size: 0.95rem;
-  color: #4b5563;
+  font-size: 0.98rem;
 }
 
-.hero-illustration {
-  max-width: 100%;
-  height: auto;
+/* Make outline buttons visible on coloured backgrounds */
+.feature-card .btn-outline-light {
+  border-width: 2px;
+}
+
+/* Small screens: stack nicely with more spacing */
+@media (max-width: 575.98px) {
+  .home-hero {
+    min-height: 60vh;
+    padding-top: 5rem;
+    padding-bottom: 4rem;
+  }
+
+  .home-features {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
 }
