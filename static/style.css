@@ -2,18 +2,17 @@
    Global Layout / Typography
 ---------------------------------- */
 
-/* Basic body defaults (no forced left padding!) */
+/* Basic body defaults */
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Let <main> grow naturally – footer is handled by Bootstrap classes */
+/* Let <main> grow naturally – footer is handled by layout */
 main {
   min-height: calc(100vh - 140px); /* approx. navbar + footer height */
 }
 
-/* Keep full-height for background layouts if needed */
 html,
 body {
   height: 100%;
@@ -36,7 +35,6 @@ body {
   outline: none;
 }
 
-/* Avatar Section inside Sidebar */
 .menu .avatar {
   background: rgba(0, 0, 0, 0.1);
   padding: 2em 0.5em;
@@ -56,7 +54,6 @@ body {
   font-size: 1.2rem;
 }
 
-/* Navigation Items */
 .menu ul {
   list-style: none;
   margin: 0;
@@ -226,7 +223,7 @@ body {
   }
 
   .menu:focus .smartphone-menu-trigger {
-    pointer-events: none; /* Prevent re-triggering */
+    pointer-events: none;
   }
 }
 
@@ -294,20 +291,37 @@ body {
    Home Page Hero + Feature Cards
 ---------------------------------- */
 
+/* Hero section with dark overlay and centered white text */
 .home-hero {
-  min-height: calc(100vh - 140px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  /* gradient only; actual photo background comes from inline style in index.html */
-  background: linear-gradient(135deg, rgba(30, 136, 229, 0.7), rgba(123, 31, 162, 0.7));
+  position: relative;
+  padding: 6rem 0 4rem;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: #ffffff;
 }
 
-.home-hero h1,
-.home-hero p {
-  color: #ffffff;
+/* dark overlay so white text is readable */
+.home-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* keep text above overlay */
+.home-hero .hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+/* force all hero text to be white */
+.home-hero .hero-content h1,
+.home-hero .hero-content p,
+.home-hero .hero-content a,
+.home-hero .hero-content span {
+  color: #ffffff !important;
 }
 
 .feature-card {

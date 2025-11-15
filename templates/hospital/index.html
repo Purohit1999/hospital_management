@@ -3,16 +3,12 @@
 
 {% block content %}
 
-<!-- Hero Section with background image like your local screenshot -->
+<!-- Hero Section -->
 <section class="home-hero"
-         style="background-image:
-                linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-                url('{% static "images/bg.jpeg" %}');
-                background-size: cover;
-                background-position: center;">
-  <div class="container py-5">
+         style="background-image: url('{% static "images/bg.jpeg" %}');">
+  <div class="container hero-content">
     <div class="row justify-content-center">
-      <div class="col-lg-8 text-center">
+      <div class="col-lg-8">
         <h1 class="display-4 fw-bold mb-3">
           Compassionate Care, Exceptional Outcomes
         </h1>
@@ -30,7 +26,7 @@
   </div>
 </section>
 
-<!-- Four feature cards (Doctor / Patient / About / Contact) -->
+<!-- Cards Section -->
 <section class="py-5 bg-white">
   <div class="container">
     <div class="row g-4">
