@@ -81,7 +81,7 @@ body {
   outline: none;
 }
 
-/* Icons for Menu Items */
+/* Icons for Menu Items (using external SVGs – safe for collectstatic) */
 .menu ul li.icon-dashboard {
   background-image: url("http://www.entypo.com/images//gauge.svg");
 }
@@ -299,10 +299,7 @@ body {
   display: flex;
   align-items: center;
   background: linear-gradient(135deg, #1e88e5, #7b1fa2);
-  /* If you had a background image before, plug it in here:
-     background-image: linear-gradient(135deg, #1e88e5, #7b1fa2),
-                       url("../images/your-background.jpg");
-  */
+  /* Only gradient background – no local image, safe for Heroku */
   background-size: cover;
   background-position: center;
   color: #ffffff;
