@@ -114,6 +114,30 @@ def afterlogin_view(request):
         return redirect('admin-dashboard')
     return redirect('home')
 
+# ---------------- ADMIN LOGIN ----------------
+def adminlogin_view(request):
+    """
+    Admin login view.
+    Only allows superusers to log in and redirects them to the admin dashboard.
+    """
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None and user.is_superuser:
+                login(request, user)
+                return redirect('admin-dashboard')
+            else:
+                messages.error(request, 'Access denied: You are not an admin user.')
+        else:
+            messages.error(request, 'Invalid credentials. Please try again.')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'hospital/adminlogin.html', {'form': form})
+
 # ---------------- DOCTOR LOGIN ----------------
 def doctor_login_view(request):
     if request.method == 'POST':
@@ -163,6 +187,7 @@ def doctor_view_discharge_patient_view(request):
     return render(request, 'hospital/doctor_view_discharge_patient.html', {
         'discharged_patients': discharged_patients
     })
+
 def admin_approve_doctor_view(request):
     doctors = Doctor.objects.filter(status=False)
     return render(request, 'hospital/admin_approve_doctor.html', {'pending_doctors': doctors})
@@ -439,6 +464,7 @@ def reject_doctor_view(request, pk):
         user.delete()
     messages.success(request, "Doctor has been rejected and removed.")
     return redirect('admin-approve-doctor')
+
 def update_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
@@ -456,6 +482,7 @@ def update_doctor_view(request, pk):
         'userForm': user_form,
         'doctorForm': doctor_form
     })
+
 def delete_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
@@ -567,5 +594,3 @@ def discharge_patient_view(request, pk):
         'todayDate': discharge_date,
         'day': int(total_days),
     })
-
-
