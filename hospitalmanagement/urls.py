@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.contrib.auth.views import LoginView, LogoutView
 from hospital import views
 
+
 urlpatterns = [
     # Admin site
     path('admin/', admin.site.urls),
@@ -36,7 +37,7 @@ urlpatterns = [
     # After login
     path('afterlogin/', views.afterlogin_view, name='afterlogin'),
 
-    # Logout — use built-in LogoutView
+    # ✅ Logout — use built-in LogoutView (NO views.logout_view ANYWHERE)
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
 
     # Dashboards
