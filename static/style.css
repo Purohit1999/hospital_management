@@ -9,19 +9,142 @@ body {
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* main area – add bottom padding so content never hugs footer */
+/* Let <main> fill space between navbar and footer */
 main {
-  min-height: calc(100vh - 140px);  /* approx navbar + footer */
-  padding-bottom: 3rem;
+  min-height: calc(100vh - 140px); /* approx navbar + footer height */
 }
 
 /* ----------------------------------
-   Sidebar Navigation (Menu)
-   (used on dashboard pages)
+   HOME PAGE – HERO
+---------------------------------- */
+
+.home-hero {
+  position: relative;
+  min-height: 70vh; /* big, but not entire page */
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+
+  /* background image + slight dark overlay via ::before */
+  background-image: url("../images/bg.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 0, 0, 0.65)
+  );
+  z-index: 0;
+}
+
+.home-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero h1 {
+  font-weight: 700;
+  font-size: 2.75rem;
+  margin-bottom: 1rem;
+}
+
+.home-hero p.lead {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto 1.75rem;
+}
+
+.home-hero .btn-hero-cta {
+  padding: 0.8rem 2.4rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* ----------------------------------
+   HOME PAGE – FEATURE CARDS SECTION
+---------------------------------- */
+
+.feature-section {
+  background: #f8f9fa;
+  padding: 3rem 0 4rem; /* bottom padding so it never touches footer */
+}
+
+.feature-section .row {
+  row-gap: 2rem;
+}
+
+/* Base card styling */
+.feature-card {
+  border: none;
+  border-radius: 1.1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, translate 0.2s ease;
+  color: #ffffff;
+  height: 100%;
+}
+
+.feature-card .card-body {
+  text-align: center;
+  padding: 2rem 1.75rem;
+}
+
+.feature-card .card-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.feature-card .card-text {
+  font-size: 0.95rem;
+  opacity: 0.95;
+  margin-bottom: 1.75rem;
+}
+
+/* Colourful backgrounds for each card (Doctor, Patient, About, Contact) */
+.feature-section .col-md-3:nth-child(1) .feature-card {
+  background: linear-gradient(135deg, #1e88e5, #1565c0); /* blue */
+}
+
+.feature-section .col-md-3:nth-child(2) .feature-card {
+  background: linear-gradient(135deg, #43a047, #2e7d32); /* green */
+}
+
+.feature-section .col-md-3:nth-child(3) .feature-card {
+  background: linear-gradient(135deg, #fb8c00, #ef6c00); /* orange */
+}
+
+.feature-section .col-md-3:nth-child(4) .feature-card {
+  background: linear-gradient(135deg, #e53935, #c62828); /* red */
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Button inside cards */
+.feature-card .btn {
+  border-radius: 999px;
+  padding: 0.5rem 1.75rem;
+  font-weight: 500;
+  border-width: 2px;
+}
+
+/* ----------------------------------
+   Sidebar Navigation (Dashboard pages)
 ---------------------------------- */
 
 .menu {
@@ -36,6 +159,7 @@ main {
   outline: none;
 }
 
+/* Avatar Section inside Sidebar */
 .menu .avatar {
   background: rgba(0, 0, 0, 0.1);
   padding: 2em 0.5em;
@@ -55,6 +179,7 @@ main {
   font-size: 1.2rem;
 }
 
+/* Navigation Items */
 .menu ul {
   list-style: none;
   margin: 0;
@@ -96,10 +221,7 @@ main {
   background-image: url("http://www.entypo.com/images//calendar.svg");
 }
 
-/* -----------------------------------
-   Tablet View (Between 400px-900px)
------------------------------------- */
-
+/* Tablet view */
 @media screen and (max-width: 900px) and (min-width: 400px) {
   .menu {
     width: 90px;
@@ -153,7 +275,7 @@ main {
   }
 
   .menu ul li span:before {
-    content: '';
+    content: "";
     width: 0;
     height: 0;
     position: absolute;
@@ -171,10 +293,7 @@ main {
   }
 }
 
-/* ----------------------------------
-   Smartphone View (Below 400px)
------------------------------------ */
-
+/* Smartphone View */
 @media screen and (max-width: 400px) {
   .menu {
     width: 230px;
@@ -200,7 +319,7 @@ main {
 
   .menu .smartphone-menu-trigger:before,
   .menu .smartphone-menu-trigger:after {
-    content: '';
+    content: "";
     width: 50%;
     height: 2px;
     background: #fff;
@@ -229,7 +348,7 @@ main {
 }
 
 /* ----------------------------------
-   Enhanced Footer Styles
+   Footer
 ---------------------------------- */
 
 .site-footer {
@@ -237,7 +356,7 @@ main {
   color: #fff;
   text-align: center;
   padding: 20px 10px;
-  margin-top: auto;
+  margin-top: 0;
 }
 
 .social-icons {
@@ -264,17 +383,17 @@ main {
 }
 
 .fa-facebook {
-  background: #3B5998;
+  background: #3b5998;
   color: white;
 }
 
 .fa-whatsapp {
-  background: #25D366;
+  background: #25d366;
   color: white;
 }
 
 .fa-twitter {
-  background: #55ACEE;
+  background: #55acee;
   color: white;
 }
 
@@ -286,109 +405,4 @@ main {
 .footer-text p {
   margin: 5px 0;
   font-size: 14px;
-}
-
-/* ----------------------------------
-   Home Page Hero + Feature Cards
----------------------------------- */
-
-/* Hero section with overlay and centered content */
-.home-hero {
-  position: relative;
-  min-height: 65vh;
-  display: flex;
-  align-items: center;
-  padding: 6rem 0 5rem;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: #ffffff;
-}
-
-/* dark overlay so text is readable */
-.home-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-}
-
-/* content sits above overlay */
-.home-hero .hero-content {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-}
-
-.home-hero .hero-content h1,
-.home-hero .hero-content p,
-.home-hero .hero-content a,
-.home-hero .hero-content span {
-  color: #ffffff !important;
-}
-
-/* Features section background */
-.home-features {
-  background: #f3f4f6;
-}
-
-/* Feature cards styling */
-.feature-card {
-  border-radius: 1.4rem;
-  border: none;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.10);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
-  color: #ffffff;
-}
-
-/* Colour variations */
-.feature-card-blue {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-}
-
-.feature-card-green {
-  background: linear-gradient(135deg, #16a34a, #15803d);
-}
-
-.feature-card-yellow {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.feature-card-red {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-}
-
-/* Hover effect */
-.feature-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.20);
-  filter: brightness(1.05);
-}
-
-.feature-card .card-title {
-  font-size: 1.35rem;
-  font-weight: 600;
-}
-
-.feature-card .card-text {
-  font-size: 0.98rem;
-}
-
-/* Make outline buttons visible on coloured backgrounds */
-.feature-card .btn-outline-light {
-  border-width: 2px;
-}
-
-/* Small screens: stack nicely with more spacing */
-@media (max-width: 575.98px) {
-  .home-hero {
-    min-height: 60vh;
-    padding-top: 5rem;
-    padding-bottom: 4rem;
-  }
-
-  .home-features {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
 }
