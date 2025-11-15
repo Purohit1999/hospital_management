@@ -143,18 +143,19 @@ def afterlogin_view(request):
 def adminlogin_view(request):
     """
     Admin login view.
-    Only allows superusers to log in and redirects them to the admin dashboard.
+    Allows staff/superusers to log in and then routes via `afterlogin_view`.
     """
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
+        form = AuthenticationForm(request=request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
             user = authenticate(request, username=username, password=password)
 
-            if user is not None and user.is_superuser:
+            # Only allow staff/superuser as admin
+            if user is not None and user.is_staff:
                 login(request, user)
-                return redirect("admin-dashboard")
+                return redirect("afterlogin")
             else:
                 messages.error(
                     request,
