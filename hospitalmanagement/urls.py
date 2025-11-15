@@ -30,13 +30,13 @@ urlpatterns = [
     path(
         'patientlogin/',
         LoginView.as_view(template_name='hospital/patientlogin.html'),
-        name='patientlogin',
+        name='patientlogin'
     ),
 
     # After login
     path('afterlogin/', views.afterlogin_view, name='afterlogin'),
 
-    # Logout – use Django's built-in LogoutView
+    # Logout — use built-in LogoutView
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
 
     # Dashboards
@@ -55,11 +55,7 @@ urlpatterns = [
     path('admin-view-doctor/', views.admin_view_doctor_view, name='admin-view-doctor'),
     path('admin-add-doctor/', views.admin_add_doctor_view, name='admin-add-doctor'),
     path('admin-approve-doctor/', views.admin_approve_doctor_view, name='admin-approve-doctor'),
-    path(
-        'admin-view-doctor-specialisation/',
-        views.admin_view_doctor_specialisation,
-        name='admin-view-doctor-specialisation',
-    ),
+    path('admin-view-doctor-specialisation/', views.admin_view_doctor_specialisation, name='admin-view-doctor-specialisation'),
 
     path('approve-doctor/<int:pk>/', views.approve_doctor_view, name='approve-doctor'),
     path('reject-doctor/<int:pk>/', views.reject_doctor_view, name='reject-doctor'),
@@ -77,14 +73,9 @@ urlpatterns = [
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
     path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),
 
-    path(
-        'patient/discharge-summary/',
-        views.patient_discharge_summary_view,
-        name='patient-discharge-summary',
-    ),
+    # Patient discharge & billing
+    path('patient/discharge-summary/', views.patient_discharge_summary_view, name='patient-discharge-summary'),
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
-
-    # Admin - Billing & Invoice
     path('generate-bill/<int:pk>/', views.generate_patient_bill_view, name='generate-bill'),
 
     # Admin - Appointment Management
