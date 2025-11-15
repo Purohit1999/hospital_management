@@ -2,75 +2,87 @@
 {% load static %}
 
 {% block content %}
-<div class="home-hero d-flex align-items-center">
+
+<!-- Hero Section with background image like your local screenshot -->
+<section class="home-hero"
+         style="background-image:
+                linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                url('{% static "images/bg.jpeg" %}');
+                background-size: cover;
+                background-position: center;">
   <div class="container py-5">
-    <!-- Hero Section -->
-    <div class="row align-items-center">
-      <div class="col-lg-7 mb-4 mb-lg-0">
-        <h1 class="display-4 fw-bold mb-3 text-dark">
-          Welcome to Hospital Management
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h1 class="display-4 fw-bold mb-3">
+          Compassionate Care, Exceptional Outcomes
         </h1>
-        <p class="lead text-dark-50 mb-4">
-          Manage patients, doctors, appointments, and billing in one simple, integrated system.
+        <p class="lead mb-4">
+          Empowering healthier lives through trusted, patient-focused medical excellence.
         </p>
-
-        <div class="d-flex flex-wrap gap-3">
-          <a href="{% url 'adminlogin' %}" class="btn btn-primary btn-lg">
-            Admin Login
-          </a>
-          <a href="{% url 'doctorlogin' %}" class="btn btn-outline-light btn-lg">
-            Doctor Login
-          </a>
-          <a href="{% url 'patientlogin' %}" class="btn btn-outline-light btn-lg">
-            Patient Login
-          </a>
-        </div>
-      </div>
-
-      <!-- Optional illustration / image -->
-      <div class="col-lg-5 text-center">
-        <!-- If you have a hero image, uncomment and point to the correct file
-        <img src="{% static 'images/hospital-hero.png' %}" 
-             class="img-fluid hero-illustration" alt="Hospital illustration">
-        -->
+        <p class="h5 fw-semibold mb-4">
+          Need Urgent Assistance?
+        </p>
+        <a href="{% url 'contactus' %}" class="btn btn-outline-light btn-lg">
+          Schedule a Consultation Now
+        </a>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- Feature cards -->
-    <div class="row mt-5">
-      <div class="col-md-4 mb-4">
-        <div class="card feature-card h-100 shadow-sm">
+<!-- Four feature cards (Doctor / Patient / About / Contact) -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100 feature-card">
           <div class="card-body">
-            <h5 class="card-title fw-bold mb-3 text-center">Patient Management</h5>
-            <p class="card-text text-muted text-center">
-              Register, update, and track patient details, medical history, and discharge summaries.
+            <h5 class="card-title mb-3">Doctor</h5>
+            <p class="card-text">
+              Access schedules, patients, and prescriptions with ease.
             </p>
+            <a href="{% url 'doctorlogin' %}" class="btn btn-primary btn-sm">Go</a>
           </div>
         </div>
       </div>
 
-      <div class="col-md-4 mb-4">
-        <div class="card feature-card h-100 shadow-sm">
+      <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100 feature-card">
           <div class="card-body">
-            <h5 class="card-title fw-bold mb-3 text-center">Doctor &amp; Appointments</h5>
-            <p class="card-text text-muted text-center">
-              Assign doctors, manage schedules, and approve appointments with ease.
+            <h5 class="card-title mb-3">Patient</h5>
+            <p class="card-text">
+              Book appointments, view bills, and track treatments.
             </p>
+            <a href="{% url 'patientlogin' %}" class="btn btn-success btn-sm">Go</a>
           </div>
         </div>
       </div>
 
-      <div class="col-md-4 mb-4">
-        <div class="card feature-card h-100 shadow-sm">
+      <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100 feature-card">
           <div class="card-body">
-            <h5 class="card-title fw-bold mb-3 text-center">Billing &amp; Discharge</h5>
-            <p class="card-text text-muted text-center">
-              Generate patient bills, calculate charges, and manage discharge summaries efficiently.
+            <h5 class="card-title mb-3">About Us</h5>
+            <p class="card-text">
+              Learn about our mission, team, and facilities.
             </p>
+            <a href="{% url 'aboutus' %}" class="btn btn-warning btn-sm">Explore</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100 feature-card">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Contact Us</h5>
+            <p class="card-text">
+              Reach out with queries or appointment requests.
+            </p>
+            <a href="{% url 'contactus' %}" class="btn btn-danger btn-sm">Contact</a>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+</section>
+
 {% endblock content %}

@@ -81,7 +81,7 @@ body {
   outline: none;
 }
 
-/* Icons for Menu Items (using external SVGs – safe for collectstatic) */
+/* Icons for Menu Items */
 .menu ul li.icon-dashboard {
   background-image: url("http://www.entypo.com/images//gauge.svg");
 }
@@ -298,10 +298,10 @@ body {
   min-height: calc(100vh - 140px);
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #1e88e5, #7b1fa2);
-  /* Only gradient background – no local image, safe for Heroku */
-  background-size: cover;
-  background-position: center;
+  justify-content: center;
+  text-align: center;
+  /* gradient only; actual photo background comes from inline style in index.html */
+  background: linear-gradient(135deg, rgba(30, 136, 229, 0.7), rgba(123, 31, 162, 0.7));
   color: #ffffff;
 }
 
