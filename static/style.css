@@ -92,64 +92,102 @@ main {
   justify-content: center;
 }
 
-/* Base card styling */
+.feature-card-link {
+  display: block;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
 .feature-card {
-  border: none;
+  --feature-accent: #ffffff;
   border-radius: 1.1rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, translate 0.2s ease;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   color: #ffffff;
   height: 100%;
-  padding: 1.75rem 1.5rem;
-  max-width: 280px;
+  padding: 1.75rem 1.6rem;
+  max-width: 320px;
   margin: 0 auto;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+  .feature-card {
+    background: rgba(34, 34, 34, 0.75);
+  }
 }
 
 .feature-card .card-body {
-  text-align: center;
   padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .feature-card .card-title {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .feature-card .card-text {
   font-size: 0.95rem;
   opacity: 0.95;
-  margin-bottom: 1.75rem;
+  margin-bottom: 0;
 }
 
-/* Colourful backgrounds for each card (Doctor, Patient, About, Contact) */
-.feature-section .col-md-3:nth-child(1) .feature-card {
-  background: linear-gradient(135deg, #1e88e5, #1565c0); /* blue */
+.feature-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 0.5rem;
+  color: var(--feature-accent);
 }
 
-.feature-section .col-md-3:nth-child(2) .feature-card {
-  background: linear-gradient(135deg, #43a047, #2e7d32); /* green */
+.feature-card-icon svg {
+  width: 30px;
+  height: 30px;
+  stroke: currentColor;
 }
 
-.feature-section .col-md-3:nth-child(3) .feature-card {
-  background: linear-gradient(135deg, #fb8c00, #ef6c00); /* orange */
+.feature-card-blue {
+  --feature-accent: #7bc4ff;
 }
 
-.feature-section .col-md-3:nth-child(4) .feature-card {
-  background: linear-gradient(135deg, #e53935, #c62828); /* red */
+.feature-card-green {
+  --feature-accent: #6ee7b7;
+}
+
+.feature-card-yellow {
+  --feature-accent: #ffd166;
+}
+
+.feature-card-red {
+  --feature-accent: #ff8f8f;
 }
 
 .feature-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Button inside cards */
-.feature-card .btn {
-  border-radius: 999px;
-  padding: 0.5rem 1.75rem;
-  font-weight: 500;
-  border-width: 2px;
+.feature-card-link:focus-visible .feature-card {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: 4px;
 }
 
 /* ----------------------------------
