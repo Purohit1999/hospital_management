@@ -26,7 +26,7 @@ main {
 
 .home-hero {
   position: relative;
-  min-height: 70vh; /* big, but not entire page */
+  min-height: 60vh;
   display: flex;
   align-items: center;
   text-align: center;
@@ -35,8 +35,8 @@ main {
   /* ✅ IMPORTANT: path must stay inside /staticfiles */
   /* CSS is at /static/style.css and image is at /static/images/bg.jpeg */
   background-image: url("images/bg.jpeg");
-  background-size: cover;
-  background-position: center;
+  background-size: contain;
+  background-position: top center;
   background-repeat: no-repeat;
 }
 
