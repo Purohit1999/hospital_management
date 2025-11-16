@@ -31,7 +31,8 @@ from .models import Doctor, Patient, Appointment, DischargeDetails
 from .forms import (
     AppointmentForm,
     PatientUserForm, PatientForm,
-    DoctorUserForm, DoctorForm
+    DoctorUserForm, DoctorForm,
+    ContactForm,          # 👈 NEW: contact form import
 )
 
 
@@ -52,7 +53,33 @@ def aboutus_view(request):
 
 
 def contactus_view(request):
-    return render(request, "hospital/contactus.html")
+    """
+    Contact/feedback view:
+    - GET: show empty ContactForm
+    - POST: validate and redirect to success page
+    """
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Here you could handle form data (save/send email) if needed:
+            # name = form.cleaned_data["name"]
+            # email = form.cleaned_data["email"]
+            # message = form.cleaned_data["message"]
+
+            # Optional user feedback (if you want a flash message as well)
+            messages.success(request, "Thank you for your feedback!")
+
+            # Redirect to success page
+            return redirect("contact-success")
+    else:
+        form = ContactForm()
+
+    return render(request, "hospital/contactus.html", {"form": form})
+
+
+def contact_success_view(request):
+    """ Simple success page after contact form submission. """
+    return render(request, "hospital/contactussuccess.html")
 
 
 # ---------------- ROLE SELECTION ----------------

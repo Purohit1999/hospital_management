@@ -118,3 +118,35 @@ class DoctorForm(forms.ModelForm):
             'mobile': forms.TextInput(attrs={'class': 'form-control'}),
             'profile_pic': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+# ------------------------------------------------------------
+# 🔹 Contact Form (Feedback)
+# ------------------------------------------------------------
+class ContactForm(forms.Form):
+    """ Simple feedback/contact form used on the Contact Us page. """
+
+    name = forms.CharField(
+        max_length=100,
+        label="Your Name",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your name'
+        })
+    )
+
+    email = forms.EmailField(
+        label="Your Email",
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your email address'
+        })
+    )
+
+    message = forms.CharField(
+        label="Message",
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Write your feedback or query here'
+        })
+    )
