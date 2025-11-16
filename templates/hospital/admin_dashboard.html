@@ -1,34 +1,43 @@
 {% extends 'hospital/admin_base.html' %}
 {% load static %}
+
 {% block content %}
 
 <!-- Dashboard Summary Cards -->
-<div class="container mt-5">
+<div class="container-fluid mt-4">
   <div class="row text-center">
-    <div class="col-md-4 mb-4">
-      <div class="card text-white bg-danger shadow">
-        <div class="card-body">
+    <div class="col-12 col-sm-6 col-lg-4 mb-4">
+      <div class="card text-white bg-danger shadow h-100">
+        <div class="card-body d-flex flex-column justify-content-center">
           <h5 class="card-title">Total Doctors</h5>
-          <p class="card-text">Pending Approvals:</p>
-          <h3><i class="fas fa-user-md"></i> {{ pending_doctors }}</h3>
+          <p class="card-text mb-1">Pending Approvals:</p>
+          <h3 class="mb-0">
+            <i class="fas fa-user-md"></i> {{ pending_doctors }}
+          </h3>
         </div>
       </div>
     </div>
-    <div class="col-md-4 mb-4">
-      <div class="card text-white bg-warning shadow">
-        <div class="card-body">
+
+    <div class="col-12 col-sm-6 col-lg-4 mb-4">
+      <div class="card text-white bg-warning shadow h-100">
+        <div class="card-body d-flex flex-column justify-content-center">
           <h5 class="card-title">Total Patients</h5>
-          <p class="card-text">Wants to Admit:</p>
-          <h3><i class="fas fa-user-injured"></i> {{ pending_patients }}</h3>
+          <p class="card-text mb-1">Wants to Admit:</p>
+          <h3 class="mb-0">
+            <i class="fas fa-user-injured"></i> {{ pending_patients }}
+          </h3>
         </div>
       </div>
     </div>
-    <div class="col-md-4 mb-4">
-      <div class="card text-white bg-info shadow">
-        <div class="card-body">
+
+    <div class="col-12 col-sm-6 col-lg-4 mb-4">
+      <div class="card text-white bg-info shadow h-100">
+        <div class="card-body d-flex flex-column justify-content-center">
           <h5 class="card-title">Total Appointments</h5>
-          <p class="card-text">Pending Approvals:</p>
-          <h3><i class="fas fa-calendar-alt"></i> {{ pending_appointments }}</h3>
+          <p class="card-text mb-1">Pending Approvals:</p>
+          <h3 class="mb-0">
+            <i class="fas fa-calendar-alt"></i> {{ pending_appointments }}
+          </h3>
         </div>
       </div>
     </div>
@@ -36,11 +45,11 @@
 </div>
 
 <!-- Recent Doctors and Patients Section -->
-<div class="container mb-5">
+<div class="container-fluid mb-4">
   <div class="row">
 
     <!-- Recent Doctors -->
-    <div class="col-md-6">
+    <div class="col-12 col-lg-6 mb-4">
       <div class="card h-100 shadow-sm">
         <div class="card-header bg-primary text-white text-center">
           <h5 class="mb-0">Recent Doctors</h5>
@@ -66,13 +75,17 @@
                     {% if d.status %}
                       <span class="badge badge-success">Approved</span>
                     {% else %}
-                      <a href="{% url 'approve-doctor' d.id %}" class="btn btn-sm btn-warning">Approve</a>
+                      <a href="{% url 'approve-doctor' d.id %}" class="btn btn-sm btn-warning">
+                        Approve
+                      </a>
                     {% endif %}
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="4" class="text-center text-muted">No recent doctors found.</td>
+                  <td colspan="4" class="text-center text-muted">
+                    No recent doctors found.
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -83,7 +96,7 @@
     </div>
 
     <!-- Recent Patients -->
-    <div class="col-md-6">
+    <div class="col-12 col-lg-6 mb-4">
       <div class="card h-100 shadow-sm">
         <div class="card-header text-white text-center" style="background-color: #28a745;">
           <h5 class="mb-0">Recent Patients</h5>
@@ -98,7 +111,7 @@
                   <th>Mobile</th>
                   <th>Address</th>
                   <th>Status</th>
-                  <th>Action</th>
+                  <th style="min-width: 150px;">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -116,18 +129,29 @@
                     {% endif %}
                   </td>
                   <td>
-                    <div class="d-flex flex-column flex-md-row gap-1">
-                      <a href="{% url 'edit-patient' p.id %}" class="btn btn-sm btn-primary mb-1">Edit</a>
-                      <a href="{% url 'delete-patient' p.id %}" class="btn btn-sm btn-danger mb-1">Delete</a>
+                    <div class="d-flex flex-wrap">
+                      <a href="{% url 'edit-patient' p.id %}"
+                         class="btn btn-sm btn-primary mr-1 mb-1">
+                        Edit
+                      </a>
+                      <a href="{% url 'delete-patient' p.id %}"
+                         class="btn btn-sm btn-danger mr-1 mb-1">
+                        Delete
+                      </a>
                       {% if not p.dischargedetails %}
-                        <a href="{% url 'discharge-patient' p.id %}" class="btn btn-sm btn-warning mb-1">Discharge</a>
+                        <a href="{% url 'discharge-patient' p.id %}"
+                           class="btn btn-sm btn-warning mb-1">
+                          Discharge
+                        </a>
                       {% endif %}
                     </div>
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="6" class="text-center text-muted">No recent patients found.</td>
+                  <td colspan="6" class="text-center text-muted">
+                    No recent patients found.
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
