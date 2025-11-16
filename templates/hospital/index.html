@@ -34,14 +34,68 @@
   </div>
 </section>
 
+<!-- CARD STYLING -->
 <style>
+  /* Full burgundy cards */
+  .feature-card {
+    background: #5A001A;                /* burgundy */
+    border-radius: 22px;
+    border: none;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    color: #F9EED0;                     /* light gold text */
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+  }
+
+  .feature-card .card-body {
+    padding: 32px 24px;
+  }
+
+  /* Icons inside the cards */
+  .feature-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .feature-card-icon svg {
+    width: 56px;
+    height: 56px;
+    stroke: #F8E7A1;                    /* soft gold */
+  }
+
+  .feature-card .card-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 14px;
+    color: #FCEEC2;
+  }
+
+  .feature-card .card-text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #F9EED0;
+  }
+
+  .feature-card-link {
+    text-decoration: none;
+  }
+
+  .feature-card-link:hover {
+    text-decoration: none;
+  }
+</style>
 
 <!-- FEATURE CARDS SECTION -->
 <section class="home-features feature-section py-5"
          style="background: linear-gradient(145deg, #f7e08c, #d1a842, #f2d675);
                 padding-top: 60px;
                 padding-bottom: 60px;">
-
   <div class="container">
     <div class="row g-4 justify-content-center">
 
@@ -59,7 +113,9 @@
                 </svg>
               </span>
               <h5 class="card-title">Doctor</h5>
-              <p class="card-text">Access schedules, patients, and prescriptions with ease.</p>
+              <p class="card-text">
+                Access schedules, patients, and prescriptions with ease.
+              </p>
             </div>
           </div>
         </a>
@@ -76,7 +132,9 @@
                 </svg>
               </span>
               <h5 class="card-title">Patient</h5>
-              <p class="card-text">Book appointments, view bills, and track treatments.</p>
+              <p class="card-text">
+                Book appointments, view bills, and track treatments.
+              </p>
             </div>
           </div>
         </a>
@@ -95,7 +153,9 @@
                 </svg>
               </span>
               <h5 class="card-title">About Us</h5>
-              <p class="card-text">Learn about our mission, team, and facilities.</p>
+              <p class="card-text">
+                Learn about our mission, team, and facilities.
+              </p>
             </div>
           </div>
         </a>
@@ -113,7 +173,9 @@
                 </svg>
               </span>
               <h5 class="card-title">Contact Us</h5>
-              <p class="card-text">Reach out with queries or appointment requests.</p>
+              <p class="card-text">
+                Reach out with queries or appointment requests.
+              </p>
             </div>
           </div>
         </a>
@@ -122,6 +184,5 @@
     </div>
   </div>
 </section>
-
 
 {% endblock content %}
