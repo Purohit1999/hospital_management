@@ -11,11 +11,9 @@ urlpatterns = [
 
     # Static pages
     path('', views.home_view, name='home'),
-    
-    # ✔ About page (use {% url 'aboutus' %} in templates)
     path('aboutus/', views.aboutus_view, name='aboutus'),
-    
     path('contactus/', views.contactus_view, name='contactus'),
+    path('contact-success/', views.contact_success_view, name='contact-success'),  # ✅ NEW
 
     # Role-based click views
     path('adminclick/', views.adminclick_view, name='adminclick'),
