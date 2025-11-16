@@ -30,8 +30,8 @@ main {
   color: #ffffff;
 
   /* ✅ IMPORTANT: path must stay inside /staticfiles */
-  /* CSS is at /static/style.css and image is at /static/images/bg.jpeg */
-  background-image: url("images/bg.jpeg");
+  /* CSS is at /static/style.css and image is at /static/images/patient.jpg */
+  background-image: url("images/patient.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
