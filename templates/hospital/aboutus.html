@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="en" dir="ltr">
+{% load static %}
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About Us | Hospital Management</title>
 
-  <!-- Bootstrap CSS (ensure this is linked in base template if not here) -->
+  <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 
-  <!-- Optional: Custom CSS -->
+  <!-- FontAwesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
   <style>
-    /* Add spacing and styling to main about section */
     .about-section {
       background-color: #f8f9fa;
       padding: 60px 20px;
@@ -50,9 +51,14 @@
   <section class="about-section">
     <div class="container">
       <h1 class="display-4">Welcome to Param Hospital System</h1>
-      <p class="lead">We are committed to streamlining the management of hospitals by simplifying the interaction between Admins, Doctors, and Patients.</p>
+      <p class="lead">
+        We are committed to streamlining hospital management by simplifying interactions between Admins, Doctors, and Patients.
+      </p>
       <hr class="my-4">
-      <p>This platform helps in scheduling appointments, managing patient records, and enabling doctors to provide better healthcare service.</p>
+      <p>
+        This platform assists with scheduling appointments, managing patient records,
+        billing, doctor–patient communication, and improving overall healthcare service delivery.
+      </p>
       <a class="btn btn-primary btn-lg btn-home" href="/" role="button">Back to Home</a>
     </div>
   </section>
@@ -61,11 +67,5 @@
   {% include "hospital/footer.html" %}
 
 </body>
-
-<!--
-Developed by: Param Purohit
-Facebook: fb.com/yourprofile
-YouTube: youtube.com/yourchannel
--->
 
 </html>

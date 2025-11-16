@@ -11,7 +11,10 @@ urlpatterns = [
 
     # Static pages
     path('', views.home_view, name='home'),
+    
+    # ✔ About page (use {% url 'aboutus' %} in templates)
     path('aboutus/', views.aboutus_view, name='aboutus'),
+    
     path('contactus/', views.contactus_view, name='contactus'),
 
     # Role-based click views
@@ -36,7 +39,7 @@ urlpatterns = [
     # After login
     path('afterlogin/', views.afterlogin_view, name='afterlogin'),
 
-    # ✅ Logout — use built-in LogoutView (NO reference to views.logout_view here)
+    # Logout
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
 
     # Dashboards
