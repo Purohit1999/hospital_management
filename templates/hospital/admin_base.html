@@ -14,11 +14,16 @@
   <link rel="stylesheet" href="{% static 'style.css' %}">
 
   <style>
-    html, body {
+    html,
+    body {
       height: 100%;
       margin: 0;
       display: flex;
       flex-direction: column;
+    }
+
+    body {
+      background-color: #f5f7fb;
     }
 
     main {
@@ -27,6 +32,7 @@
       flex-direction: column;
     }
 
+    /* Sidebar */
     .menu {
       background: #0bab64;
       height: 100vh;
@@ -36,10 +42,12 @@
       left: 0;
       padding-top: 20px;
       color: white;
+      z-index: 1030;
     }
 
     .avatar {
       text-align: center;
+      margin-bottom: 10px;
     }
 
     .avatar img {
@@ -51,6 +59,7 @@
     .menu ul {
       list-style: none;
       padding-left: 0;
+      margin-bottom: 0;
     }
 
     .menu ul li {
@@ -67,14 +76,20 @@
       background-color: rgba(0, 0, 0, 0.1);
     }
 
+    /* Top navbar */
     .navbar {
       margin-left: 240px;
+      z-index: 1020;
     }
 
-    .container-fluid {
+    /* Main content area (everything below the blue navbar) */
+    .main-body {
       margin-left: 240px;
+      padding: 90px 15px 40px; /* space for fixed navbar + bottom padding */
+      min-height: calc(100vh - 80px); /* leave room so footer isn't cramped */
     }
 
+    /* Footer */
     footer {
       background-color: #000;
       color: white;
@@ -94,10 +109,21 @@
       color: white;
     }
 
-    .fa-facebook { background: #3B5998; }
-    .fa-whatsapp { background: #25d366; }
-    .fa-twitter { background: #55ACEE; }
-    .fa-instagram { background: #e4405f; }
+    .fa-facebook {
+      background: #3B5998;
+    }
+
+    .fa-whatsapp {
+      background: #25d366;
+    }
+
+    .fa-twitter {
+      background: #55ACEE;
+    }
+
+    .fa-instagram {
+      background: #e4405f;
+    }
 
     .fa:hover {
       opacity: 0.8;
@@ -107,6 +133,24 @@
     .footer-copyright p {
       margin: 0;
     }
+
+    /* Small-screen tweak: stack sidebar above (optional, can be improved later) */
+    @media (max-width: 767.98px) {
+      .menu {
+        position: static;
+        width: 100%;
+        height: auto;
+      }
+
+      .navbar {
+        margin-left: 0;
+      }
+
+      .main-body {
+        margin-left: 0;
+        padding-top: 120px;
+      }
+    }
   </style>
 </head>
 
@@ -115,7 +159,7 @@
   <!-- Sidebar Navigation -->
   <nav class="menu">
     <header class="avatar">
-      <img src="{% static 'images/adminpropic.png' %}" alt="Admin Profile Pic"/>
+      <img src="{% static 'images/adminpropic.png' %}" alt="Admin Profile Pic" />
       <h6>Admin</h6>
       <h2>{{ request.user.first_name }}</h2>
     </header>
@@ -146,9 +190,8 @@
       </div>
     </nav>
 
-    <br><br><br>
-
-    <div class="container-fluid">
+    <!-- The actual page content -->
+    <div class="main-body">
       {% block content %}{% endblock content %}
     </div>
 
