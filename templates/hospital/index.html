@@ -34,7 +34,7 @@
   </div>
 </section>
 
-<!-- CUSTOM STYLES FOR BURGUNDY FEATURE CARDS -->
+<!-- CUSTOM STYLES FOR GOLD METALLIC FEATURE CARDS -->
 <style>
   .home-features {
     padding: 4rem 0 4.5rem 0;
@@ -42,30 +42,37 @@
   }
 
   .home-features .feature-card {
-    background: linear-gradient(135deg, #5a0f24, #7a1733); /* burgundy gradient */
-    border: none;
+    /* Gold metallic effect */
+    background: linear-gradient(145deg, #b8860b, #f0c96a);
+    background-image:
+      linear-gradient(145deg, #b8860b 0%, #f0c96a 45%, #a97405 100%);
     border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
     padding: 32px 24px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-    color: #fdf4f6;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    color: #2a1c06;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease-out;
   }
 
   .home-features .feature-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
   }
 
   .home-features .feature-card .card-title {
     font-weight: 700;
     margin-bottom: 0.75rem;
-    color: #ffffff;
+    color: #221506;
   }
 
   .home-features .feature-card .card-text {
     font-size: 0.98rem;
     line-height: 1.6;
-    color: #fbe5eb;
+    color: #3b2710;
   }
 
   .home-features .feature-card-link {
@@ -83,15 +90,15 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.08);      /* subtle dark circle behind icon */
     margin-bottom: 18px;
-    color: #1d1d1f;           /* dark icon colour */
+    color: #2a1c06;                       /* dark icons */
   }
 
   .home-features .feature-card-icon svg {
     width: 32px;
     height: 32px;
-    stroke: currentColor;     /* uses the dark colour above */
+    stroke: currentColor;                 /* uses dark colour above */
   }
 
   @media (max-width: 767.98px) {
