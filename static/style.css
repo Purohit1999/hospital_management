@@ -10,11 +10,14 @@ body {
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Let <main> fill space between navbar and footer */
 main {
-  min-height: calc(100vh - 140px); /* approx navbar + footer height */
+  flex: 1 0 auto;
 }
 
 /* ----------------------------------
@@ -35,7 +38,6 @@ main {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  overflow: hidden;
 }
 
 .home-hero::before {
@@ -78,13 +80,16 @@ main {
    HOME PAGE – FEATURE CARDS SECTION
 ---------------------------------- */
 
-.feature-section {
+.feature-section,
+.home-features {
   background: #f8f9fa;
-  padding: 3rem 0 4rem; /* bottom padding so it never touches footer */
+  padding: 2.5rem 0 4.5rem;
 }
 
-.feature-section .row {
-  row-gap: 2rem;
+.feature-section .row,
+.home-features .row {
+  row-gap: 1.5rem;
+  justify-content: center;
 }
 
 /* Base card styling */
@@ -95,11 +100,14 @@ main {
   transition: transform 0.2s ease, box-shadow 0.2s ease, translate 0.2s ease;
   color: #ffffff;
   height: 100%;
+  padding: 1.75rem 1.5rem;
+  max-width: 280px;
+  margin: 0 auto;
 }
 
 .feature-card .card-body {
   text-align: center;
-  padding: 2rem 1.75rem;
+  padding: 0;
 }
 
 .feature-card .card-title {
@@ -357,7 +365,7 @@ main {
   color: #fff;
   text-align: center;
   padding: 20px 10px;
-  margin-top: 0;
+  margin-top: auto;
 }
 
 .social-icons {
