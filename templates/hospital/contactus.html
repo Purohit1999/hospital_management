@@ -65,9 +65,9 @@
             {% csrf_token %}
             {{ form.as_p }}
             <div class="text-center mt-4">
-              <a href="{% url 'contactus' %}" class="btn btn-primary btn-lg">
+              <button type="submit" class="btn btn-primary btn-lg">
                 Send Message
-              </a>
+              </button>
             </div>
           </form>
 
