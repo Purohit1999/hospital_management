@@ -26,7 +26,8 @@
           Need Urgent Assistance?
         </p>
 
-        <a href="{% url 'adminlogin' %}" class="btn btn-outline-light btn-lg px-4">
+        <!-- 🔁 CHANGED: goes to patient booking instead of admin login -->
+        <a href="{% url 'patient-book-appointment' %}" class="btn btn-outline-light btn-lg px-4">
           Schedule a Consultation Now
         </a>
       </div>
@@ -142,7 +143,8 @@
 
       <!-- About Us -->
       <div class="col-md-6 col-lg-3 mb-4">
-        <a class="feature-card-link" href="/about/">
+        <!-- 🔁 use named URL instead of hard-coded /about/ -->
+        <a class="feature-card-link" href="{% url 'aboutus' %}">
           <div class="card feature-card h-100 text-center">
             <div class="card-body">
               <span class="feature-card-icon">
@@ -163,7 +165,8 @@
 
       <!-- Contact Us -->
       <div class="col-md-6 col-lg-3 mb-4">
-        <a class="feature-card-link" href="/contact/">
+        <!-- 🔁 use named URL instead of hard-coded /contact/ -->
+        <a class="feature-card-link" href="{% url 'contactus' %}">
           <div class="card feature-card h-100 text-center">
             <div class="card-body">
               <span class="feature-card-icon">
