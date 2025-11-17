@@ -47,15 +47,34 @@
   }
 </style>
 
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
 <h2 class="dashboard-heading">Welcome to Your Patient Dashboard</h2>
-<p class="dashboard-subtext">Access your appointment details, doctor information, and treatment history with ease.</p>
+<p class="dashboard-subtext">
+  Access your appointment details, doctor information, and treatment history with ease.
+</p>
 
 <div class="row g-3">
   <div class="col-lg-4 col-md-6">
     <div class="card-box bg-danger">
       <i class="bi bi-person-circle"></i>
       Doctor Name
-      <div>{{ doctor.user.get_full_name|default:"-" }}</div>
+      <div>
+        {% if doctor %}
+          {{ doctor.user.get_full_name }}
+        {% else %}
+          -
+        {% endif %}
+      </div>
     </div>
   </div>
 
@@ -71,7 +90,13 @@
     <div class="card-box bg-info">
       <i class="bi bi-telephone"></i>
       Doctor Mobile
-      <div>{{ doctor.mobile|default:"-" }}</div>
+      <div>
+        {% if doctor %}
+          {{ doctor.mobile|default:"-" }}
+        {% else %}
+          -
+        {% endif %}
+      </div>
     </div>
   </div>
 
@@ -79,7 +104,13 @@
     <div class="card-box bg-primary">
       <i class="bi bi-geo-alt"></i>
       Doctor Address
-      <div>{{ doctor.address|default:"-" }}</div>
+      <div>
+        {% if doctor %}
+          {{ doctor.address|default:"-" }}
+        {% else %}
+          -
+        {% endif %}
+      </div>
     </div>
   </div>
 
@@ -87,15 +118,27 @@
     <div class="card-box bg-success">
       <i class="bi bi-building"></i>
       Department
-      <div>{{ doctor.department|default:"-" }}</div>
+      <div>
+        {% if doctor %}
+          {{ doctor.department|default:"-" }}
+        {% else %}
+          -
+        {% endif %}
+      </div>
     </div>
   </div>
 
   <div class="col-lg-4 col-md-6">
     <div class="card-box bg-danger">
       <i class="bi bi-calendar-check"></i>
-      Admit Date
-      <div>{{ patient.created_at|date:"d M Y"|default:"-" }}</div>
+      Latest Appointment Date
+      <div>
+        {% if latest_appointment %}
+          {{ latest_appointment.date_time|date:"d M Y" }}
+        {% else %}
+          -
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>

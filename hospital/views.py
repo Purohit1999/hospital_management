@@ -278,8 +278,28 @@ def admin_approve_doctor_view(request):
 # ---------------- PATIENT DASHBOARD ----------------
 @login_required
 def patient_dashboard_view(request):
+    """
+    Patient dashboard:
+    - Shows patient info
+    - Shows latest appointment's doctor & date (if any)
+    - Displays any success messages (e.g., after booking)
+    """
     patient = get_object_or_404(Patient, user=request.user)
-    return render(request, "hospital/patient_dashboard.html", {"patient": patient})
+
+    latest_appointment = (
+        Appointment.objects.filter(patient=patient)
+        .select_related("doctor__user")
+        .order_by("-date_time")
+        .first()
+    )
+    doctor = latest_appointment.doctor if latest_appointment else None
+
+    context = {
+        "patient": patient,
+        "doctor": doctor,
+        "latest_appointment": latest_appointment,
+    }
+    return render(request, "hospital/patient_dashboard.html", context)
 
 
 # ---------------- ADMIN DASHBOARD ----------------
@@ -484,13 +504,11 @@ def admin_discharge_patient_view(request):
 def patient_book_appointment_view(request):
     """
     Patient-facing appointment booking.
-    After successful booking, shows a confirmation message on the same page.
+    After successful booking, redirect to dashboard with a success message.
     """
     patient = Patient.objects.filter(user=request.user).first()
     if not patient:
         return redirect("patient-dashboard")
-
-    message = None  # will hold confirmation text
 
     if request.method == "POST":
         form = AppointmentForm(request.POST)
@@ -501,18 +519,15 @@ def patient_book_appointment_view(request):
             appointment.updated_by = request.user
             appointment.save()
 
-            # Confirmation text for the template
-            message = "Your appointment has been booked successfully."
-
-            # Reset form after successful submission
-            form = AppointmentForm()
+            messages.success(request, "Your appointment has been booked successfully.")
+            return redirect("patient-dashboard")
     else:
         form = AppointmentForm()
 
     return render(
         request,
         "hospital/patient_book_appointment.html",
-        {"form": form, "message": message},
+        {"form": form},
     )
 
 
