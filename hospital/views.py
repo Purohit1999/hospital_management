@@ -32,7 +32,7 @@ from .forms import (
     AppointmentForm,
     PatientUserForm, PatientForm,
     DoctorUserForm, DoctorForm,
-    ContactForm,          # 👈 NEW: contact form import
+    ContactForm,          # 👈 contact form import
 )
 
 
@@ -61,15 +61,8 @@ def contactus_view(request):
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Here you could handle form data (save/send email) if needed:
-            # name = form.cleaned_data["name"]
-            # email = form.cleaned_data["email"]
-            # message = form.cleaned_data["message"]
-
-            # Optional user feedback (if you want a flash message as well)
+            # Optional user feedback
             messages.success(request, "Thank you for your feedback!")
-
-            # Redirect to success page
             return redirect("contact-success")
     else:
         form = ContactForm()
@@ -489,9 +482,15 @@ def admin_discharge_patient_view(request):
 @login_required(login_url="patientlogin")
 @user_passes_test(lambda u: u.groups.filter(name="PATIENT").exists())
 def patient_book_appointment_view(request):
+    """
+    Patient-facing appointment booking.
+    After successful booking, shows a confirmation message on the same page.
+    """
     patient = Patient.objects.filter(user=request.user).first()
     if not patient:
         return redirect("patient-dashboard")
+
+    message = None  # will hold confirmation text
 
     if request.method == "POST":
         form = AppointmentForm(request.POST)
@@ -501,14 +500,19 @@ def patient_book_appointment_view(request):
             appointment.created_by = request.user
             appointment.updated_by = request.user
             appointment.save()
-            return redirect("patient-appointment-list")
+
+            # Confirmation text for the template
+            message = "Your appointment has been booked successfully."
+
+            # Reset form after successful submission
+            form = AppointmentForm()
     else:
         form = AppointmentForm()
 
     return render(
         request,
         "hospital/patient_book_appointment.html",
-        {"form": form},
+        {"form": form, "message": message},
     )
 
 

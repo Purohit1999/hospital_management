@@ -54,15 +54,6 @@
     max-width: 600px;
   }
 
-  footer {
-    text-align: center;
-    padding: 1rem;
-    background-color: #222;
-    color: #fff;
-    font-size: 0.9rem;
-    margin-top: 4rem;
-  }
-
   @media (max-width: 768px) {
     .form-content {
       padding: 2rem;
@@ -75,9 +66,9 @@
 </style>
 
 {% if message %}
-<div class="alert alert-info text-center alert-box" role="alert">
-  {{ message }}
-</div>
+  <div class="alert alert-success text-center alert-box" role="alert">
+    {{ message }}
+  </div>
 {% endif %}
 
 <form method="post">
@@ -112,9 +103,5 @@
     </div>
   </div>
 </form>
-
-<footer>
-  © 2025 | Made in UK
-</footer>
 
 {% endblock content %}
