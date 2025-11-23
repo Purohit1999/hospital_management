@@ -154,9 +154,12 @@ This system aims for a **clean, modern, mobile-responsive** interface using Boot
 You can place your images here like:
 
 ```
+## 🖼 Wireframes
+
 ![Desktop Wireframe](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/desktop.png)
 ![Tablet Wireframe](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/tablet.png)
 ![Mobile Wireframe](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/mobile.png)
+
 ```
 
 ---
