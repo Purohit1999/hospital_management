@@ -45,144 +45,191 @@ This **Hospital Management System** modernizes hospital operations with:
 
 ---
 
-👤 User Stories
+# 👤 **User Stories**
 
-Below are the full user stories embedded in the system.
-Each story focuses on user goals, expected actions, and the value delivered.
+Below are the full user stories built into this system.
+Each story explains the **goal**, the **action**, and the **value delivered** to the user.
 
-🧑‍⚕️ Admin User Stories
+---
 
-As an Admin, I want to:
+# 🧑‍⚕️ **Admin User Stories**
 
-🟢 1. Register or Approve Doctors & Patients
+As an **Admin**, I want to:
 
-Ensure only verified and trusted individuals gain system access so that hospital data remains secure.
-I should be able to:
+---
 
-View all pending registration requests
+### 🟢 **1. Register or Approve Doctors & Patients**
 
-Approve, reject, or delete accounts
+So that only trusted and verified users gain access to the hospital system.
 
-See account status updates instantly
+**I should be able to:**
 
-📝 2. Add & Manage Appointments
+* View all pending registration requests
+* Approve, reject, or delete accounts
+* Ensure secure access to sensitive data
+* See account status updates instantly
 
-Create, approve, reschedule, or cancel patient appointments to maintain an organized schedule and avoid double-booking.
-This includes:
+---
 
-Calendar-based appointment management
+### 📝 **2. Add & Manage Appointments**
 
-Viewing upcoming and previous appointments
+To maintain an organized schedule and prevent double-booking.
 
-Automatic conflict prevention
+**This includes:**
 
-🔍 3. View & Update Doctor/Patient Records
+* Creating new appointments
+* Approving or denying appointment requests
+* Rescheduling or cancelling bookings
+* Viewing all appointments in date order
 
-Quickly access, edit, or remove user data to maintain accuracy across the hospital system.
-Admins should be able to:
+---
 
-Search by name, mobile, or symptoms
+### 🔍 **3. View & Update Doctor/Patient Records**
 
-Edit contact details or role data
+So that hospital data remains accurate and up to date.
 
-Delete outdated or duplicate records safely
+**I should be able to:**
 
-🧾 4. Generate Bills & Discharge Summaries
+* Search for users
+* Edit or delete records
+* Update profile information
+* View medical or administrative details
 
-Produce complete billing reports and discharge documents that patients can download or print.
-This includes:
+---
 
-Calculating room charges, doctor fees, medicine cost
+### 🧾 **4. Generate Bills & Discharge Summaries**
 
-Auto-calculating length of stay
+To ensure smooth billing workflows and accurate documentation.
 
-Providing PDF-style final invoices
+**I can:**
 
-📊 5. Access the Admin Dashboard
+* Generate final invoices
+* Add doctor fees, room charges, medicine fees
+* Download discharge summaries
+* Store records for future reference
 
-Get a real-time overview of hospital operations:
+---
 
-Total doctors, patients, appointments
+### 📊 **5. Access the Admin Dashboard**
 
-Pending approvals
+So that I can monitor overall hospital activity.
 
-New activity since the last login
+**Dashboard shows:**
 
-🔒 6. Enforce Role-Based Access
+* Pending approvals
+* Total appointments
+* Total patients and doctors
+* Latest system activity
 
-Ensure system security by restricting sensitive sections to authorised users only.
-Admins must:
+---
 
-Have full CRUD access
+### 🔒 **6. Enforce Role-Based Authentication**
 
-Ensure Doctors/Patients can access only relevant data
+To ensure that restricted pages are only accessed by authorized roles.
 
-Reduce risk of unauthorized data exposure
+---
 
-🩺 Doctor User Stories
+# 🩺 **Doctor User Stories**
 
-As a Doctor, I want to:
+As a **Doctor**, I want to:
 
-📅 1. View My Appointments
+---
 
-See upcoming appointments sorted by patient name or date so I can prepare for consultations effectively.
+### 📅 **1. View My Appointments**
 
-👨‍⚕️ 2. Access Assigned Patients
+To quickly understand the daily schedule and patient list.
 
-View complete patient profiles (symptoms, previous visits, discharge history) to make informed clinical decisions.
+**I can:**
 
-💊 3. Issue Prescriptions
+* View appointments assigned to me
+* Sort by date and time
+* Check patient names, symptoms, and notes
 
-Write treatment plans and medication instructions that patients can view or download from their dashboard.
+---
 
-🗂 4. View Past Discharge Summaries
+### 👨‍⚕️ **2. Access Assigned Patients**
 
-Understand patient history to avoid repeating treatment or missing important medical data.
+To prepare for consultations.
 
-🛡 5. Access Only My Patients
+**I can:**
 
-Maintain confidentiality by ensuring that each doctor can only view patients assigned to them.
+* View patient details and medical history
+* Access submitted symptoms and prior treatments
+* See profile images for easy identification
 
-🧑‍🦽 Patient User Stories
+---
 
-As a Patient, I want to:
+### 💊 **3. Issue Prescriptions**
 
-🧾 1. Register Easily
+To provide correct treatment.
 
-Provide my personal and medical details so I can receive medical care and access hospital services.
+**I can:**
 
-📅 2. Book Appointments
+* Add medication names
+* Add dosage & timings
+* Create downloadable notes for patients
 
-Choose a doctor, preferred date, and reason for visit.
-I should receive confirmation and see the appointment in my dashboard.
+---
 
-🔎 3. View Appointment History
+### 🗂 **4. View Past Discharge Summaries**
 
-Track all past and upcoming appointments, including:
+To understand patient history for future visits.
 
-Booking status
+---
 
-Doctor’s name
+### 🛡 **5. Access Only My Patients**
 
-Date & time
+To maintain confidentiality and privacy.
 
-Any related discharge details
+---
 
-📄 4. Access Billing & Discharge Information
+# 🧑‍🦽 **Patient User Stories**
 
-Download or view my final bill and discharge summary after treatment.
+As a **Patient**, I want to:
 
-💬 5. Send Feedback or Queries
+---
 
-Use the contact form to submit feedback or request additional help.
+### 🧾 **1. Register Easily**
 
-### 📄 4. Access Billing & Discharge Reports
+So that I can securely access the system.
 
-Download invoices securely.
+**I provide:**
 
-### 💬 5. Provide Feedback
+* Basic personal details
+* Contact information
+* Symptoms
+* Optional profile photo
 
-Optional rating and comments.
+---
+
+### 📅 **2. Book Appointments**
+
+To receive timely medical assistance.
+
+**I can:**
+
+* Choose a doctor
+* Select appointment date
+* Get confirmation instantly
+
+---
+
+### 🔎 **3. View Appointment History**
+
+To keep track of all past and upcoming medical visits.
+
+---
+
+### 📄 **4. View Billing & Discharge Information**
+
+To download and review all medical charges.
+
+---
+
+### 💬 **5. Send Feedback / Contact Form**
+
+To reach out to the hospital for help or suggestions.
+
 
 ---
 
