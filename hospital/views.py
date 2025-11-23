@@ -231,6 +231,29 @@ def doctor_login_view(request):
     return render(request, "hospital/doctorlogin.html", {"form": form})
 
 
+def patient_login_view(request):
+    """Render the patient login page."""
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(request, username=username, password=password)
+            if user and is_patient(user):
+                login(request, user)
+                return redirect("patient-dashboard")
+            messages.error(
+                request,
+                "Access denied: Please log in using a patient account.",
+            )
+        else:
+            messages.error(request, "Invalid credentials. Please try again.")
+    else:
+        form = AuthenticationForm()
+
+    return render(request, "hospital/patient_login.html", {"form": form})
+
+
 # ---------------- DOCTOR DASHBOARD ----------------
 @login_required(login_url="doctorlogin")
 @user_passes_test(is_doctor)

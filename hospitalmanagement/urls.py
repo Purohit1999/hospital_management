@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LogoutView
 from hospital import views, views_stripe_test
 
 urlpatterns = [
@@ -30,7 +30,7 @@ urlpatterns = [
     path('doctorlogin/', views.doctor_login_view, name='doctorlogin'),
     path(
         'patientlogin/',
-        LoginView.as_view(template_name='hospital/patientlogin.html'),
+        views.patient_login_view,
         name='patientlogin'
     ),
 
