@@ -149,11 +149,19 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = MEDIA_DIR
 
-# WhiteNoise storage
+# Django 4.2+ storage settings
 STORAGES = {
+    # Default storage for uploaded files (profile pictures, etc.)
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": MEDIA_ROOT,
+        },
+    },
+    # Storage for static files (served via WhiteNoise on Heroku)
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    }
+    },
 }
 
 # ─────────────────────────────────────────────
