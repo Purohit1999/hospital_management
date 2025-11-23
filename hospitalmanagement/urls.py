@@ -49,16 +49,22 @@ urlpatterns = [
     path('doctor-view-patient/', views.doctor_view_patient_view, name='doctor-view-patient'),
     path('doctor-view-appointment/', views.doctor_view_appointment_view, name='doctor-view-appointment'),
     path('doctor-search-patient/', views.doctor_search_patient_view, name='doctor-search-patient'),
-    path('doctor-view-discharge-patient/', views.doctor_view_discharge_patient_view,
-         name='doctor-view-discharge-patient'),
+    path(
+        'doctor-view-discharge-patient/',
+        views.doctor_view_discharge_patient_view,
+        name='doctor-view-discharge-patient'
+    ),
 
     # Admin - Doctor Management
     path('admin-doctor/', views.admin_doctor_view, name='admin-doctor'),
     path('admin-view-doctor/', views.admin_view_doctor_view, name='admin-view-doctor'),
     path('admin-add-doctor/', views.admin_add_doctor_view, name='admin-add-doctor'),
     path('admin-approve-doctor/', views.admin_approve_doctor_view, name='admin-approve-doctor'),
-    path('admin-view-doctor-specialisation/', views.admin_view_doctor_specialisation,
-         name='admin-view-doctor-specialisation'),
+    path(
+        'admin-view-doctor-specialisation/',
+        views.admin_view_doctor_specialisation,
+        name='admin-view-doctor-specialisation'
+    ),
 
     path('approve-doctor/<int:pk>/', views.approve_doctor_view, name='approve-doctor'),
     path('reject-doctor/<int:pk>/', views.reject_doctor_view, name='reject-doctor'),
@@ -77,8 +83,11 @@ urlpatterns = [
     path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),
 
     # Patient discharge & billing
-    path('patient/discharge-summary/', views.patient_discharge_summary_view,
-         name='patient-discharge-summary'),
+    path(
+        'patient/discharge-summary/',
+        views.patient_discharge_summary_view,
+        name='patient-discharge-summary'
+    ),
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
     path('generate-bill/<int:pk>/', views.generate_patient_bill_view, name='generate-bill'),
 
@@ -86,23 +95,35 @@ urlpatterns = [
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
     path('admin-view-appointment/', views.admin_view_appointment, name='admin-view-appointment'),
     path('admin-add-appointment/', views.admin_add_appointment_view, name='admin-add-appointment'),
-    path('admin-approve-appointment/', views.admin_approve_appointment_view,
-         name='admin-approve-appointment'),
-    path('admin-discharge-patient/', views.admin_discharge_patient_view,
-         name='admin-discharge-patient'),
+    path(
+        'admin-approve-appointment/',
+        views.admin_approve_appointment_view,
+        name='admin-approve-appointment'
+    ),
+    path(
+        'admin-discharge-patient/',
+        views.admin_discharge_patient_view,
+        name='admin-discharge-patient'
+    ),
 
     # Public/Patient Appointment Views
     path('appointments/', views.list_appointments, name='appointments'),
     path('appointments/<int:pk>/', views.appointment_detail, name='appointment_detail'),
-    path('patient-book-appointment/', views.patient_book_appointment_view,
-         name='patient-book-appointment'),
-    path('patient-appointments/', views.patient_appointment_list_view,
-         name='patient-appointment-list'),
+    path(
+        'patient-book-appointment/',
+        views.patient_book_appointment_view,
+        name='patient-book-appointment'
+    ),
+    path(
+        'patient-appointments/',
+        views.patient_appointment_list_view,
+        name='patient-appointment-list'
+    ),
+
+    # 🔹 Stripe test endpoint
+    path('stripe-test/', views_stripe_test.stripe_keys_test, name='stripe-test'),
 ]
 
 # Serve media files during development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-    path('stripe-test/', views_stripe_test.stripe_keys_test, name='stripe-test'),
