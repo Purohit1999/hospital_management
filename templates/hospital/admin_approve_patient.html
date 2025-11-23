@@ -1,6 +1,7 @@
 {% extends 'hospital/admin_base.html' %}
 {% load static %}
-{% block content %}
+
+{% block extra_css %}
 <style>
   a:link {
     text-decoration: none;
@@ -60,6 +61,9 @@
     background-color: #f8f9fa;
   }
 </style>
+{% endblock %}
+
+{% block content %}
 
 <div class="container">
   <div class="panel">
