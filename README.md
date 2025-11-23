@@ -108,3 +108,10 @@ Rate experience and provide optional comments for improvement.
 ## 🧭 Data Flow Diagram
 
 ![Data Flow](https://github.com/Purohit1999/hospital_management/blob/main/static/images/data_flow.png?raw=true)
+### Stripe Keys on Heroku
+1. Open Heroku dashboard ? Your App ? Settings.
+2. Click "Reveal Config Vars".
+3. Add entries:
+   - STRIPE_PUBLISHABLE_KEY = pk_test_...
+   - STRIPE_SECRET_KEY = sk_test_...
+4. Save changes so dynos inherit the keys.
