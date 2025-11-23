@@ -1,6 +1,7 @@
 {% extends 'hospital/admin_base.html' %}
 {% load static %}
-{% block content %}
+
+{% block extra_css %}
 <style>
   .section-title {
     background: linear-gradient(to right, #0072ff, #8811c5);
@@ -39,6 +40,9 @@
     background-color: #f9f9f9;
   }
 </style>
+{% endblock %}
+
+{% block content %}
 
 <div class="container">
   <div class="card-box">
