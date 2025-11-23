@@ -16,6 +16,7 @@
   <!-- Project CSS -->
   <link rel="stylesheet" href="{% static 'style.css' %}">
   <link rel="stylesheet" href="{% static 'hospital/css/styles.css' %}">
+  {% block extra_css %}{% endblock %}
 
   <style>
     html,
@@ -142,7 +143,7 @@
           <li class="nav-item">
             <form method="post" action="{% url 'logout' %}" style="display:inline;">
               {% csrf_token %}
-              <button type="submit" class="nav-link btn btn-link" style="color: white; padding: 0;">Logout</button>
+  <button type="submit" class="nav-link btn btn-link" style="color: white; padding: 0;">Logout</button>
             </form>
           </li>
         </ul>
