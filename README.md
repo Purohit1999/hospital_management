@@ -474,18 +474,49 @@ Set config vars for:
 * ALLOWED_HOSTS
 
 ---
+# 📁 File Structure
 
-# 📁 **File Structure**
-
-
+```text
 hospital_management/
-│
 ├── hospital/
+│   ├── models.py
+│   ├── forms.py
+│   ├── views.py
+│   ├── urls.py
+│   └── templates/
+│       └── hospital/
+│
 ├── payments/
+│   ├── models.py
+│   ├── views.py
+│   └── templates/
+│       └── payments/
+│
 ├── static/
+│   ├── css/
+│   ├── js/
+│   └── images/
+│       ├── responsive.png
+│       ├── desktop.png
+│       ├── tablet.png
+│       ├── mobile.png
+│       ├── html_validate.png
+│       ├── css_valid.png
+│       ├── js_valid.png
+│       ├── python_PEP8_valid.png
+│       ├── lighthouse_desk.jpg
+│       └── lighthouse_mob.jpg
+│
 ├── templates/
+│   └── base.html
+│
 ├── manage.py
+│
 └── hospitalmanagement/
+    ├── settings.py
+    ├── urls.py
+    └── wsgi.py
+```
 
 
 ---
