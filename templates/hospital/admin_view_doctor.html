@@ -62,26 +62,26 @@
           </tr>
         </thead>
         <tbody>
-          {% for d in doctors %}
+          {% for doctor in doctors %}
           <tr>
-            <td>{{ d.user.get_full_name|default:d.user.username }}</td>
+            <td>{{ doctor.user.get_full_name|default:doctor.user.username }}</td>
             <td>
-              {% if d.profile_pic %}
-                <img src="{{ d.profile_pic.url }}" alt="Profile" class="profile-pic">
+              {% if doctor.profile_pic %}
+                <img src="{{ doctor.profile_pic.url }}" alt="Profile" class="profile-pic">
               {% else %}
                 <img src="{% static 'images/doctor.png' %}" alt="Default" class="profile-pic">
               {% endif %}
             </td>
-            <td>{{ d.mobile }}</td>
-            <td>{{ d.address }}</td>
-            <td>{{ d.department }}</td>
+            <td>{{ doctor.mobile }}</td>
+            <td>{{ doctor.address }}</td>
+            <td>{{ doctor.department }}</td>
             <td>
-              <a class="btn btn-sm btn-info" href="{% url 'edit-doctor' d.id %}" title="Edit">
+              <a class="btn btn-sm btn-info" href="{% url 'edit-doctor' doctor.id %}" title="Edit">
                 <i class="fa fa-pencil"></i> Edit
               </a>
             </td>
             <td>
-              <a class="btn btn-sm btn-danger" href="{% url 'delete-doctor-from-hospital' d.id %}" title="Delete"
+              <a class="btn btn-sm btn-danger" href="{% url 'delete-doctor-from-hospital' doctor.id %}" title="Delete"
                  onclick="return confirm('Are you sure you want to delete this doctor?');">
                 <i class="fa fa-trash"></i> Delete
               </a>

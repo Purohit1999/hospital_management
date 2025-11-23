@@ -107,16 +107,16 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for d in recent_doctors %}
+                  {% for doctor in recent_doctors %}
                   <tr>
-                    <td>{{ d.user.get_full_name|default:d.user.username }}</td>
-                    <td>{{ d.department }}</td>
-                    <td>{{ d.mobile }}</td>
+                    <td>{{ doctor.user.get_full_name|default:doctor.user.username }}</td>
+                    <td>{{ doctor.department }}</td>
+                    <td>{{ doctor.mobile }}</td>
                     <td>
-                      {% if d.status %}
+                      {% if doctor.status %}
                         <span class="badge badge-success">Approved</span>
                       {% else %}
-                        <a href="{% url 'approve-doctor' d.id %}" class="btn btn-sm btn-warning">
+                        <a href="{% url 'approve-doctor' doctor.id %}" class="btn btn-sm btn-warning">
                           Approve
                         </a>
                       {% endif %}
@@ -156,14 +156,14 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for p in recent_patients %}
+                  {% for patient in recent_patients %}
                   <tr>
-                    <td>{{ p.user.get_full_name|default:p.user.username }}</td>
-                    <td>{{ p.symptoms }}</td>
-                    <td>{{ p.mobile }}</td>
-                    <td>{{ p.address }}</td>
+                    <td>{{ patient.user.get_full_name|default:patient.user.username }}</td>
+                    <td>{{ patient.symptoms }}</td>
+                    <td>{{ patient.mobile }}</td>
+                    <td>{{ patient.address }}</td>
                     <td>
-                      {% if p.dischargedetails %}
+                      {% if patient.dischargedetails %}
                         <span class="badge badge-secondary">Discharged</span>
                       {% else %}
                         <span class="badge badge-success">Admitted</span>
@@ -171,16 +171,16 @@
                     </td>
                     <td>
                       <div class="d-flex flex-wrap">
-                        <a href="{% url 'edit-patient' p.id %}"
+                        <a href="{% url 'edit-patient' patient.id %}"
                            class="btn btn-sm btn-primary mr-1 mb-1">
                           Edit
                         </a>
-                        <a href="{% url 'delete-patient' p.id %}"
+                        <a href="{% url 'delete-patient' patient.id %}"
                            class="btn btn-sm btn-danger mr-1 mb-1">
                           Delete
                         </a>
-                        {% if not p.dischargedetails %}
-                          <a href="{% url 'discharge-patient' p.id %}"
+                        {% if not patient.dischargedetails %}
+                          <a href="{% url 'discharge-patient' patient.id %}"
                              class="btn btn-sm btn-warning mb-1">
                             Discharge
                           </a>

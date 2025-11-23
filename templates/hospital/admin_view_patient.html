@@ -74,31 +74,31 @@
           </tr>
         </thead>
         <tbody>
-          {% for p in patients %}
+          {% for patient in patients %}
           <tr>
-            <td>{{ p.user.get_full_name|default:p.user.username }}</td>
+            <td>{{ patient.user.get_full_name|default:patient.user.username }}</td>
             <td>
-              {% if p.profile_pic %}
-                <img src="{{ p.profile_pic.url }}" alt="Profile" class="profile-pic">
+              {% if patient.profile_pic %}
+                <img src="{{ patient.profile_pic.url }}" alt="Profile" class="profile-pic">
               {% else %}
                 <img src="{% static 'images/default_avatar.png' %}" alt="No Pic" class="profile-pic">
               {% endif %}
             </td>
-            <td>{{ p.symptoms }}</td>
-            <td>{{ p.mobile }}</td>
-            <td>{{ p.address }}</td>
+            <td>{{ patient.symptoms }}</td>
+            <td>{{ patient.mobile }}</td>
+            <td>{{ patient.address }}</td>
             <td>
-              <a class="btn btn-info btn-sm" href="{% url 'edit-patient' p.id %}" title="Edit">
+              <a class="btn btn-info btn-sm" href="{% url 'edit-patient' patient.id %}" title="Edit">
                 <i class="fas fa-edit"></i>
               </a>
             </td>
             <td>
-              <a class="btn btn-danger btn-sm" href="{% url 'delete-patient' p.id %}" title="Delete">
+              <a class="btn btn-danger btn-sm" href="{% url 'delete-patient' patient.id %}" title="Delete">
                 <i class="fas fa-trash-alt"></i>
               </a>
             </td>
             <td>
-              <a class="btn btn-warning btn-sm" href="{% url 'discharge-patient' pk=p.id %}" title="Discharge Patient">
+              <a class="btn btn-warning btn-sm" href="{% url 'discharge-patient' pk=patient.id %}" title="Discharge Patient">
                 <i class="fas fa-sign-out-alt"></i>
               </a>
             </td>
