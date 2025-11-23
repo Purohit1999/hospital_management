@@ -359,6 +359,99 @@ Below is the full validation section you requested, including images stored in G
 
 ---
 
+# 🐞 Debugging & Issue Resolution
+
+This project went through several rounds of debugging and validation to ensure that the **HTML**, **CSS**, **JavaScript**, and **Python** code are clean, standards-compliant, and production-ready.  
+Below is a summary of the main issues encountered and how they were fixed.
+
+---
+
+## 1️⃣ HTML Validation (W3C Nu Validator)
+
+**Tool:** W3C HTML Validator (https://validator.w3.org/)  
+**Screenshot:**  
+![HTML Validation](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/html_validate.png)
+
+### Initial Issues
+
+| Problem | Details |
+| ------ | ------- |
+| Trailing slash on void elements | Validator reported that a `<link>` tag had a trailing `/` and highlighted that this can cause issues with unquoted attributes. |
+| `<style>` inside `<main>` | A `<style>` tag had been placed inside a `<main>` element, causing the error: **"Element `style` not allowed as child of element `main` in this context."** |
+
+### Fixes Applied
+
+- Removed unnecessary trailing `/` from affected void elements where required.
+- Moved all inline `<style>` blocks from page content sections (e.g. inside `<main>`) into the base templates’ `<head>` section.
+- Re-ran the validator until **no HTML errors** were reported.
+
+---
+
+## 2️⃣ CSS Validation (W3C Jigsaw)
+
+**Tool:** W3C CSS Validator (https://jigsaw.w3.org/css-validator/)  
+**Screenshot:**  
+![CSS Validation](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/css_valid.png)
+
+### Initial Issues
+
+| Problem | Details |
+| ------ | ------- |
+| `style.css` not found | When validating via the live Heroku URL, the validator returned a `java.lang.Exception` because it could not fetch `/static/css/style.css`. |
+| Vendor-specific warnings | External CSS from **Bootstrap 5.3.2** and **Font Awesome 6.5.2** generated many warnings about vendor prefixes (`-webkit-`, `-moz-`, `-o-`) and deprecated properties such as `clip`. |
+
+### Fixes Applied
+
+- Downloaded `static/style.css` locally and uploaded it directly to the validator instead of validating via the dynamic Heroku path.
+- Cleaned up custom CSS where possible, keeping only necessary rules.
+- Accepted vendor-prefixed rules and deprecation warnings coming from **third-party CDN stylesheets** (Bootstrap & Font Awesome). These are external dependencies and are **not modified** in this project.
+
+The final validation of the **project’s own CSS** passes without critical errors.
+
+---
+
+## 3️⃣ JavaScript Validation (JSHint)
+
+**Tool:** JSHint (https://jshint.com/)  
+**Screenshot:**  
+![JavaScript Validation](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/js_valid.png)
+
+### Initial Warnings
+
+JSHint reported that:
+
+- `arrow function syntax (=>) is only available in ES6`
+- `const is available in ES6 (use 'esversion: 6')`
+
+These warnings were related to modern syntax used in the script:
+
+```js
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll(".card");
+  cards.forEach((card, index) => {
+    setTimeout(() => card.classList.add("card-visible"), index * 100);
+  });
+
+  const scrollBtn = document.getElementById("scrollTopBtn");
+  if (!scrollBtn) return;
+
+  const toggleScrollBtn = () => {
+    if (window.pageYOffset > 200) {
+      scrollBtn.classList.add("show");
+    } else {
+      scrollBtn.classList.remove("show");
+    }
+  };
+
+  window.addEventListener("scroll", toggleScrollBtn);
+  toggleScrollBtn();
+
+  scrollBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+---
+
 # 🚀 **Deployment Guide (Heroku)**
 
 Steps include:
