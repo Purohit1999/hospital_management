@@ -1,6 +1,7 @@
 {% extends 'hospital/admin_base.html' %}
 {% load static %}
-{% block content %}
+
+{% block extra_css %}
 <style>
   a:link {
     text-decoration: none;
@@ -61,6 +62,9 @@
     margin-bottom: 40px;
   }
 </style>
+{% endblock %}
+
+{% block content %}
 
 <!-- Doctor Approval Panel -->
 <div class="container">
