@@ -90,7 +90,7 @@
     .main-body {
       margin-left: 240px;
       padding: 90px 15px 40px; /* space for fixed navbar + bottom padding */
-      min-height: calc(100vh - 80px); /* leave room so footer isn't cramped */
+      min-height: calc(100vh - 80px);
     }
 
     /* Small-screen tweak: stack sidebar above (optional, can be improved later) */
@@ -153,9 +153,6 @@
     <div class="main-body">
       {% block content %}{% endblock content %}
     </div>
-
   </main>
-
-  {% include "hospital/footer.html" %}
 </body>
 </html>
