@@ -159,3 +159,4 @@ cython_debug/
 
 # Abstra (automation tool)
 .abstra/
+static/images/responsive.png 
