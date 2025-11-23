@@ -19,8 +19,9 @@ MEDIA_DIR = BASE_DIR / "media"
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
-# Use environment variable to control DEBUG (True locally, False on Heroku)
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+# Use environment variable to control DEBUG
+# Default = True for local dev. On Heroku set DEBUG=false in Config Vars.
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 # ✔ ALLOWED_HOSTS — LOCAL + HEROKU APPS
 ALLOWED_HOSTS = [
@@ -50,11 +51,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # Third-party
     "widget_tweaks",
+
     # Local apps
     "hospital",
-    "payments",
+    "payments",  # Stripe / payments app
 ]
 
 # ─────────────────────────────────────────────
@@ -182,17 +185,25 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "from@gmail.com"  # replace when needed
-EMAIL_HOST_PASSWORD = "your_app_password"  # replace with Gmail App Password
+EMAIL_HOST_USER = "from@gmail.com"          # TODO: replace for real use
+EMAIL_HOST_PASSWORD = "your_app_password"   # TODO: use env var in production
 EMAIL_RECEIVING_USER = ["to@gmail.com"]
 
-STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+# ─────────────────────────────────────────────
+# STRIPE SETTINGS
+# ─────────────────────────────────────────────
+
+# Read from environment; default to empty strings so code doesn't crash
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_CURRENCY = "gbp"
+
+# Configure Stripe SDK only if we actually have a key
+if STRIPE_SECRET_KEY:
+    stripe.api_key = STRIPE_SECRET_KEY
 
 # ─────────────────────────────────────────────
 # DEFAULT FIELD TYPE
 # ─────────────────────────────────────────────
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
