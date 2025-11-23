@@ -2,8 +2,10 @@
 # 🏥 **Hospital Management System — Full Stack Django Application**
 
 <p align="center">
-  <img src="static/images/responsive.png.png" alt="Hospital Management System Screenshot" width="900">
+  <img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/responsive.png" 
+       alt="Hospital Management System Screenshot" width="900">
 </p>
+
 
 A comprehensive **Hospital Management System** built with **Django**, **Stripe Payments**, **Bootstrap**, **JavaScript**, and a **relational database** (SQLite locally, PostgreSQL on Heroku).
 This platform enables **Admins**, **Doctors**, and **Patients** to securely interact with hospital workflows such as appointments, patient records, doctor management, billing, discharge summaries, and online payments.
