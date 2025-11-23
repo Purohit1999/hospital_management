@@ -20,7 +20,7 @@ MEDIA_DIR = BASE_DIR / "media"
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
 # Use environment variable to control DEBUG (True locally, False on Heroku)
-DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # ✔ ALLOWED_HOSTS — LOCAL + HEROKU APPS
 ALLOWED_HOSTS = [
@@ -186,8 +186,13 @@ EMAIL_HOST_USER = "from@gmail.com"  # replace when needed
 EMAIL_HOST_PASSWORD = "your_app_password"  # replace with Gmail App Password
 EMAIL_RECEIVING_USER = ["to@gmail.com"]
 
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_CURRENCY = "gbp"
+
 # ─────────────────────────────────────────────
 # DEFAULT FIELD TYPE
 # ─────────────────────────────────────────────
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
