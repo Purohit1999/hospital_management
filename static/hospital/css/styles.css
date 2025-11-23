@@ -28,16 +28,19 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background-color: #1877f2;
-    color: #fff;
+    color: #ffffff;
     text-decoration: none;
-    font-size: 0.8rem;
+}
+.site-footer .footer-social a i {
+    font-size: 0.75rem;
+    line-height: 1;
 }
 .site-footer .footer-social a:hover {
-    opacity: 0.85;
+    opacity: 0.9;
 }
 @media (min-width: 768px) {
     .site-footer .footer-content {
