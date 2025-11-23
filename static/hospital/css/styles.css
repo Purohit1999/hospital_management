@@ -8,10 +8,10 @@
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     text-align: center;
 }
 .site-footer .footer-text {
@@ -28,22 +28,18 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background-color: #1877f2;
-    color: #ffffff;
     text-decoration: none;
 }
 .site-footer .footer-social a i {
-    font-size: 0.75rem;
+    font-size: 0.9rem;
+    color: #ffffff;
     line-height: 1;
+    font-family: "Font Awesome 6 Brands", "Font Awesome 6 Free", sans-serif !important;
 }
 .site-footer .footer-social a:hover {
-    opacity: 0.9;
-}
-@media (min-width: 768px) {
-    .site-footer .footer-content {
-        flex-direction: row;
-    }
+    opacity: 0.85;
 }
