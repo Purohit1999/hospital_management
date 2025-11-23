@@ -40,6 +40,11 @@ CSRF_TRUSTED_ORIGINS = [
 # ✔ Needed for Heroku reverse proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# ⚠️ TEMP: Allow embedding in iframes so tools like "Am I Responsive" work.
+# Remove these two lines after taking screenshots, to restore clickjacking protection.
+X_FRAME_OPTIONS = "ALLOWALL"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
 # ─────────────────────────────────────────────
 # APPLICATIONS
 # ─────────────────────────────────────────────
