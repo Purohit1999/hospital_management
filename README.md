@@ -2,7 +2,7 @@
 # 🏥 **Hospital Management System — Full Stack Django Application**
 
 <p align="center">
-  <img src="static/images/admin.png" alt="Hospital Management System Screenshot" width="900">
+  <img src="static/images/responsive.png.png" alt="Hospital Management System Screenshot" width="900">
 </p>
 
 A comprehensive **Hospital Management System** built with **Django**, **Stripe Payments**, **Bootstrap**, **JavaScript**, and a **relational database** (SQLite locally, PostgreSQL on Heroku).
