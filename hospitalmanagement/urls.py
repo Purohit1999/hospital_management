@@ -3,7 +3,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LoginView, LogoutView
-from hospital import views
+from hospital import views, views_stripe_test
 
 urlpatterns = [
     # Admin site
@@ -103,3 +103,6 @@ urlpatterns = [
 # Serve media files during development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+    path('stripe-test/', views_stripe_test.stripe_keys_test, name='stripe-test'),
