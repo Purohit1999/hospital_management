@@ -409,10 +409,8 @@ Run using Chrome DevTools → Lighthouse Panel.
 
 ## 📷 **Lighthouse Screenshots (Add later)**
 
-```markdown
-![Lighthouse Report Mobile](static/images/lighthouse_mobile.png)
-![Lighthouse Report Desktop](static/images/lighthouse_desktop.png)
-```
+![Lighthouse Desktop](static/images/lighthouse_desk.jpg)
+![Lighthouse Mobile](static/images/lighthouse_mob.jpg)
 
 ---
 
