@@ -1,3 +1,4 @@
+---
 
 # 🏥 **Hospital Management System — Full Stack Django Application**
 
@@ -6,13 +7,12 @@
        alt="Hospital Management System Screenshot" width="900">
 </p>
 
-
 A comprehensive **Hospital Management System** built with **Django**, **Stripe Payments**, **Bootstrap**, **JavaScript**, and a **relational database** (SQLite locally, PostgreSQL on Heroku).
-This platform enables **Admins**, **Doctors**, and **Patients** to securely interact with hospital workflows such as appointments, patient records, doctor management, billing, discharge summaries, and online payments.
+This platform enables **Admins**, **Doctors**, and **Patients** to securely manage appointments, records, billing, discharge summaries, and online payments.
 
 ---
 
-## 📖 **Table of Contents**
+# 📖 **Table of Contents**
 
 1. [📌 Project Overview](#-project-overview)
 2. [👤 User Stories](#-user-stories)
@@ -33,25 +33,22 @@ This platform enables **Admins**, **Doctors**, and **Patients** to securely inte
 
 # 📌 **Project Overview**
 
-The **Hospital Management System** is a full-featured web application designed to modernize hospital operations by offering:
+This **Hospital Management System** modernizes hospital operations with:
 
-✔ Role-based user access (Admin, Doctor, Patient)
-✔ Appointment scheduling and management
-✔ Doctor & patient onboarding with profile management
-✔ Discharge summaries + billing
-✔ Stripe-powered payments
-✔ Interactive dashboards
-✔ Fully responsive UI
-✔ Relational database with well-designed models
-✔ Django admin default CMS for backend supervision
-
-The goal is to provide a seamless digital environment for hospital administration while fulfilling full-stack academic project requirements.
+✔ Multi-role access: Admin, Doctor, Patient
+✔ Appointment booking + management
+✔ Doctor & patient onboarding
+✔ Discharge summary & billing generator
+✔ Stripe-powered online payment system
+✔ Mobile-first responsive UI
+✔ Django ORM + secure authentication
+✔ Comprehensive validations & Lighthouse testing
 
 ---
 
 # 👤 **User Stories**
 
-This section highlights what **Admins**, **Doctors**, and **Patients** can do.
+Below are the full user stories embedded in the system.
 
 ---
 
@@ -61,27 +58,27 @@ As an **Admin**, I want to:
 
 ### 🟢 1. Register or Approve Doctors & Patients
 
-So that only verified users have access to the system.
+Ensure only verified users gain access.
 
 ### 📝 2. Add & Manage Appointments
 
-Create, approve, or cancel appointments with proper validation.
+Create, approve, or cancel bookings.
 
 ### 🔍 3. View & Update Doctor/Patient Records
 
-Edit or delete entries with error messages and confirmations.
+Search, edit, and delete data securely.
 
-### 🧾 4. Generate Bills and Discharge Summaries
+### 🧾 4. Generate Bills & Discharge Summaries
 
-Produce PDF-style templates with medicine cost, doctor fees, room charges, etc.
+Create downloadable invoices and discharge PDFs.
 
-### 📊 5. Access Admin Dashboard
+### 📊 5. Access the Admin Dashboard
 
-See latest hospital activity, new registrations, and pending approvals.
+Overview of hospital metrics and pending actions.
 
 ### 🔒 6. Enforce Role-Based Access
 
-Sensitive info must only be visible to authorized roles.
+Sensitive pages are restricted appropriately.
 
 ---
 
@@ -89,25 +86,25 @@ Sensitive info must only be visible to authorized roles.
 
 As a **Doctor**, I want to:
 
-### 📅 1. View All My Appointments
+### 📅 1. View My Appointments
 
-Sorted by date and patient.
+Sorted by patient and date.
 
 ### 👨‍⚕️ 2. Access Assigned Patients
 
-View symptoms, personal details, and profile photo.
+See symptoms, personal info, and medical history.
 
 ### 💊 3. Issue Prescriptions
 
-Add medication instructions and downloadable notes.
+Provide instructions & treatment plans.
 
-### 🗂 4. Review Past Discharge Records
+### 🗂 4. View Past Discharge Summaries
 
-To understand historical medical cases.
+Inform decisions for re-visiting patients.
 
-### 🛡 5. See Only My Assigned Patients
+### 🛡 5. Access Only My Patients
 
-To maintain privacy and data protection.
+Protect privacy.
 
 ---
 
@@ -117,48 +114,50 @@ As a **Patient**, I want to:
 
 ### 🧾 1. Register Easily
 
-Provide personal info, contact number, symptoms, and photo.
+Submit personal + medical details.
 
 ### 📅 2. Book Appointments
 
-Choose a doctor → set a date → receive confirmation.
+Select preferred doctor & date.
 
-### 🔎 3. Review Appointment History
+### 🔎 3. View Appointment History
 
-Access upcoming and past appointments.
+Track status & results.
 
-### 📄 4. View Billing & Discharge Info
+### 📄 4. Access Billing & Discharge Reports
 
-Download discharge reports securely.
+Download invoices securely.
 
-### 💬 5. Give Feedback
+### 💬 5. Provide Feedback
 
-Optionally rate or comment on services.
+Optional rating and comments.
 
 ---
 
 # 🎨 **UX / UI Design**
 
-This system aims for a **clean, modern, mobile-responsive** interface using Bootstrap 4+ and custom CSS.
+### UX Goals
 
-### **UX Goals**
+✔ Accessible
+✔ Clean & modern
+✔ Mobile responsive
+✔ Easy navigation
 
-* Simple navigation
-* Clear visual hierarchy
-* Easy access to essential hospital functions
-* Role-specific dashboards
-* Optimized for both desktop and mobile
+---
 
-### 🖥️ **Wireframes (To Be Added Later)**
+## 🖼 **Wireframes (GitHub Hosted)**
 
-You can place your images here like:
-
-## 🖼 Wireframes
+### 🖥 Desktop
 
 ![Desktop Wireframe](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/desktop.png)
-![Tablet Wireframe](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/tablet.png)
-![Mobile Wireframe](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/mobile.png)
 
+### 📱 Tablet
+
+![Tablet Wireframe](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/tablet.png)
+
+### 📲 Mobile
+
+![Mobile Wireframe](https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/mobile.png)
 
 ---
 
@@ -167,305 +166,218 @@ You can place your images here like:
 ### **Frontend**
 
 * HTML5
-* CSS3 + Bootstrap
-* JavaScript (custom scripts for validation & interactivity)
+* CSS3 / Bootstrap
+* JavaScript
 
 ### **Backend**
 
-* Django 4+
-* Python 3+
-* Stripe API (Payments)
+* Django
+* Python
 * Django ModelForms
-* Django Authentication
 * Django ORM
 
 ### **Database**
 
-* SQLite (development)
-* PostgreSQL (Heroku production)
+* SQLite (Local)
+* PostgreSQL (Heroku)
 
-### **Deployment Tools**
+### **Deployment**
 
 * Heroku
-* WhiteNoise (static files)
+* GitHub
+* WhiteNoise
 * Gunicorn
-* Git & GitHub
-* DJ Database URL
-* Environment Variables for Security
 
 ---
 
 # 📂 **System Architecture**
 
-### Multi-App Django Structure
-
 ```
 hospital_management/
 │
-├── hospital/         # Core hospital logic
-├── payments/         # Stripe integration
-├── templates/
-├── static/
-└── hospitalmanagement/  # Project config
+├── hospital/         # Main logic & models
+├── payments/         # Stripe handling
+├── static/           # CSS, JS, images
+├── templates/        # HTML templates
+└── hospitalmanagement/ # Settings + URLs
 ```
-
-### App Separation
-
-| App        | Function                                               |
-| ---------- | ------------------------------------------------------ |
-| `hospital` | Doctors, patients, appointments, discharge, dashboards |
-| `payments` | Stripe checkout, webhooks, payment logs                |
 
 ---
 
 # 🗄 **Data Models**
 
-Your project meets academic requirements by including **custom models**:
+Includes:
 
-### **Doctor Model**
+✔ Doctor
+✔ Patient
+✔ Appointment
+✔ DischargeDetails
+✔ Payment (Stripe)
 
-* OneToOne relationship with Django User
-* Specialty, profile image, mobile, status
+With relationships:
 
-### **Patient Model**
-
-* OneToOne relationship with Django User
-* Symptoms, address, assigned doctor
-
-### **Appointment Model**
-
-* ForeignKeys → Doctor + Patient
-* Date/time, description, status
-
-### **DischargeDetails Model**
-
-* Billing breakdown
-* Auto-calculated stay duration
-
-### **Payment Model (Stripe)**
-
-* User
-* PaymentIntent ID
-* Amount
-* Status
-* Timestamp
-
-### **Relationships Summary**
-
-* **OneToOne**: User → Doctor, User → Patient
-* **ManyToOne**: Doctor → Appointments, Patient → Appointments
-* **OneToMany**: Patient → Discharge entries
-* **OneToMany**: User → Payments
+* One-to-One: User ↔ Doctor, User ↔ Patient
+* Many-to-One: Patient → Appointments
+* One-to-Many: Patient → Discharge Summaries
 
 ---
 
 # 🔐 **Authentication & Authorization**
 
-✔ Django built-in authentication
-✔ Group-based permissions: **DOCTOR**, **PATIENT**
-✔ @login_required used throughout
-✔ @user_passes_test for role-specific views
-✔ Session-based access control
-✔ Admin uses secure Django admin login
+✔ Django Auth
+✔ Role-based permissions
+✔ Secure session management
+✔ Custom decorators for access control
 
 ---
 
 # 📅 **App Features Overview**
 
-### 🔹 Admin Features
+### **Admin**
 
-* Approve doctors/patients
+* Approve users
 * Manage appointments
-* Discharge and billing
-* Edit/delete records
-* Dashboard with statistics
+* Billing + discharge
 
-### 🔹 Doctor Features
+### **Doctor**
 
 * View appointments
-* Access assigned patients
+* Patient access
 * Add diagnosis
-* View discharge summaries
 
-### 🔹 Patient Features
+### **Patient**
 
 * Book appointments
-* View appointment history
-* Download bills
-* Update profile
+* Track visit history
+* Download reports
 
 ---
 
 # 💳 **Stripe Payment Integration**
 
-The project includes complete Stripe integration:
+Includes:
 
-### Features Implemented
+✔ Stripe Checkout
+✔ Secure redirection
+✔ Test mode supported
+✔ Payment logs stored in DB
 
-✔ Checkout Sessions or PaymentIntent flow
-✔ Test mode keys
-✔ Django view for processing payments
-✔ Redirection after success/failure
-✔ Payment model stored in DB
-✔ Webhook support (optional / recommended)
-
-### How It Works
-
-1. User visits payment page
-2. Django calls Stripe API → creates Checkout Session
-3. User is redirected to secure hosted payment page
-4. Stripe returns success/failure
-5. System updates Payment model
-6. User receives confirmation + access to premium content
-
-### Required Environment Variables
+Environment vars:
 
 ```
 STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...(optional)
 ```
 
 ---
 
-
 # 🧪 **Validation, Testing & Lighthouse**
 
-The Hospital Management System has undergone extensive validation and testing across **HTML**, **CSS**, **JavaScript**, **Python**, and **Lighthouse** to ensure high performance, accessibility, and code quality.
+Below is the full validation section you requested, including images stored in GitHub.
 
 ---
 
 ## ✅ **Validation Summary Table**
 
-| **Validation Type**       | **Tool Used**                     | **Status** | **Notes**                                 |
-| ------------------------- | --------------------------------- | ---------- | ----------------------------------------- |
-| **HTML Validation**       | W3C HTML Validator                | ✅ Passed   | No critical errors found across templates |
-| **CSS Validation**        | Jigsaw CSS Validator              | ✅ Passed   | Minor warnings resolved                   |
-| **JavaScript Validation** | JSHint / ESLint                   | ✅ Passed   | Inline JS validated manually              |
-| **Python (PEP8)**         | pycodestyle / flake8              | ✅ Passed   | Views, models, URL configs validated      |
-| **Django Security Check** | `python manage.py check --deploy` | ✅ Passed   | No high-risk issues detected              |
+| Validation Type   | Tool                 | Status   | Notes                             |
+| ----------------- | -------------------- | -------- | --------------------------------- |
+| HTML              | W3C Validator        | ✔ Passed | Templates validated               |
+| CSS               | Jigsaw CSS Validator | ✔ Passed | Bootstrap vendor warnings ignored |
+| JS                | JSHint / ESLint      | ✔ Passed | ES6 validated with config         |
+| Python            | pycodestyle / flake8 | ✔ Passed | Long lines noted but non-breaking |
+| Django Deployment | `check --deploy`     | ✔ Passed | Safe                              |
 
-### CSS Validation Notes
+---
 
-- `static/style.css` and `static/hospital/css/styles.css` were uploaded directly to the W3C CSS Validator and pass validation. Vendor-prefixed rules such as `-webkit-backdrop-filter` remain only where a standard `backdrop-filter` fallback is also provided.
-- Remaining warnings originate from third-party CDN stylesheets (Bootstrap 5.3.2 and Font Awesome 6.5.2). These libraries are external dependencies and are left unchanged; their vendor extensions and deprecation warnings are acknowledged but not modified.
+## 🖼 **Validation Screenshots**
+
+### ✅ HTML Validation
+
+<img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/html_validate.png" width="700">
+
+### 🎨 CSS Validation
+
+<img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/css_valid.png" width="700">
+
+### 🟨 JavaScript Validation
+
+<img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/js_valid.png" width="700">
+
+### 🐍 Python (PEP8) Validation
+
+<img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/python_pep8_valid.png" width="700">
 
 ---
 
 ## 📱 **Responsiveness Testing**
 
-| **Device Type**                 | **Examples**                   | **Result** |
-| ------------------------------- | ------------------------------ | ---------- |
-| **Mobile (≤ 480px)**            | Pixel 5, iPhone 11, Galaxy S8+ | ✔ Good     |
-| **Tablet (768px–1024px)**       | iPad Mini, iPad Air            | ✔ Good     |
-| **Small Laptops (1024px)**      | Surface Pro, MacBook Air       | ✔ Good     |
-| **Wide Screens (1280–1900px+)** | Desktop monitors, iMacs        | ✔ Good     |
+| Device Type | Examples         | Result |
+| ----------- | ---------------- | ------ |
+| Mobile      | iPhone, Pixel    | ✔ Good |
+| Tablet      | iPad Mini        | ✔ Good |
+| Laptop      | MacBook, Surface | ✔ Good |
+| Desktop     | FHD/4K           | ✔ Good |
 
 ---
 
 ## 🌐 **Browser Compatibility Testing**
 
-| **Browser** | **Appearance** | **Functionality** | **Responsiveness** |
-| ----------- | -------------- | ----------------- | ------------------ |
-| **Chrome**  | ✔ Good         | ✔ Works perfectly | ✔ Good             |
-| **Safari**  | ✔ Good         | ✔ Works perfectly | ✔ Good             |
-| **Firefox** | ✔ Good         | ✔ Works perfectly | ✔ Good             |
-| **Edge**    | ✔ Good         | ✔ Works perfectly | ✔ Good             |
+| Browser | Appearance | Functionality | Responsive |
+| ------- | ---------- | ------------- | ---------- |
+| Chrome  | ✔          | ✔             | ✔          |
+| Safari  | ✔          | ✔             | ✔          |
+| Firefox | ✔          | ✔             | ✔          |
+| Edge    | ✔          | ✔             | ✔          |
 
 ---
 
 ## 🧪 **Manual Testing Matrix**
 
-| **Test Case**                     | **Expected Outcome**            | **Actual Outcome** | **Status** |
-| --------------------------------- | ------------------------------- | ------------------ | ---------- |
-| User login with valid credentials | Redirect to dashboard           | Works correctly    | ✅ Passed   |
-| Invalid login attempt             | Show error message              | Error displayed    | ✅ Passed   |
-| Booking an appointment            | Saves and shows confirmation    | Works              | ✅ Passed   |
-| Approving a doctor                | Admin approval updates status   | Works              | ✅ Passed   |
-| Generating discharge bill         | PDF generated                   | Works              | ✅ Passed   |
-| Stripe checkout (test mode)       | Redirects to payment page       | Works              | ✅ Passed   |
-| Logout                            | Ends session and redirects home | Works              | ✔ Passed   |
+| Test Case           | Expected       | Actual  | Status |
+| ------------------- | -------------- | ------- | ------ |
+| Login               | Redirect       | Works   | ✔      |
+| Invalid Login       | Error          | Correct | ✔      |
+| Booking Appointment | Saves          | Works   | ✔      |
+| Approve Doctor      | Status updates | Works   | ✔      |
+| Discharge Bill      | PDF            | Works   | ✔      |
+| Stripe Payment      | Works          | Works   | ✔      |
 
 ---
 
-## 🧱 **Automated & Code Quality Checks**
+## 🔦 **Lighthouse Scores**
 
-| **Check Type**      | **Command Used**                  | **Result** |
-| ------------------- | --------------------------------- | ---------- |
-| **PEP8**            | `pycodestyle hospital/`           | ✔ Clean    |
-| **Django Security** | `python manage.py check --deploy` | ✔ Safe     |
-| **CSS**             | W3C CSS Validator                 | ✔ Passed   |
-| **JavaScript**      | JSHint / ESLint                   | ✔ Passed   |
+| Metric         | Mobile | Desktop |
+| -------------- | ------ | ------- |
+| Performance    | ⭐⭐⭐⭐   | ⭐⭐⭐⭐⭐   |
+| Accessibility  | ⭐⭐⭐⭐   | ⭐⭐⭐⭐    |
+| Best Practices | ⭐⭐⭐⭐⭐  | ⭐⭐⭐⭐⭐   |
+| SEO            | ⭐⭐⭐⭐⭐  | ⭐⭐⭐⭐⭐   |
 
----
+### Screenshots
 
-## 🔦 **Lighthouse Reports (Mobile + Desktop)**
-
-Run using Chrome DevTools → Lighthouse Panel.
-
-| **Metric**         | **Mobile Score** | **Desktop Score** | Notes                               |
-| ------------------ | ---------------- | ----------------- | ----------------------------------- |
-| **Performance**    | ⭐⭐⭐⭐             | ⭐⭐⭐⭐⭐             | Images optimized, static compressed |
-| **Accessibility**  | ⭐⭐⭐⭐             | ⭐⭐⭐⭐              | Alt text + ARIA applied             |
-| **Best Practices** | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐⭐             | No console errors                   |
-| **SEO**            | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐⭐             | Semantic HTML, meta tags            |
+<img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/lighthouse_desk.jpg" width="700">
+<img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/lighthouse_mob.jpg" width="700">
 
 ---
-
-## 📷 **Lighthouse Screenshots (Add later)**
-
-![Lighthouse Desktop](static/images/lighthouse_desk.jpg)
-![Lighthouse Mobile](static/images/lighthouse_mob.jpg)
-
----
-
 
 # 🚀 **Deployment Guide (Heroku)**
 
-### **1. Login**
+Steps include:
 
 ```
 heroku login
-```
-
-### **2. Create App**
-
-```
 heroku create hospital-management-web
-```
-
-### **3. Add Buildpacks**
-
-```
-heroku buildpacks:set heroku/python
-heroku buildpacks:add --index 1 heroku/nodejs
-```
-
-### **4. Push Code**
-
-```
 git push heroku main
-```
-
-### **5. Migrations**
-
-```
 heroku run python manage.py migrate
-```
-
-### **6. Add Config Vars**
-
-* DJANGO_SECRET_KEY
-* STRIPE_PUBLISHABLE_KEY
-* STRIPE_SECRET_KEY
-* DEBUG=False
-* ALLOWED_HOSTS
-
-### **7. Collect Static**
-
-```
 heroku run python manage.py collectstatic --noinput
 ```
+
+Set config vars for:
+
+* STRIPE keys
+* SECRET_KEY
+* DEBUG
+* ALLOWED_HOSTS
 
 ---
 
@@ -475,51 +387,29 @@ heroku run python manage.py collectstatic --noinput
 hospital_management/
 │
 ├── hospital/
-│   ├── models.py
-│   ├── forms.py
-│   ├── views.py
-│   ├── urls.py
-│   └── templates/hospital/
-│
 ├── payments/
-│   ├── models.py
-│   ├── views.py
-│   └── templates/payments/
-│
 ├── static/
-│   ├── css/
-│   ├── images/
-│   └── js/
-│
 ├── templates/
 ├── manage.py
-│
 └── hospitalmanagement/
-    ├── settings.py
-    ├── urls.py
-    └── wsgi.py
 ```
 
 ---
 
 # 🙏 **Credits & Attribution**
 
-### **Mentors**
+Mentors:
 
-* Rachel Furlong
-* Spencer Barriball
+* **Rachel Furlong**
+* **Spencer Barriball**
 
-### **Technologies & Libraries**
+Tools:
 
-* Django Documentation
-* Stripe Documentation
 * Bootstrap
-* FontAwesome
-* GitHub Open-Source Community
-
-### **UI/UX Tools**
-
-* Balsamiq Wireframes
+* Django Docs
+* Stripe Docs
+* Balsamiq
+* GitHub
 
 ---
 
@@ -527,20 +417,19 @@ hospital_management/
 
 This project is licensed under the **MIT License**.
 
-
 ---
 
 # 🎉 **Conclusion**
 
-This Hospital Management System is a complete, production-ready, secure, and scalable application that demonstrates:
+This system demonstrates:
 
-✔ Full-stack Django mastery
-✔ Proper database modelling
+✔ Full-stack Django development
+✔ Secure user authentication
+✔ Robust relational data modeling
 ✔ Stripe payment integration
-✔ Multi-role authentication
-✔ Professional UX principles
-✔ Modern deployment practices
+✔ Professional UI/UX
+✔ Real-world hospital workflow automation
 
-Perfect for academic submission, professional portfolios, and real-world hospital systems.
+A complete, secure, and production-ready application suitable for academic and professional use.
 
 ---
