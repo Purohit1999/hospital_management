@@ -11,12 +11,11 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Font Awesome (same version as homepage, for social icons) -->
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-dhnY6cnN6TqO3Y4+Q3K7S8q5bgZp3ynjTEK2XsyKMmuc/6Wn0GCLYKnrSc7hhV9x/eEwVxOUYvE2QFZ3gk9c5A==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
   <!-- Project CSS -->
   <link rel="stylesheet" href="{% static 'style.css' %}">
+  <link rel="stylesheet" href="{% static 'hospital/css/styles.css' %}">
 
   <style>
     html,
@@ -155,10 +154,8 @@
       {% block content %}{% endblock content %}
     </div>
 
-    {% block footer %}
-      {% include "hospital/footer.html" %}
-    {% endblock %}
   </main>
 
+  {% include "hospital/footer.html" %}
 </body>
 </html>
