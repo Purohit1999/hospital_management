@@ -76,7 +76,7 @@
         <tbody>
           {% for p in patients %}
           <tr>
-            <td>{{ p.user.first_name }} {{ p.user.last_name }}</td>
+            <td>{{ p.user.get_full_name|default:p.user.username }}</td>
             <td>
               {% if p.profile_pic %}
                 <img src="{{ p.profile_pic.url }}" alt="Profile" class="profile-pic">
