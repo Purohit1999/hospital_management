@@ -38,7 +38,7 @@ urlpatterns = [
     path('afterlogin/', views.afterlogin_view, name='afterlogin'),
 
     # Logout
-    path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
+    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
 
     # Dashboards
     path('admin-dashboard/', views.admin_dashboard_view, name='admin-dashboard'),

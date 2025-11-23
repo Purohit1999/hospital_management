@@ -4,6 +4,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Q
 from django.contrib import messages
 
@@ -232,26 +233,35 @@ def doctor_login_view(request):
 
 
 def patient_login_view(request):
-    """Render the patient login page."""
+    """
+    Handle patient login, redirecting to the requested page (next) or dashboard.
+    """
+    next_url = request.GET.get("next") or request.POST.get("next") or ""
+    error_message = None
+    username_value = request.POST.get("username", "") if request.method == "POST" else ""
+
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
+        form = AuthenticationForm(request=request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-            user = authenticate(request, username=username, password=password)
+            user = form.get_user()
             if user and is_patient(user):
                 login(request, user)
+                redirect_to = request.POST.get("next") or request.GET.get("next")
+                if redirect_to and url_has_allowed_host_and_scheme(
+                    redirect_to, allowed_hosts={request.get_host()}
+                ):
+                    return redirect(redirect_to)
                 return redirect("patient-dashboard")
-            messages.error(
-                request,
-                "Access denied: Please log in using a patient account.",
-            )
+            error_message = "Access denied: Please log in using a patient account."
         else:
-            messages.error(request, "Invalid credentials. Please try again.")
-    else:
-        form = AuthenticationForm()
+            error_message = "Invalid username or password."
 
-    return render(request, "hospital/patient_login.html", {"form": form})
+    context = {
+        "error": error_message,
+        "next": next_url,
+        "username": username_value,
+    }
+    return render(request, "hospital/patient_login.html", context)
 
 
 # ---------------- DOCTOR DASHBOARD ----------------
