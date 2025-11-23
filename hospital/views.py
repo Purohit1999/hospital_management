@@ -36,6 +36,21 @@ from .forms import (
 )
 
 
+# ==============================
+# Helper functions for roles
+# ==============================
+def is_admin(user):
+    return user.is_superuser or user.is_staff
+
+
+def is_doctor(user):
+    return user.groups.filter(name="DOCTOR").exists()
+
+
+def is_patient(user):
+    return user.groups.filter(name="PATIENT").exists()
+
+
 # ---------------- CUSTOM LOGOUT ----------------
 @method_decorator(csrf_exempt, name="dispatch")
 class CustomLogoutView(LogoutView):
@@ -217,22 +232,46 @@ def doctor_login_view(request):
 
 
 # ---------------- DOCTOR DASHBOARD ----------------
-@login_required
+@login_required(login_url="doctorlogin")
+@user_passes_test(is_doctor)
 def doctor_dashboard_view(request):
-    doctor = get_object_or_404(Doctor, user=request.user)
+    """
+    Doctor dashboard:
+    - Loads doctor profile linked to the logged-in user
+    - If no doctor profile exists, show a friendly message instead of 404
+    """
+    doctor = Doctor.objects.filter(user=request.user).select_related("user").first()
+    if not doctor:
+        messages.warning(
+            request,
+            "Your doctor profile is not found or is awaiting admin approval. "
+            "Please contact the administrator.",
+        )
+        return redirect("doctorclick")
+
     return render(request, "hospital/doctor_dashboard.html", {"doctor": doctor})
 
 
-@login_required
+@login_required(login_url="doctorlogin")
+@user_passes_test(is_doctor)
 def doctor_view_patient_view(request):
-    doctor = get_object_or_404(Doctor, user=request.user)
+    doctor = Doctor.objects.filter(user=request.user).first()
+    if not doctor:
+        messages.warning(request, "Doctor profile not found.")
+        return redirect("doctorclick")
+
     patients = Patient.objects.filter(appointment__doctor=doctor).distinct()
     return render(request, "hospital/doctor_view_patient.html", {"patients": patients})
 
 
-@login_required
+@login_required(login_url="doctorlogin")
+@user_passes_test(is_doctor)
 def doctor_view_appointment_view(request):
-    doctor = get_object_or_404(Doctor, user=request.user)
+    doctor = Doctor.objects.filter(user=request.user).first()
+    if not doctor:
+        messages.warning(request, "Doctor profile not found.")
+        return redirect("doctorclick")
+
     appointments = Appointment.objects.filter(doctor=doctor).select_related(
         "patient__user"
     )
@@ -244,7 +283,7 @@ def doctor_view_appointment_view(request):
 
 
 @login_required(login_url="doctorlogin")
-@user_passes_test(lambda u: u.groups.filter(name="DOCTOR").exists())
+@user_passes_test(is_doctor)
 def doctor_view_discharge_patient_view(request):
     """
     Doctor view of discharged patients.
@@ -266,6 +305,9 @@ def doctor_view_discharge_patient_view(request):
     )
 
 
+# ---------------- DOCTOR APPROVAL (ADMIN) ----------------
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_approve_doctor_view(request):
     doctors = Doctor.objects.filter(status=False)
     return render(
@@ -276,7 +318,8 @@ def admin_approve_doctor_view(request):
 
 
 # ---------------- PATIENT DASHBOARD ----------------
-@login_required
+@login_required(login_url="patientlogin")
+@user_passes_test(is_patient)
 def patient_dashboard_view(request):
     """
     Patient dashboard:
@@ -303,14 +346,19 @@ def patient_dashboard_view(request):
 
 
 # ---------------- ADMIN DASHBOARD ----------------
-@login_required
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_dashboard_view(request):
     context = {
+        # how many doctors are still waiting for approval
         "pending_doctors": Doctor.objects.filter(status=False).count(),
+        # total patients (you could also track pending separately if needed)
         "pending_patients": Patient.objects.count(),
+        # appointments that are still pending
         "pending_appointments": Appointment.objects.filter(
             status="pending"
         ).count(),
+        # recent / approved doctors and recent patients for the tables
         "recent_doctors": Doctor.objects.select_related("user")
         .filter(status=True)
         .order_by("-id")[:5],
@@ -320,15 +368,21 @@ def admin_dashboard_view(request):
 
 
 # ---------------- DOCTOR ADMIN ----------------
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_doctor_view(request):
     return render(request, "hospital/admin_doctor.html")
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_doctor_view(request):
     doctors = Doctor.objects.select_related("user").all()
     return render(request, "hospital/admin_view_doctor.html", {"doctors": doctors})
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_add_doctor_view(request):
     if request.method == "POST":
         user_form = DoctorUserForm(request.POST)
@@ -356,6 +410,8 @@ def admin_add_doctor_view(request):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def edit_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
@@ -378,10 +434,14 @@ def edit_doctor_view(request, pk):
 
 
 # ---------------- PATIENT ADMIN ----------------
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_patient_view(request):
     return render(request, "hospital/admin_patient.html")
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_patient_view(request):
     patients = Patient.objects.select_related("user").all()
     return render(
@@ -389,6 +449,8 @@ def admin_view_patient_view(request):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_add_patient_view(request):
     if request.method == "POST":
         user_form = PatientUserForm(request.POST)
@@ -416,6 +478,8 @@ def admin_add_patient_view(request):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def edit_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     user = patient.user
@@ -437,6 +501,8 @@ def edit_patient_view(request, pk):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def delete_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     user = patient.user
@@ -446,6 +512,8 @@ def delete_patient_view(request, pk):
     return redirect("admin-view-patient")
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def approve_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     patient.status = True
@@ -453,6 +521,8 @@ def approve_patient_view(request, pk):
     return redirect("admin-approve-patient")
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def reject_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     user = patient.user
@@ -461,8 +531,9 @@ def reject_patient_view(request, pk):
     return redirect("admin-approve-patient")
 
 
-# ---------------- DISCHARGE PATIENT ----------------
-@login_required
+# ---------------- DISCHARGE PATIENT (PATIENT VIEW) ----------------
+@login_required(login_url="patientlogin")
+@user_passes_test(is_patient)
 def patient_discharge_summary_view(request):
     patient = get_object_or_404(Patient, user=request.user)
     discharges = DischargeDetails.objects.filter(
@@ -478,6 +549,9 @@ def patient_discharge_summary_view(request):
     return render(request, "hospital/patient_discharge.html", context)
 
 
+# ---------------- DISCHARGE PATIENT (ADMIN LISTS) ----------------
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_approve_patient_view(request):
     patients = Patient.objects.filter(dischargedetails__isnull=True)
     return render(
@@ -487,6 +561,8 @@ def admin_approve_patient_view(request):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_discharge_patient_view(request):
     patients = Patient.objects.filter(
         status=True, dischargedetails__isnull=True
@@ -500,7 +576,7 @@ def admin_discharge_patient_view(request):
 
 # ---------------- APPOINTMENTS ----------------
 @login_required(login_url="patientlogin")
-@user_passes_test(lambda u: u.groups.filter(name="PATIENT").exists())
+@user_passes_test(is_patient)
 def patient_book_appointment_view(request):
     """
     Patient-facing appointment booking.
@@ -532,7 +608,7 @@ def patient_book_appointment_view(request):
 
 
 @login_required(login_url="patientlogin")
-@user_passes_test(lambda u: u.groups.filter(name="PATIENT").exists())
+@user_passes_test(is_patient)
 def patient_appointment_list_view(request):
     patient = Patient.objects.get(user=request.user)
     appointments = Appointment.objects.filter(patient=patient).order_by(
@@ -546,6 +622,8 @@ def patient_appointment_list_view(request):
 
 
 # ---------------- ADMIN / OTHER VIEWS ----------------
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def list_appointments(request):
     appointments = (
         Appointment.objects.select_related("patient", "doctor")
@@ -558,6 +636,8 @@ def list_appointments(request):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def appointment_detail(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     return render(
@@ -567,6 +647,8 @@ def appointment_detail(request, pk):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_appointment(request):
     appointments = Appointment.objects.select_related(
         "doctor__user", "patient__user"
@@ -578,15 +660,21 @@ def admin_view_appointment(request):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_appointment_view(request):
     return render(request, "hospital/admin_appointment.html")
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_approve_appointment_view(request):
     return render(request, "hospital/admin_approve_appointment.html")
 
 
 # ---------------- SPECIALISATION VIEW ----------------
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_doctor_specialisation(request):
     doctors = Doctor.objects.select_related("user").filter(status=True)
     return render(
@@ -596,6 +684,8 @@ def admin_view_doctor_specialisation(request):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_add_appointment_view(request):
     if request.method == "POST":
         form = AppointmentForm(request.POST)
@@ -617,6 +707,8 @@ def admin_add_appointment_view(request):
 
 
 # ---------------- DOCTOR APPROVAL / SEARCH ----------------
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def approve_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     doctor.status = True
@@ -625,6 +717,8 @@ def approve_doctor_view(request, pk):
     return redirect("admin-approve-doctor")
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def reject_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
@@ -635,6 +729,8 @@ def reject_doctor_view(request, pk):
     return redirect("admin-approve-doctor")
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def update_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
@@ -656,6 +752,8 @@ def update_doctor_view(request, pk):
     )
 
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def delete_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
@@ -666,10 +764,13 @@ def delete_doctor_view(request, pk):
 
 
 @login_required(login_url="doctorlogin")
-@user_passes_test(lambda u: u.groups.filter(name="DOCTOR").exists())
+@user_passes_test(is_doctor)
 def doctor_search_patient_view(request):
     query = request.GET.get("query", "")
-    doctor = Doctor.objects.get(user=request.user)
+    doctor = Doctor.objects.filter(user=request.user).first()
+    if not doctor:
+        messages.warning(request, "Doctor profile not found.")
+        return redirect("doctor-dashboard")
 
     patients = (
         Patient.objects.filter(assignedDoctorId=doctor)
