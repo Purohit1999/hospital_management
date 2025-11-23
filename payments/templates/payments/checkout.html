@@ -1,0 +1,43 @@
+{% extends "hospital/patient_base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Complete Payment</h2>
+  <p>Amount: £{{ amount }}</p>
+
+  <form id="payment-form">
+    <div id="card-element"><!--Stripe.js injects Card Element here--></div>
+    <button id="submit" class="btn btn-primary mt-3">Pay</button>
+    <div id="payment-message" class="mt-3"></div>
+  </form>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe("{{ STRIPE_PUBLISHABLE_KEY }}");
+  const elements = stripe.elements();
+  const cardElement = elements.create("card");
+  cardElement.mount("#card-element");
+
+  const form = document.getElementById("payment-form");
+  const messageEl = document.getElementById("payment-message");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const {error, paymentIntent} = await stripe.confirmCardPayment(
+      "{{ client_secret }}",
+      {
+        payment_method: {
+          card: cardElement,
+        },
+      }
+    );
+
+    if (error) {
+      messageEl.textContent = error.message;
+    } else if (paymentIntent.status === "succeeded") {
+      messageEl.textContent = "Payment succeeded! Redirecting...";
+      window.location.href = "{% url 'payments-success' %}";
+    }
+  });
+</script>
+{% endblock %}

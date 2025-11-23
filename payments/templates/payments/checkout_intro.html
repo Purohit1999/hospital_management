@@ -1,0 +1,11 @@
+{% extends "hospital/patient_base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Premium Access / Donation</h2>
+  <p>You can unlock extra features by making a test payment of £{{ amount }} (Stripe test mode).</p>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-primary">Proceed to payment</button>
+  </form>
+</div>
+{% endblock %}
