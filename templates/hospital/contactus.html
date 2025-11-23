@@ -1,67 +1,41 @@
-<!DOCTYPE html>
+{% extends 'hospital/homebase.html' %}
 {% load static %}
-<html lang="en" dir="ltr">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Contact Us | Hospital Management</title>
+{% block content %}
+<style>
+  .contact-page {
+    background: linear-gradient(to right, #dfe9f3, #ffffff);
+    font-family: 'Roboto', sans-serif;
+  }
 
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-dhnY6cnN6TqO3Y4+Q3K7S8q5bgZp3ynjTEK2XsyKMmuc/6Wn0GCLYKnrSc7hhV9x/eEwVxOUYvE2QFZ3gk9c5A==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-  <link rel="stylesheet" href="{% static 'hospital/css/styles.css' %}">
+  .contact-container {
+    margin-top: 80px;
+    margin-bottom: 60px;
+  }
 
-  <style>
-    body {
-      background: linear-gradient(to right, #dfe9f3, #ffffff);
-      font-family: 'Roboto', sans-serif;
-      min-height: 100vh;
-    }
+  .contact-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  }
 
-    .contact-container {
-      margin-top: 80px;
-      margin-bottom: 60px;
-    }
+  .contact-title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: bold;
+  }
+</style>
 
-    .contact-card {
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 40px;
-      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .contact-title {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #333;
-      font-weight: bold;
-    }
-
-    .btn-send {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 30px;
-      border-radius: 25px;
-      font-size: 16px;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-send:hover {
-      background-color: #0056b3;
-    }
-  </style>
-</head>
-
-<body>
-
-  {% include "hospital/navbar.html" %}
-
+<div class="contact-page">
   <div class="container contact-container">
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="contact-card">
-          <h3 class="contact-title"><i class="fas fa-envelope"></i> Send Us Your Valuable Feedback</h3>
-
+          <h3 class="contact-title">
+            <i class="fas fa-envelope"></i> Send Us Your Valuable Feedback
+          </h3>
           <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
@@ -71,13 +45,9 @@
               </button>
             </div>
           </form>
-
         </div>
       </div>
     </div>
   </div>
-
-  {% include "hospital/footer.html" %}
-</body>
-
-</html>
+</div>
+{% endblock %}

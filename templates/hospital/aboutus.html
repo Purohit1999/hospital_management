@@ -1,72 +1,45 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+{% extends 'hospital/homebase.html' %}
 {% load static %}
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About Us | Hospital Management</title>
+{% block content %}
+<style>
+  .about-section {
+    background-color: #f8f9fa;
+    padding: 60px 20px;
+    text-align: center;
+  }
 
-  <!-- Bootstrap CSS -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  .about-section h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
 
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-dhnY6cnN6TqO3Y4+Q3K7S8q5bgZp3ynjTEK2XsyKMmuc/6Wn0GCLYKnrSc7hhV9x/eEwVxOUYvE2QFZ3gk9c5A==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-  <link rel="stylesheet" href="{% static 'hospital/css/styles.css' %}">
+  .about-section p {
+    font-size: 1.2rem;
+    color: #555;
+  }
 
-  <!-- Custom CSS -->
-  <style>
-    .about-section {
-      background-color: #f8f9fa;
-      padding: 60px 20px;
-      text-align: center;
-    }
+  .btn-home {
+    margin-top: 30px;
+  }
+</style>
 
-    .about-section h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-    }
+<div class="alert alert-success text-center mb-0">
+  <h3 class="mb-0">About Us</h3>
+</div>
 
-    .about-section p {
-      font-size: 1.2rem;
-      color: #555;
-    }
-
-    .btn-home {
-      margin-top: 30px;
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- Navbar -->
-  {% include "hospital/navbar.html" %}
-
-  <!-- Page Header -->
-  <div class="alert alert-success text-center mb-0">
-    <h3 class="mb-0">About Us</h3>
+<section class="about-section">
+  <div class="container">
+    <h1 class="display-4">Welcome to Param Hospital System</h1>
+    <p class="lead">
+      We are committed to streamlining hospital management by simplifying interactions between Admins, Doctors, and Patients.
+    </p>
+    <hr class="my-4">
+    <p>
+      This platform assists with scheduling appointments, managing patient records,
+      billing, doctor-patient communication, and improving overall healthcare service delivery.
+    </p>
+    <a class="btn btn-primary btn-lg btn-home" href="/" role="button">Back to Home</a>
   </div>
-
-  <!-- Main About Section -->
-  <section class="about-section">
-    <div class="container">
-      <h1 class="display-4">Welcome to Param Hospital System</h1>
-      <p class="lead">
-        We are committed to streamlining hospital management by simplifying interactions between Admins, Doctors, and Patients.
-      </p>
-      <hr class="my-4">
-      <p>
-        This platform assists with scheduling appointments, managing patient records,
-        billing, doctor–patient communication, and improving overall healthcare service delivery.
-      </p>
-      <a class="btn btn-primary btn-lg btn-home" href="/" role="button">Back to Home</a>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  {% include "hospital/footer.html" %}
-
-</body>
-
-</html>
+</section>
+{% endblock %}
