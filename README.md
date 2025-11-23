@@ -1,4 +1,3 @@
----
 
 # 🏥 **Hospital Management System — Full Stack Django Application**
 
