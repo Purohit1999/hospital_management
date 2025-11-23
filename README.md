@@ -304,7 +304,7 @@ Below is the full validation section you requested, including images stored in G
 
 ### 🐍 Python (PEP8) Validation
 
-<img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/python_pep8_valid.png" width="700">
+<img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/python_PEP8_valid.png" width="700">
 
 
 ---
