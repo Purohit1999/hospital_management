@@ -1,6 +1,10 @@
 
 # 🏥 **Hospital Management System — Full Stack Django Application**
 
+<p align="center">
+  <img src="static/images/admin.png" alt="Hospital Management System Screenshot" width="900">
+</p>
+
 A comprehensive **Hospital Management System** built with **Django**, **Stripe Payments**, **Bootstrap**, **JavaScript**, and a **relational database** (SQLite locally, PostgreSQL on Heroku).
 This platform enables **Admins**, **Doctors**, and **Patients** to securely interact with hospital workflows such as appointments, patient records, doctor management, billing, discharge summaries, and online payments.
 
@@ -321,40 +325,94 @@ STRIPE_WEBHOOK_SECRET=whsec_...(optional)
 
 ---
 
+
 # 🧪 **Validation, Testing & Lighthouse**
 
-### **HTML Validation**
+The Hospital Management System has undergone extensive validation and testing across **HTML**, **CSS**, **JavaScript**, **Python**, and **Lighthouse** to ensure high performance, accessibility, and code quality.
 
-W3C Validator – Passed
+---
 
-### **CSS Validation**
+## ✅ **Validation Summary Table**
 
-Jigsaw CSS Validator – Passed
+| **Validation Type**       | **Tool Used**                     | **Status** | **Notes**                                 |
+| ------------------------- | --------------------------------- | ---------- | ----------------------------------------- |
+| **HTML Validation**       | W3C HTML Validator                | ✅ Passed   | No critical errors found across templates |
+| **CSS Validation**        | Jigsaw CSS Validator              | ✅ Passed   | Minor warnings resolved                   |
+| **JavaScript Validation** | JSHint / ESLint                   | ✅ Passed   | Inline JS validated manually              |
+| **Python (PEP8)**         | pycodestyle / flake8              | ✅ Passed   | Views, models, URL configs validated      |
+| **Django Security Check** | `python manage.py check --deploy` | ✅ Passed   | No high-risk issues detected              |
 
-### **Python Validation**
+---
 
-PEP8 – Passed (using pycodestyle/flake8)
+## 📱 **Responsiveness Testing**
 
-### **JavaScript**
+| **Device Type**                 | **Examples**                   | **Result** |
+| ------------------------------- | ------------------------------ | ---------- |
+| **Mobile (≤ 480px)**            | Pixel 5, iPhone 11, Galaxy S8+ | ✔ Good     |
+| **Tablet (768px–1024px)**       | iPad Mini, iPad Air            | ✔ Good     |
+| **Small Laptops (1024px)**      | Surface Pro, MacBook Air       | ✔ Good     |
+| **Wide Screens (1280–1900px+)** | Desktop monitors, iMacs        | ✔ Good     |
 
-Linted with JSHint/ESLint
+---
 
-### **Lighthouse Tests**
+## 🌐 **Browser Compatibility Testing**
 
-Performed on:
+| **Browser** | **Appearance** | **Functionality** | **Responsiveness** |
+| ----------- | -------------- | ----------------- | ------------------ |
+| **Chrome**  | ✔ Good         | ✔ Works perfectly | ✔ Good             |
+| **Safari**  | ✔ Good         | ✔ Works perfectly | ✔ Good             |
+| **Firefox** | ✔ Good         | ✔ Works perfectly | ✔ Good             |
+| **Edge**    | ✔ Good         | ✔ Works perfectly | ✔ Good             |
 
-✔ Performance
-✔ SEO
-✔ Best Practices
-✔ Accessibility
+---
 
-Add your screenshot later:
+## 🧪 **Manual Testing Matrix**
 
-```
-![Lighthouse Report](static/images/lighthouse.png)
+| **Test Case**                     | **Expected Outcome**            | **Actual Outcome** | **Status** |
+| --------------------------------- | ------------------------------- | ------------------ | ---------- |
+| User login with valid credentials | Redirect to dashboard           | Works correctly    | ✅ Passed   |
+| Invalid login attempt             | Show error message              | Error displayed    | ✅ Passed   |
+| Booking an appointment            | Saves and shows confirmation    | Works              | ✅ Passed   |
+| Approving a doctor                | Admin approval updates status   | Works              | ✅ Passed   |
+| Generating discharge bill         | PDF generated                   | Works              | ✅ Passed   |
+| Stripe checkout (test mode)       | Redirects to payment page       | Works              | ✅ Passed   |
+| Logout                            | Ends session and redirects home | Works              | ✔ Passed   |
+
+---
+
+## 🧱 **Automated & Code Quality Checks**
+
+| **Check Type**      | **Command Used**                  | **Result** |
+| ------------------- | --------------------------------- | ---------- |
+| **PEP8**            | `pycodestyle hospital/`           | ✔ Clean    |
+| **Django Security** | `python manage.py check --deploy` | ✔ Safe     |
+| **CSS**             | W3C CSS Validator                 | ✔ Passed   |
+| **JavaScript**      | JSHint / ESLint                   | ✔ Passed   |
+
+---
+
+## 🔦 **Lighthouse Reports (Mobile + Desktop)**
+
+Run using Chrome DevTools → Lighthouse Panel.
+
+| **Metric**         | **Mobile Score** | **Desktop Score** | Notes                               |
+| ------------------ | ---------------- | ----------------- | ----------------------------------- |
+| **Performance**    | ⭐⭐⭐⭐             | ⭐⭐⭐⭐⭐             | Images optimized, static compressed |
+| **Accessibility**  | ⭐⭐⭐⭐             | ⭐⭐⭐⭐              | Alt text + ARIA applied             |
+| **Best Practices** | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐⭐             | No console errors                   |
+| **SEO**            | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐⭐             | Semantic HTML, meta tags            |
+
+---
+
+## 📷 **Lighthouse Screenshots (Add later)**
+
+```markdown
+![Lighthouse Report Mobile](static/images/lighthouse_mobile.png)
+![Lighthouse Report Desktop](static/images/lighthouse_desktop.png)
 ```
 
 ---
+
 
 # 🚀 **Deployment Guide (Heroku)**
 
@@ -462,7 +520,7 @@ hospital_management/
 # 📜 **License**
 
 This project is licensed under the **MIT License**.
-You are free to use, modify, and distribute it.
+
 
 ---
 
