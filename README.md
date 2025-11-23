@@ -345,6 +345,11 @@ The Hospital Management System has undergone extensive validation and testing ac
 | **Python (PEP8)**         | pycodestyle / flake8              | ✅ Passed   | Views, models, URL configs validated      |
 | **Django Security Check** | `python manage.py check --deploy` | ✅ Passed   | No high-risk issues detected              |
 
+### CSS Validation Notes
+
+- `static/style.css` and `static/hospital/css/styles.css` were uploaded directly to the W3C CSS Validator and pass validation. Vendor-prefixed rules such as `-webkit-backdrop-filter` remain only where a standard `backdrop-filter` fallback is also provided.
+- Remaining warnings originate from third-party CDN stylesheets (Bootstrap 5.3.2 and Font Awesome 6.5.2). These libraries are external dependencies and are left unchanged; their vendor extensions and deprecation warnings are acknowledged but not modified.
+
 ---
 
 ## 📱 **Responsiveness Testing**
