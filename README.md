@@ -306,6 +306,7 @@ Below is the full validation section you requested, including images stored in G
 
 <img src="https://raw.githubusercontent.com/Purohit1999/hospital_management/main/static/images/python_pep8_valid.png" width="700">
 
+
 ---
 
 ## 📱 **Responsiveness Testing**
