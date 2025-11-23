@@ -451,19 +451,20 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });
+```
 ---
 
 # 🚀 **Deployment Guide (Heroku)**
 
 Steps include:
 
-```
+
 heroku login
 heroku create hospital-management-web
 git push heroku main
 heroku run python manage.py migrate
 heroku run python manage.py collectstatic --noinput
-```
+
 
 Set config vars for:
 
@@ -476,7 +477,7 @@ Set config vars for:
 
 # 📁 **File Structure**
 
-```
+
 hospital_management/
 │
 ├── hospital/
@@ -485,7 +486,7 @@ hospital_management/
 ├── templates/
 ├── manage.py
 └── hospitalmanagement/
-```
+
 
 ---
 
