@@ -37,3 +37,4 @@ urllib3==2.5.0
 webencodings==0.5.1
 whitenoise==6.11.0
 xhtml2pdf==0.2.17
+stripe==11.3.0
