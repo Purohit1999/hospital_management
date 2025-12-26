@@ -141,3 +141,42 @@ class ConsultationRequestTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(send_mail_mock.call_count, 2)
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class DoctorLoginTests(TestCase):
+    def setUp(self):
+        self.doctor_user = User.objects.create_user(
+            username="doctor_user",
+            password="doctor_pass",
+        )
+        group, _ = Group.objects.get_or_create(name="DOCTOR")
+        self.doctor_user.groups.add(group)
+
+    def test_doctor_login_page_renders_form(self):
+        response = self.client.get(reverse("doctorlogin"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Doctor Login")
+        self.assertContains(response, "<form", html=False)
+
+    def test_doctor_dashboard_redirects_when_unauthenticated(self):
+        response = self.client.get(reverse("doctor-dashboard"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/doctorlogin/?next=/doctor-dashboard/", response["Location"])
+
+    def test_doctor_login_redirects_to_next(self):
+        response = self.client.post(
+            reverse("doctorlogin") + "?next=/doctor-dashboard/",
+            data={
+                "username": "doctor_user",
+                "password": "doctor_pass",
+                "next": "/doctor-dashboard/",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/doctor-dashboard/")

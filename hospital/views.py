@@ -268,29 +268,32 @@ def adminlogin_view(request):
 
 # ---------------- DOCTOR LOGIN ----------------
 def doctor_login_view(request):
+    next_url = request.GET.get("next") or request.POST.get("next") or ""
+    error_message = None
+
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                if Group.objects.get(name="DOCTOR") in user.groups.all():
-                    login(request, user)
-                    return redirect("doctor-dashboard")
-                else:
-                    messages.error(
-                        request,
-                        "Access denied: You are not a doctor.",
-                    )
-            else:
-                messages.error(request, "Invalid username or password.")
+            user = form.get_user()
+            if user and is_doctor(user):
+                login(request, user)
+                redirect_to = request.POST.get("next") or request.GET.get("next")
+                if redirect_to and url_has_allowed_host_and_scheme(
+                    redirect_to, allowed_hosts={request.get_host()}
+                ):
+                    return redirect(redirect_to)
+                return redirect("doctor-dashboard")
+            error_message = "Access denied: You are not a doctor."
         else:
-            messages.error(request, "Invalid credentials. Please try again.")
+            error_message = "Invalid credentials. Please try again."
     else:
         form = AuthenticationForm()
 
-    return render(request, "hospital/doctorlogin.html", {"form": form})
+    return render(
+        request,
+        "hospital/doctorlogin.html",
+        {"form": form, "error": error_message, "next": next_url},
+    )
 
 
 def patient_login_view(request):
