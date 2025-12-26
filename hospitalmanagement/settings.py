@@ -196,6 +196,7 @@ DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
     EMAIL_HOST_USER or "no-reply@example.com",
 )
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", DEFAULT_FROM_EMAIL)
 EMAIL_RECEIVING_USER = [
     email for email in os.getenv("EMAIL_RECEIVING_USER", "").split(",") if email
 ]

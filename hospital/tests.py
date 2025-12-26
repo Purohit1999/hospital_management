@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group, User
 from django.test import TestCase, override_settings
+from unittest.mock import patch
 from django.urls import reverse
 
 from .models import Appointment, Doctor, Patient, ConsultationRequest
@@ -124,3 +125,19 @@ class ConsultationRequestTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(ConsultationRequest.objects.count(), 1)
+
+    @patch("hospital.views.send_mail")
+    def test_post_sends_emails(self, send_mail_mock):
+        post_data = {
+            "full_name": "Email Test",
+            "email": "emailtest@example.com",
+            "phone": "333333333",
+            "preferred_date": "2030-01-03",
+            "preferred_time": "11:15",
+            "message": "Email notifications test.",
+        }
+        response = self.client.post(
+            reverse("book-consultation"), data=post_data, follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(send_mail_mock.call_count, 2)

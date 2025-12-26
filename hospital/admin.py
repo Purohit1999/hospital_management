@@ -6,7 +6,8 @@ from .models import (
     Appointment,
     Prescription,
     Invoice,
-    Feedback
+    Feedback,
+    ConsultationRequest,
 )
 
 # ------------------------------------------------------------
@@ -128,3 +129,21 @@ class FeedbackAdmin(admin.ModelAdmin):
             return f"{obj.appointment.patient.user.get_full_name()} ({obj.rating}/5)"
         return "Unknown"
     appointment_info.short_description = 'Feedback From'
+
+
+# ------------------------------------------------------------
+# Consultation Request Admin
+# ------------------------------------------------------------
+@admin.register(ConsultationRequest)
+class ConsultationRequestAdmin(admin.ModelAdmin):
+    list_display = (
+        "full_name",
+        "email",
+        "phone",
+        "preferred_date",
+        "preferred_time",
+        "status",
+        "created_at",
+    )
+    search_fields = ("full_name", "email", "phone", "message")
+    list_filter = ("status", "preferred_date", "created_at")

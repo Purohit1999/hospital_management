@@ -4,11 +4,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
+from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.db import IntegrityError
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.contrib import messages
+from django.core.mail import send_mail
 
 # ==============================
 # Authentication & Authorization
@@ -102,7 +104,35 @@ def book_consultation_view(request):
     if request.method == "POST":
         form = ConsultationRequestForm(request.POST)
         if form.is_valid():
-            form.save()
+            consultation = form.save()
+            if consultation.email:
+                send_mail(
+                    subject="Consultation request received",
+                    message=(
+                        "Thanks — we’ve received your consultation request.\n"
+                        "Our team will contact you soon.\n\n"
+                        f"Requested: {consultation.preferred_date} "
+                        f"{consultation.preferred_time}\n"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[consultation.email],
+                    fail_silently=True,
+                )
+            send_mail(
+                subject="New consultation request",
+                message=(
+                    "A new consultation request has been submitted.\n\n"
+                    f"Name: {consultation.full_name}\n"
+                    f"Email: {consultation.email}\n"
+                    f"Phone: {consultation.phone}\n"
+                    f"Preferred: {consultation.preferred_date} "
+                    f"{consultation.preferred_time}\n"
+                    f"Message: {consultation.message}\n"
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.ADMIN_EMAIL],
+                fail_silently=True,
+            )
             messages.success(
                 request,
                 "Thanks — we’ll contact you soon.",
@@ -443,6 +473,17 @@ def admin_doctor_view(request):
 def admin_view_doctor_view(request):
     doctors = Doctor.objects.select_related("user").all()
     return render(request, "hospital/admin_view_doctor.html", {"doctors": doctors})
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def admin_consultation_requests_view(request):
+    requests = ConsultationRequest.objects.order_by("-created_at")
+    return render(
+        request,
+        "hospital/admin_consultation_requests.html",
+        {"requests": requests},
+    )
 
 
 @login_required(login_url="adminlogin")
