@@ -22,14 +22,14 @@ def main():
 
     # Environment warning for development
     if os.environ.get('DJANGO_SETTINGS_MODULE') == 'hospitalmanagement.settings':
-        print("🔧 Running in development mode. Make sure to configure production settings before deployment.")
+        print("Running in development mode. Make sure to configure production settings before deployment.")
 
     try:
         # Import and run the Django management utility
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
-            "❌ Couldn't import Django. Ensure it's installed and "
+            "Could not import Django. Ensure it is installed and "
             "available on your PYTHONPATH environment variable. "
             "Did you forget to activate a virtual environment?"
         ) from exc

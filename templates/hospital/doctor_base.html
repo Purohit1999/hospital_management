@@ -82,6 +82,35 @@
     .pt-fixed-adjust {
       padding-top: 80px; /* To avoid overlap with navbar */
     }
+
+    .toast-container {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 360px;
+    }
+
+    .toast-message {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 6px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .toast-close {
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -104,6 +133,17 @@
     <li><a href="{% url 'doctor-view-discharge-patient' %}">Discharged</a></li>
   </ul>
 </nav>
+
+{% if messages %}
+<div class="toast-container">
+  {% for message in messages %}
+  <div class="toast-message alert alert-{{ message.tags|default:'info' }}">
+    <span>{{ message }}</span>
+    <button type="button" class="toast-close" aria-label="Close">&times;</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 <!-- Main Content -->
 <main class="d-flex flex-column min-vh-100">
@@ -130,5 +170,22 @@
 
 <button id="scrollTopBtn" title="Back to top">↑</button>
 <script src="{% static 'hospital/js/dashboard.js' %}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toast-message").forEach(function (el) {
+      var closeBtn = el.querySelector(".toast-close");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", function () {
+          el.remove();
+        });
+      }
+      setTimeout(function () {
+        if (el && el.parentNode) {
+          el.parentNode.removeChild(el);
+        }
+      }, 5000);
+    });
+  });
+</script>
 </body>
 </html>

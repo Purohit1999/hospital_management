@@ -21,29 +21,29 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
 # Use environment variable to control DEBUG
 # Default = True for local dev. On Heroku set DEBUG=false in Config Vars.
-DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # ✔ ALLOWED_HOSTS — LOCAL + HEROKU APPS
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "hospital-management-web.herokuapp.com",
-    "hospital-management-web-4963f51d811d.herokuapp.com",
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if host.strip()
 ]
+ALLOWED_HOSTS.append("testserver")
 
 # ✔ CSRF Origins (MUST be full URLs)
 CSRF_TRUSTED_ORIGINS = [
-    "https://hospital-management-web.herokuapp.com",
-    "https://hospital-management-web-4963f51d811d.herokuapp.com",
+    origin.strip()
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
 ]
 
 # ✔ Needed for Heroku reverse proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# ⚠️ TEMP: Allow embedding in iframes so tools like "Am I Responsive" work.
-# Remove these two lines after taking screenshots, to restore clickjacking protection.
-X_FRAME_OPTIONS = "ALLOWALL"
-SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+# Clickjacking protection
+X_FRAME_OPTIONS = "DENY"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 
 # ─────────────────────────────────────────────
 # APPLICATIONS
@@ -190,9 +190,15 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "from@gmail.com"          # TODO: replace for real use
-EMAIL_HOST_PASSWORD = "your_app_password"   # TODO: use env var in production
-EMAIL_RECEIVING_USER = ["to@gmail.com"]
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    EMAIL_HOST_USER or "no-reply@example.com",
+)
+EMAIL_RECEIVING_USER = [
+    email for email in os.getenv("EMAIL_RECEIVING_USER", "").split(",") if email
+]
 
 # ─────────────────────────────────────────────
 # STRIPE SETTINGS

@@ -171,16 +171,16 @@
                     </td>
                     <td>
                       <div class="d-flex flex-wrap">
-                        <a href="{% url 'edit-patient' patient.id %}"
+                        <a href="{% url 'edit-patient' patient.pk %}"
                            class="btn btn-sm btn-primary mr-1 mb-1">
                           Edit
                         </a>
-                        <a href="{% url 'delete-patient' patient.id %}"
+                        <a href="{% url 'delete-patient' patient.pk %}"
                            class="btn btn-sm btn-danger mr-1 mb-1">
                           Delete
                         </a>
                         {% if not patient.dischargedetails %}
-                          <a href="{% url 'discharge-patient' patient.id %}"
+                          <a href="{% url 'discharge-patient' patient.pk %}"
                              class="btn btn-sm btn-warning mb-1">
                             Discharge
                           </a>

@@ -5,7 +5,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.db import IntegrityError
 from django.db.models import Q
+from django.db.models.deletion import ProtectedError
 from django.contrib import messages
 
 # ==============================
@@ -29,10 +31,12 @@ from datetime import datetime
 # App-Specific Imports
 # ==============================
 from .models import Doctor, Patient, Appointment, DischargeDetails
+from payments.models import Payment
 from .forms import (
     AppointmentForm,
     PatientUserForm, PatientForm,
     DoctorUserForm, DoctorForm,
+    UserForm,
     ContactForm,          # 👈 contact form import
 )
 
@@ -125,7 +129,9 @@ def doctor_signup_view(request):
             doctor.user = user
             doctor.status = False
             doctor.save()
-            return redirect("doctorlogin")
+            login(request, user)
+            messages.success(request, "Registration successful. Welcome!")
+            return redirect("afterlogin")
     else:
         user_form = DoctorUserForm()
         doctor_form = DoctorForm()
@@ -152,7 +158,9 @@ def patient_signup_view(request):
             patient = patient_form.save(commit=False)
             patient.user = user
             patient.save()
-            return redirect("patientlogin")
+            login(request, user)
+            messages.success(request, "Registration successful. Welcome!")
+            return redirect("afterlogin")
     else:
         user_form = PatientUserForm()
         patient_form = PatientForm()
@@ -449,14 +457,15 @@ def edit_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
     if request.method == "POST":
-        user_form = DoctorUserForm(request.POST, instance=user)
+        user_form = UserForm(request.POST, instance=user)
         doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
         if user_form.is_valid() and doctor_form.is_valid():
             user_form.save()
             doctor_form.save()
+            messages.success(request, "Doctor updated successfully.")
             return redirect("admin-view-doctor")
     else:
-        user_form = DoctorUserForm(instance=user)
+        user_form = UserForm(instance=user)
         doctor_form = DoctorForm(instance=doctor)
 
     return render(
@@ -517,14 +526,15 @@ def edit_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     user = patient.user
     if request.method == "POST":
-        user_form = PatientUserForm(request.POST, instance=user)
+        user_form = UserForm(request.POST, instance=user)
         patient_form = PatientForm(request.POST, request.FILES, instance=patient)
         if user_form.is_valid() and patient_form.is_valid():
             user_form.save()
             patient_form.save()
+            messages.success(request, "Patient updated successfully.")
             return redirect("admin-view-patient")
     else:
-        user_form = PatientUserForm(instance=user)
+        user_form = UserForm(instance=user)
         patient_form = PatientForm(instance=patient)
 
     return render(
@@ -539,9 +549,25 @@ def edit_patient_view(request, pk):
 def delete_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     user = patient.user
-    patient.delete()
+    if Appointment.objects.filter(patient=patient).exists():
+        messages.error(
+            request,
+            "Cannot delete patient because related appointments exist. "
+            "Please remove appointments first.",
+        )
+        return redirect("admin-view-patient")
+    try:
+        patient.delete()
+    except (ProtectedError, IntegrityError):
+        messages.error(
+            request,
+            "Cannot delete patient because related appointments exist. "
+            "Please remove appointments first.",
+        )
+        return redirect("admin-view-patient")
     if user:
         user.delete()
+    messages.success(request, "Patient deleted successfully.")
     return redirect("admin-view-patient")
 
 
@@ -572,13 +598,22 @@ def patient_discharge_summary_view(request):
     discharges = DischargeDetails.objects.filter(
         patient=patient
     ).order_by("-discharge_date")
+    payments = Payment.objects.filter(patient=patient).select_related("discharge")
+    payments_by_discharge = {
+        payment.discharge_id: payment for payment in payments if payment.discharge_id
+    }
 
     for discharge in discharges:
         discharge.days_spent = (
             discharge.discharge_date - discharge.admission_date
         ).days or 1
+        discharge.payment = payments_by_discharge.get(discharge.id)
 
-    context = {"discharges": discharges, "patient": patient}
+    context = {
+        "discharges": discharges,
+        "patient": patient,
+        "payments_by_discharge": payments_by_discharge,
+    }
     return render(request, "hospital/patient_discharge.html", context)
 
 
@@ -768,14 +803,14 @@ def update_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
     if request.method == "POST":
-        user_form = DoctorUserForm(request.POST, instance=user)
+        user_form = UserForm(request.POST, instance=user)
         doctor_form = DoctorForm(request.POST, request.FILES, instance=doctor)
         if user_form.is_valid() and doctor_form.is_valid():
             user_form.save()
             doctor_form.save()
             return redirect("admin-view-doctor")
     else:
-        user_form = DoctorUserForm(instance=user)
+        user_form = UserForm(instance=user)
         doctor_form = DoctorForm(instance=doctor)
 
     return render(
@@ -790,9 +825,25 @@ def update_doctor_view(request, pk):
 def delete_doctor_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     user = doctor.user
-    doctor.delete()
+    if Appointment.objects.filter(doctor=doctor).exists():
+        messages.error(
+            request,
+            "Cannot delete doctor because related appointments exist. "
+            "Please remove appointments first.",
+        )
+        return redirect("admin-view-doctor")
+    try:
+        doctor.delete()
+    except (ProtectedError, IntegrityError):
+        messages.error(
+            request,
+            "Cannot delete doctor because related appointments exist. "
+            "Please remove appointments first.",
+        )
+        return redirect("admin-view-doctor")
     if user:
         user.delete()
+    messages.success(request, "Doctor deleted successfully.")
     return redirect("admin-view-doctor")
 
 

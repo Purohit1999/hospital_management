@@ -114,6 +114,16 @@
         </table>
 
         <div class="text-center mt-4">
+          {% if discharge.payment and discharge.payment.status == "paid" %}
+            <span class="badge bg-success">Paid</span>
+          {% elif discharge.payment and discharge.payment.status == "pending" %}
+            <span class="badge bg-warning text-dark">Payment pending</span>
+          {% else %}
+            <form method="post" action="{% url 'payments-checkout' discharge.id %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Pay Bill</button>
+            </form>
+          {% endif %}
           <button onclick="printInvoice('{{ forloop.counter }}')" class="btn btn-secondary">Print Invoice</button>
         </div>
       </div>

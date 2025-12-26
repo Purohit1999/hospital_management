@@ -2,6 +2,11 @@
 {% block content %}
 <div class="container mt-4">
   <h2>Payment successful</h2>
-  <p>Your Stripe test payment completed. Premium features can now be unlocked here.</p>
+  <p>Your payment has been processed successfully.</p>
+  {% if payment %}
+    <p><strong>Amount:</strong> {{ payment.amount }} {{ payment.currency|upper }}</p>
+    <p><strong>Status:</strong> {{ payment.get_status_display }}</p>
+  {% endif %}
+  <a href="{% url 'patient-discharge-summary' %}" class="btn btn-primary mt-3">Back to Discharge</a>
 </div>
 {% endblock %}

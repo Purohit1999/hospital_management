@@ -319,6 +319,60 @@ With relationships:
 * Many-to-One: Patient → Appointments
 * One-to-Many: Patient → Discharge Summaries
 
+## Full Data Schema (Tables + Fields)
+
+Doctor
+- user_id (OneToOne -> auth_user)
+- department, mobile, address, profile_pic, status, created_at
+
+Patient
+- user_id (OneToOne -> auth_user)
+- address, mobile, symptoms, profile_pic, assignedDoctorId (FK -> Doctor), status, created_at
+
+Appointment
+- patient_id (FK -> Patient)
+- doctor_id (FK -> Doctor)
+- date_time, description, status, created_at
+- created_by_id, updated_by_id (FK -> auth_user)
+
+DischargeDetails
+- patient_id (FK -> Patient)
+- doctor_id (FK -> Doctor, nullable)
+- admission_date, discharge_date, summary
+- room_charge, doctor_fee, medicine_cost, other_charge, total, created_at
+
+Invoice
+- patient_id (FK -> Patient)
+- issued_date, amount, paid, created_at, created_by_id (FK -> auth_user)
+
+Payment
+- user_id (FK -> auth_user)
+- patient_id (FK -> Patient)
+- discharge_id (FK -> DischargeDetails, nullable)
+- amount, currency, stripe_session_id, stripe_payment_intent, status, created_at
+
+Prescription
+- appointment_id (OneToOne -> Appointment)
+- date_issued, medications, instructions, created_at, created_by_id (FK -> auth_user)
+
+Feedback
+- appointment_id (FK -> Appointment)
+- rating, comments, submitted_at
+
+## Text ERD (Relationships)
+
+```
+User 1--1 Doctor
+User 1--1 Patient
+Patient 1--* Appointment *--1 Doctor
+Appointment 1--1 Prescription
+Appointment 1--* Feedback
+Patient 1--* DischargeDetails
+DischargeDetails 1--* Payment
+User 1--* Payment
+Patient 1--* Invoice
+```
+
 ---
 
 # 🔐 **Authentication & Authorization**

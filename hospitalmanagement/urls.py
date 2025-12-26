@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LogoutView
@@ -69,7 +69,7 @@ urlpatterns = [
     path('approve-doctor/<int:pk>/', views.approve_doctor_view, name='approve-doctor'),
     path('reject-doctor/<int:pk>/', views.reject_doctor_view, name='reject-doctor'),
     path('edit-doctor/<int:pk>/', views.edit_doctor_view, name='edit-doctor'),
-    path('delete-doctor/<int:pk>/', views.delete_doctor_view, name='delete-doctor-from-hospital'),
+    path('delete-doctor/<int:pk>/', views.delete_doctor_view, name='delete-doctor'),
 
     # Admin - Patient Management
     path('admin-patient/', views.admin_patient_view, name='admin-patient'),
@@ -122,6 +122,9 @@ urlpatterns = [
 
     # 🔹 Stripe test endpoint
     path('stripe-test/', views_stripe_test.stripe_keys_test, name='stripe-test'),
+
+    # Payments
+    path('payments/', include('payments.urls')),
 ]
 
 # Serve media files during development
