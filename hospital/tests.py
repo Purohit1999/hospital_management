@@ -1,9 +1,11 @@
+from datetime import timedelta
 from django.contrib.auth.models import Group, User
 from django.test import TestCase, override_settings
+from django.utils import timezone
 from unittest.mock import patch
 from django.urls import reverse
 
-from .models import Appointment, Doctor, Patient, ConsultationRequest
+from .models import Appointment, Doctor, Patient, ConsultationRequest, DischargeDetails
 
 
 @override_settings(
@@ -227,3 +229,83 @@ class DoctorSignupTests(TestCase):
         user = User.objects.get(username="doc_user")
         self.assertTrue(user.groups.filter(name="DOCTOR").exists())
         self.assertTrue(Doctor.objects.filter(user=user).exists())
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class AdminModuleTests(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_user(
+            username="admin_user",
+            password="admin_pass",
+            is_staff=True,
+            is_superuser=True,
+        )
+        self.doctor_user = User.objects.create_user(
+            username="doctor_user",
+            password="doctor_pass",
+        )
+        self.patient_user = User.objects.create_user(
+            username="patient_user",
+            password="patient_pass",
+        )
+        self.doctor = Doctor.objects.create(user=self.doctor_user, status=True)
+        self.patient = Patient.objects.create(
+            user=self.patient_user,
+            assignedDoctorId=self.doctor,
+            symptoms="Cough",
+        )
+
+    def test_admin_patient_list_renders(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.get(reverse("admin-view-patient"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Patient")
+
+    def test_admin_add_patient_creates_record(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("admin-add-patient"),
+            data={
+                "first_name": "New",
+                "last_name": "Patient",
+                "username": "new_patient",
+                "password": "new_pass",
+                "address": "1 Street",
+                "mobile": "1234567890",
+                "symptoms": "Fever",
+                "assignedDoctorId": "",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(User.objects.filter(username="new_patient").exists())
+        self.assertTrue(Patient.objects.filter(user__username="new_patient").exists())
+
+    def test_discharge_creates_discharge_details_and_pdf(self):
+        self.client.force_login(self.admin_user)
+        self.patient.created_at = timezone.now() - timedelta(days=2)
+        self.patient.save(update_fields=["created_at"])
+
+        discharge_response = self.client.post(
+            reverse("discharge-patient", args=[self.patient.pk]),
+            data={
+                "roomCharge": "100",
+                "doctorFee": "50",
+                "medicineCost": "25",
+                "OtherCharge": "10",
+            },
+        )
+        self.assertEqual(discharge_response.status_code, 200)
+        self.assertTrue(
+            DischargeDetails.objects.filter(patient=self.patient).exists()
+        )
+
+        pdf_response = self.client.get(
+            reverse("download-pdf", args=[self.patient.pk])
+        )
+        self.assertEqual(pdf_response.status_code, 200)
+        self.assertEqual(pdf_response["Content-Type"], "application/pdf")

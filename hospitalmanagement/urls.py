@@ -76,6 +76,8 @@ urlpatterns = [
     path('reject-doctor/<int:pk>/', views.reject_doctor_view, name='reject-doctor'),
     path('edit-doctor/<int:pk>/', views.edit_doctor_view, name='edit-doctor'),
     path('delete-doctor/<int:pk>/', views.delete_doctor_view, name='delete-doctor'),
+    path('admin-update-doctor/<int:pk>/', views.edit_doctor_view, name='admin-update-doctor'),
+    path('admin-delete-doctor/<int:pk>/', views.delete_doctor_view, name='admin-delete-doctor'),
 
     # Admin - Patient Management
     path('admin-patient/', views.admin_patient_view, name='admin-patient'),
@@ -87,6 +89,8 @@ urlpatterns = [
     path('reject-patient/<int:pk>/', views.reject_patient_view, name='reject-patient'),
     path('edit-patient/<int:pk>/', views.edit_patient_view, name='edit-patient'),
     path('delete-patient/<int:pk>/', views.delete_patient_view, name='delete-patient'),
+    path('admin-update-patient/<int:pk>/', views.edit_patient_view, name='admin-update-patient'),
+    path('admin-delete-patient/<int:pk>/', views.delete_patient_view, name='admin-delete-patient'),
 
     # Patient discharge & billing
     path(
@@ -96,6 +100,8 @@ urlpatterns = [
     ),
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
     path('generate-bill/<int:pk>/', views.generate_patient_bill_view, name='generate-bill'),
+    path('download-pdf/<int:pk>/', views.download_invoice_pdf_view, name='download-pdf'),
+    path('email-invoice/<int:pk>/', views.email_invoice_view, name='email-invoice'),
 
     # Admin - Appointment Management
     path('admin-appointment/', views.admin_appointment_view, name='admin-appointment'),
@@ -106,6 +112,10 @@ urlpatterns = [
         views.admin_approve_appointment_view,
         name='admin-approve-appointment'
     ),
+    path('admin-update-appointment/<int:pk>/', views.admin_update_appointment_view, name='admin-update-appointment'),
+    path('admin-delete-appointment/<int:pk>/', views.admin_delete_appointment_view, name='admin-delete-appointment'),
+    path('approve-appointment/<int:pk>/', views.approve_appointment_view, name='approve-appointment'),
+    path('reject-appointment/<int:pk>/', views.reject_appointment_view, name='reject-appointment'),
     path(
         'admin-discharge-patient/',
         views.admin_discharge_patient_view,

@@ -126,6 +126,8 @@
 
   <div class="btn-group">
     <button onclick="printInvoice()">Print Invoice</button>
+    <a href="{% url 'download-pdf' patientId %}">Download PDF</a>
+    <a href="{% url 'email-invoice' patientId %}">Email Invoice</a>
   </div>
 </div>
 

@@ -76,12 +76,12 @@
             <td>{{ doctor.address }}</td>
             <td>{{ doctor.department }}</td>
             <td>
-              <a class="btn btn-sm btn-info" href="{% url 'edit-doctor' doctor.pk %}" title="Edit">
+              <a class="btn btn-sm btn-info" href="{% url 'admin-update-doctor' doctor.pk %}" title="Edit">
                 <i class="fa fa-pencil"></i> Edit
               </a>
             </td>
             <td>
-              <a class="btn btn-sm btn-danger" href="{% url 'delete-doctor' doctor.pk %}" title="Delete"
+              <a class="btn btn-sm btn-danger" href="{% url 'admin-delete-doctor' doctor.pk %}" title="Delete"
                  onclick="return confirm('Are you sure you want to delete this doctor?');">
                 <i class="fa fa-trash"></i> Delete
               </a>

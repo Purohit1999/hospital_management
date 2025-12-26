@@ -10,7 +10,8 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.contrib import messages
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
+from django.template.loader import render_to_string
 
 # ==============================
 # Authentication & Authorization
@@ -28,6 +29,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 from datetime import datetime
+from io import BytesIO
 
 # ==============================
 # App-Specific Imports
@@ -806,7 +808,34 @@ def admin_appointment_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def admin_approve_appointment_view(request):
-    return render(request, "hospital/admin_approve_appointment.html")
+    appointments = Appointment.objects.select_related(
+        "doctor__user", "patient__user"
+    ).filter(status="pending")
+    return render(
+        request,
+        "hospital/admin_approve_appointment.html",
+        {"appointments": appointments},
+    )
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def approve_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+    appointment.status = "confirmed"
+    appointment.save()
+    messages.success(request, "Appointment approved successfully.")
+    return redirect("admin-approve-appointment")
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def reject_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+    appointment.status = "cancelled"
+    appointment.save()
+    messages.success(request, "Appointment rejected successfully.")
+    return redirect("admin-approve-appointment")
 
 
 # ---------------- SPECIALISATION VIEW ----------------
@@ -841,6 +870,37 @@ def admin_add_appointment_view(request):
         "hospital/admin_add_appointment.html",
         {"form": form},
     )
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def admin_update_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+    if request.method == "POST":
+        form = AppointmentForm(request.POST, instance=appointment)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.updated_by = request.user
+            appointment.save()
+            messages.success(request, "Appointment updated successfully.")
+            return redirect("admin-view-appointment")
+    else:
+        form = AppointmentForm(instance=appointment)
+
+    return render(
+        request,
+        "hospital/admin_update_appointment.html",
+        {"form": form, "appointment": appointment},
+    )
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def admin_delete_appointment_view(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+    appointment.delete()
+    messages.success(request, "Appointment deleted successfully.")
+    return redirect("admin-view-appointment")
 
 
 # ---------------- DOCTOR APPROVAL / SEARCH ----------------
@@ -943,35 +1003,45 @@ def doctor_search_patient_view(request):
 
 
 # ---------------- BILLING / DISCHARGE ----------------
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
+def _get_patient_admit_date(patient):
+    if patient and patient.created_at:
+        return patient.created_at.date()
+    return timezone.now().date()
+
+
+def _build_bill_context(patient, admit_date, discharge_date, total_days):
+    return {
+        "name": f"{patient.user.first_name} {patient.user.last_name}",
+        "mobile": patient.mobile,
+        "address": patient.address,
+        "symptoms": patient.symptoms,
+        "assignedDoctorName": patient.assignedDoctorId.user.get_full_name()
+        if patient.assignedDoctorId
+        else "N/A",
+        "admitDate": admit_date,
+        "todayDate": discharge_date,
+        "day": int(total_days),
+        "patientId": patient.id,
+    }
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def generate_patient_bill_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
 
-    if hasattr(patient, "dischargedetails"):
-        messages.warning(request, "⚠️ Patient already discharged.")
+    if DischargeDetails.objects.filter(patient=patient).exists():
+        messages.warning(request, "Patient already discharged.")
         return redirect("admin-view-patient")
 
-    admit_date = timezone.now().date()
+    admit_date = _get_patient_admit_date(patient)
     today = timezone.now().date()
-    total_days = 1
+    total_days = max(1, (today - admit_date).days)
 
     return render(
         request,
         "hospital/patient_generate_bill.html",
-        {
-            "name": f"{patient.user.first_name} {patient.user.last_name}",
-            "mobile": patient.mobile,
-            "address": patient.address,
-            "symptoms": patient.symptoms,
-            "assignedDoctorName": patient.assignedDoctorId.user.get_full_name()
-            if patient.assignedDoctorId
-            else "N/A",
-            "admitDate": admit_date,
-            "todayDate": today,
-            "day": total_days,
-            "patientId": patient.id,
-        },
+        _build_bill_context(patient, admit_date, today, total_days),
     )
 
 
@@ -983,19 +1053,18 @@ def safe_float(value):
         return 0.0
 
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def discharge_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
 
-    last_discharge = DischargeDetails.objects.filter(patient=patient).last()
-    admit_date = (
-        last_discharge.admission_date
-        if last_discharge
-        else timezone.now().date()
-    )
+    if DischargeDetails.objects.filter(patient=patient).exists():
+        messages.warning(request, "Patient already discharged.")
+        return redirect("admin-view-patient")
+
+    admit_date = _get_patient_admit_date(patient)
     discharge_date = timezone.now().date()
-    total_days = (discharge_date - admit_date).days or 1
+    total_days = max(1, (discharge_date - admit_date).days)
 
     if request.method == "POST":
         room_charge = safe_float(request.POST.get("roomCharge", 0)) * total_days
@@ -1019,36 +1088,137 @@ def discharge_patient_view(request, pk):
             total=total,
         )
 
-        return render(
-            request,
-            "hospital/patient_final_bill.html",
+        context = _build_bill_context(
+            patient,
+            admit_date.strftime("%Y-%m-%d"),
+            discharge_date.strftime("%Y-%m-%d"),
+            total_days,
+        )
+        context.update(
             {
-                "name": f"{patient.user.first_name} {patient.user.last_name}",
-                "mobile": patient.mobile,
-                "address": patient.address,
-                "symptoms": patient.symptoms,
-                "assignedDoctorName": patient.assignedDoctorId.user.get_full_name()
-                if patient.assignedDoctorId
-                else "N/A",
-                "admitDate": admit_date.strftime("%Y-%m-%d"),
-                "todayDate": discharge_date.strftime("%Y-%m-%d"),
-                "day": int(total_days),
                 "roomCharge": room_charge,
                 "doctorFee": doctor_fee,
                 "medicineCost": medicine_cost,
                 "OtherCharge": other_charge,
                 "total": total,
-                "patientId": patient.id,
-            },
+            }
         )
+        return render(request, "hospital/patient_final_bill.html", context)
 
     return render(
         request,
         "hospital/patient_generate_bill.html",
-        {
-            "patient": patient,
-            "admitDate": admit_date,
-            "todayDate": discharge_date,
-            "day": int(total_days),
-        },
+        _build_bill_context(patient, admit_date, discharge_date, total_days),
     )
+
+
+def _get_discharge_details(patient):
+    return (
+        DischargeDetails.objects.filter(patient=patient)
+        .order_by("-discharge_date")
+        .first()
+    )
+
+
+def _render_invoice_pdf(context):
+    from xhtml2pdf import pisa
+
+    html = render_to_string("hospital/download_bill.html", context)
+    pdf_file = BytesIO()
+    pisa_status = pisa.CreatePDF(html, dest=pdf_file)
+    if pisa_status.err:
+        return None
+    return pdf_file.getvalue()
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def download_invoice_pdf_view(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    discharge = _get_discharge_details(patient)
+    if not discharge:
+        messages.error(request, "No discharge record found for this patient.")
+        return redirect("admin-view-patient")
+
+    context = {
+        "patientName": patient.user.get_full_name(),
+        "mobile": patient.mobile,
+        "address": patient.address,
+        "assignedDoctorName": discharge.doctor.user.get_full_name()
+        if discharge.doctor and discharge.doctor.user
+        else "N/A",
+        "admitDate": discharge.admission_date,
+        "releaseDate": discharge.discharge_date,
+        "daySpent": max(1, (discharge.discharge_date - discharge.admission_date).days),
+        "symptoms": patient.symptoms,
+        "roomCharge": discharge.room_charge,
+        "doctorFee": discharge.doctor_fee,
+        "medicineCost": discharge.medicine_cost,
+        "OtherCharge": discharge.other_charge,
+        "total": discharge.total,
+    }
+    pdf_content = _render_invoice_pdf(context)
+    if not pdf_content:
+        messages.error(request, "Unable to generate PDF at this time.")
+        return redirect("admin-view-patient")
+
+    response = HttpResponse(pdf_content, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="invoice_{patient.id}.pdf"'
+    return response
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def email_invoice_view(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    discharge = _get_discharge_details(patient)
+    if not discharge:
+        messages.error(request, "No discharge record found for this patient.")
+        return redirect("admin-view-patient")
+
+    if not patient.user.email:
+        messages.error(request, "Patient does not have an email address.")
+        return redirect("admin-view-patient")
+
+    context = {
+        "patientName": patient.user.get_full_name(),
+        "mobile": patient.mobile,
+        "address": patient.address,
+        "assignedDoctorName": discharge.doctor.user.get_full_name()
+        if discharge.doctor and discharge.doctor.user
+        else "N/A",
+        "admitDate": discharge.admission_date,
+        "releaseDate": discharge.discharge_date,
+        "daySpent": max(1, (discharge.discharge_date - discharge.admission_date).days),
+        "symptoms": patient.symptoms,
+        "roomCharge": discharge.room_charge,
+        "doctorFee": discharge.doctor_fee,
+        "medicineCost": discharge.medicine_cost,
+        "OtherCharge": discharge.other_charge,
+        "total": discharge.total,
+    }
+    pdf_content = _render_invoice_pdf(context)
+    if not pdf_content:
+        messages.error(request, "Unable to generate PDF at this time.")
+        return redirect("admin-view-patient")
+
+    subject = "Your Hospital Invoice"
+    body = (
+        "Please find attached your hospital invoice.\n"
+        "If you have any questions, contact us."
+    )
+    email = EmailMessage(
+        subject=subject,
+        body=body,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[patient.user.email],
+        cc=[settings.ADMIN_EMAIL],
+    )
+    email.attach(
+        filename=f"invoice_{patient.id}.pdf",
+        content=pdf_content,
+        mimetype="application/pdf",
+    )
+    email.send(fail_silently=True)
+    messages.success(request, "Invoice emailed successfully.")
+    return redirect("admin-view-patient")
