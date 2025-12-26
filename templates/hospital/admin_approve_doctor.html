@@ -72,6 +72,9 @@
     <div class="panel-heading">
       <h2 class="panel-title">Doctors Applied for Registration</h2>
     </div>
+    {% if error %}
+      <div class="alert alert-danger m-3">{{ error }}</div>
+    {% endif %}
     <div class="table-responsive">
       <table class="table table-hover table-bordered">
         <thead class="thead-light">
@@ -92,7 +95,11 @@
             <td>{{ d.user.get_full_name }}</td>
             <td>{{ d.user.email }}</td>
             <td>
-              <img src="{{ d.profile_pic.url }}" alt="Profile Pic" class="profile-pic">
+              {% if d.profile_pic %}
+                <img src="{{ d.profile_pic.url }}" alt="Profile Pic" class="profile-pic">
+              {% else %}
+                <img src="{% static 'images/doctor.png' %}" alt="Default" class="profile-pic">
+              {% endif %}
             </td>
             <td>{{ d.mobile }}</td>
             <td>{{ d.address }}</td>

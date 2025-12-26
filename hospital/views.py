@@ -10,6 +10,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.contrib import messages
+import logging
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 
@@ -45,6 +46,8 @@ from .forms import (
     ConsultationRequestForm,
     ContactForm,          # 👈 contact form import
 )
+
+logger = logging.getLogger(__name__)
 
 
 # ==============================
@@ -410,12 +413,19 @@ def doctor_view_discharge_patient_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def admin_approve_doctor_view(request):
-    doctors = Doctor.objects.filter(status=False)
-    return render(
-        request,
-        "hospital/admin_approve_doctor.html",
-        {"pending_doctors": doctors},
-    )
+    try:
+        doctors = Doctor.objects.filter(status=False).select_related("user")
+        context = {"pending_doctors": doctors}
+    except Exception:
+        logger.exception(
+            "Failed to load pending doctors",
+            extra={"path": request.path, "user": request.user.username},
+        )
+        context = {
+            "pending_doctors": [],
+            "error": "Unable to load pending doctors right now. Please try again.",
+        }
+    return render(request, "hospital/admin_approve_doctor.html", context)
 
 
 # ---------------- PATIENT DASHBOARD ----------------
@@ -842,12 +852,19 @@ def reject_appointment_view(request, pk):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def admin_view_doctor_specialisation(request):
-    doctors = Doctor.objects.select_related("user").filter(status=True)
-    return render(
-        request,
-        "hospital/admin_view_doctor_specialisation.html",
-        {"doctors": doctors},
-    )
+    try:
+        doctors = Doctor.objects.select_related("user").filter(status=True)
+        context = {"doctors": doctors}
+    except Exception:
+        logger.exception(
+            "Failed to load doctor specialisations",
+            extra={"path": request.path, "user": request.user.username},
+        )
+        context = {
+            "doctors": [],
+            "error": "Unable to load doctor specialisations right now.",
+        }
+    return render(request, "hospital/admin_view_doctor_specialisation.html", context)
 
 
 @login_required(login_url="adminlogin")

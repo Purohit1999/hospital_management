@@ -52,7 +52,11 @@
           <tr>
             <td>{{ d.get_name }}</td>
             <td>
-              <img src="{% static d.profile_pic.url %}" class="table-avatar" alt="Doctor Image">
+              {% if d.profile_pic %}
+                <img src="{{ d.profile_pic.url }}" class="table-avatar" alt="Doctor Image">
+              {% else %}
+                <img src="{% static 'images/doctor.png' %}" class="table-avatar" alt="Default Doctor">
+              {% endif %}
             </td>
             <td>{{ d.mobile }}</td>
             <td>{{ d.address }}</td>
