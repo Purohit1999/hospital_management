@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group, User
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from .models import Appointment, Doctor, Patient
+from .models import Appointment, Doctor, Patient, ConsultationRequest
 
 
 @override_settings(
@@ -73,3 +73,54 @@ class AdminPatientViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Patient.objects.filter(pk=self.patient.pk).exists())
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class ConsultationRequestTests(TestCase):
+    def test_get_book_consultation(self):
+        response = self.client.get(reverse("book-consultation"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_creates_consultation_request(self):
+        post_data = {
+            "full_name": "John Doe",
+            "email": "john@example.com",
+            "phone": "123456789",
+            "preferred_date": "2030-01-01",
+            "preferred_time": "10:30",
+            "message": "Need a consultation.",
+        }
+        response = self.client.post(
+            reverse("book-consultation"), data=post_data, follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ConsultationRequest.objects.count(), 1)
+
+    def test_post_rejects_taken_slot(self):
+        ConsultationRequest.objects.create(
+            full_name="Existing",
+            email="existing@example.com",
+            phone="111111111",
+            preferred_date="2030-01-02",
+            preferred_time="09:00",
+            message="Existing request",
+            status="pending",
+        )
+        post_data = {
+            "full_name": "Jane Doe",
+            "email": "jane@example.com",
+            "phone": "222222222",
+            "preferred_date": "2030-01-02",
+            "preferred_time": "09:00",
+            "message": "Try same slot.",
+        }
+        response = self.client.post(
+            reverse("book-consultation"), data=post_data, follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ConsultationRequest.objects.count(), 1)

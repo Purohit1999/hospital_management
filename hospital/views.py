@@ -31,12 +31,14 @@ from datetime import datetime
 # App-Specific Imports
 # ==============================
 from .models import Doctor, Patient, Appointment, DischargeDetails
+from .models import ConsultationRequest
 from payments.models import Payment
 from .forms import (
     AppointmentForm,
     PatientUserForm, PatientForm,
     DoctorUserForm, DoctorForm,
     UserForm,
+    ConsultationRequestForm,
     ContactForm,          # 👈 contact form import
 )
 
@@ -93,6 +95,27 @@ def contactus_view(request):
 def contact_success_view(request):
     """ Simple success page after contact form submission. """
     return render(request, "hospital/contactussuccess.html")
+
+
+# ---------------- PUBLIC CONSULTATION ----------------
+def book_consultation_view(request):
+    if request.method == "POST":
+        form = ConsultationRequestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                "Thanks — we’ll contact you soon.",
+            )
+            return redirect("book-consultation")
+    else:
+        form = ConsultationRequestForm()
+
+    return render(
+        request,
+        "hospital/book_consultation.html",
+        {"form": form},
+    )
 
 
 # ---------------- ROLE SELECTION ----------------

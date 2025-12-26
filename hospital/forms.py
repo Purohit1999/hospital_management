@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 from django.contrib.auth.models import User
-from .models import Appointment, Patient, Doctor
+from .models import Appointment, Patient, Doctor, ConsultationRequest
 
 # ------------------------------------------------------------
 # 🔹 User Edit Form (For Admins)
@@ -150,3 +150,61 @@ class ContactForm(forms.Form):
             'placeholder': 'Write your feedback or query here'
         })
     )
+
+
+# ------------------------------------------------------------
+# Public Consultation Request Form
+# ------------------------------------------------------------
+class ConsultationRequestForm(forms.ModelForm):
+    class Meta:
+        model = ConsultationRequest
+        fields = [
+            "full_name",
+            "email",
+            "phone",
+            "preferred_date",
+            "preferred_time",
+            "message",
+        ]
+        widgets = {
+            "full_name": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "phone": forms.TextInput(attrs={"class": "form-control"}),
+            "preferred_date": forms.DateInput(
+                attrs={"class": "form-control", "type": "date"}
+            ),
+            "preferred_time": forms.TimeInput(
+                attrs={"class": "form-control", "type": "time"}
+            ),
+            "message": forms.Textarea(
+                attrs={"class": "form-control", "rows": 4}
+            ),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        preferred_date = cleaned_data.get("preferred_date")
+        preferred_time = cleaned_data.get("preferred_time")
+        if not preferred_date or not preferred_time:
+            return cleaned_data
+
+        existing_request = ConsultationRequest.objects.filter(
+            preferred_date=preferred_date,
+            preferred_time=preferred_time,
+            status__in=["pending", "confirmed"],
+        ).exists()
+        if existing_request:
+            raise forms.ValidationError(
+                "This time slot is already requested. Please choose another time."
+            )
+
+        appointment_conflict = Appointment.objects.filter(
+            date_time__date=preferred_date,
+            date_time__time=preferred_time,
+        ).exists()
+        if appointment_conflict:
+            raise forms.ValidationError(
+                "This time slot is unavailable. Please choose another time."
+            )
+
+        return cleaned_data

@@ -14,6 +14,7 @@ urlpatterns = [
     path('aboutus/', views.aboutus_view, name='aboutus'),
     path('contactus/', views.contactus_view, name='contactus'),
     path('contact-success/', views.contact_success_view, name='contact-success'),
+    path('book-consultation/', views.book_consultation_view, name='book-consultation'),
 
     # Role-based click views
     path('adminclick/', views.adminclick_view, name='adminclick'),

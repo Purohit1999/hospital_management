@@ -118,3 +118,28 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"{self.appointment.patient.user.get_full_name()} rated {self.rating}/5"
+
+
+# ------------------------------------------------------------
+# Public Consultation Request model
+# ------------------------------------------------------------
+class ConsultationRequest(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("confirmed", "Confirmed"),
+        ("cancelled", "Cancelled"),
+    ]
+
+    full_name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone = models.CharField(max_length=30)
+    preferred_date = models.DateField()
+    preferred_time = models.TimeField()
+    message = models.TextField(blank=True)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="pending"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.preferred_date} {self.preferred_time}"
