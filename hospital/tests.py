@@ -157,6 +157,7 @@ class DoctorLoginTests(TestCase):
         )
         group, _ = Group.objects.get_or_create(name="DOCTOR")
         self.doctor_user.groups.add(group)
+        self.doctor_profile = Doctor.objects.create(user=self.doctor_user, status=True)
 
     def test_doctor_login_page_renders_form(self):
         response = self.client.get(reverse("doctorlogin"))
@@ -180,3 +181,49 @@ class DoctorLoginTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "/doctor-dashboard/")
+
+    def test_doctor_login_denies_non_doctor(self):
+        non_doctor = User.objects.create_user(
+            username="not_doctor",
+            password="not_doctor_pass",
+        )
+        response = self.client.post(
+            reverse("doctorlogin"),
+            data={"username": "not_doctor", "password": "not_doctor_pass"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "Access denied: Your doctor profile is missing or not approved."
+        )
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class DoctorSignupTests(TestCase):
+    def test_doctor_signup_page_renders(self):
+        response = self.client.get(reverse("doctorsignup"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Doctor Registration")
+        self.assertContains(response, "<form", html=False)
+
+    def test_doctor_signup_creates_user_and_profile(self):
+        post_data = {
+            "first_name": "Doc",
+            "last_name": "Tor",
+            "username": "doc_user",
+            "password": "doc_pass",
+            "department": "Cardiology",
+            "address": "1 Street",
+            "mobile": "5551234",
+        }
+        response = self.client.post(reverse("doctorsignup"), data=post_data)
+        self.assertEqual(response.status_code, 302)
+
+        user = User.objects.get(username="doc_user")
+        self.assertTrue(user.groups.filter(name="DOCTOR").exists())
+        self.assertTrue(Doctor.objects.filter(user=user).exists())

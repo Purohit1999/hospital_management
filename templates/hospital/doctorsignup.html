@@ -1,152 +1,132 @@
-<!DOCTYPE html>
+{% extends "hospital/homebase.html" %}
 {% load static %}
 {% load widget_tweaks %}
-<html lang="en" dir="ltr">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Doctor Signup | Hospital Management</title>
+{% block extra_css %}
+<style>
+  body {
+    background-color: #f1f4f7;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-  />
-  <link rel="stylesheet" href="{% static 'hospital/css/styles.css' %}">
+  .card {
+    border-radius: 1rem;
+  }
 
-  <style>
-    body {
-      background-color: #f1f4f7;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+  .btn-signup {
+    border-radius: 50px;
+    padding: 10px 30px;
+  }
 
-    .card {
-      border-radius: 1rem;
-    }
+  .card-header {
+    background: linear-gradient(to right, #0072ff, #8811c5);
+    color: #fff;
+    text-align: center;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+  }
 
-    .btn-signup {
-      border-radius: 50px;
-      padding: 10px 30px;
-    }
+  .form-control {
+    border-radius: 1rem;
+  }
 
-    .card-header {
-      background: linear-gradient(to right, #0072ff, #8811c5);
-      color: #fff;
-      text-align: center;
-      border-top-left-radius: 1rem;
-      border-top-right-radius: 1rem;
-    }
+  .form-label {
+    font-weight: 600;
+  }
 
-    .form-control {
-      border-radius: 1rem;
-    }
+  .form-note {
+    font-size: 0.9rem;
+  }
 
-    .form-label {
-      font-weight: 600;
-    }
+  .errorlist {
+    color: red;
+    list-style: none;
+    padding-left: 0;
+  }
+</style>
+{% endblock %}
 
-    .form-note {
-      font-size: 0.9rem;
-    }
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg">
+        <div class="card-header py-3">
+          <h4 class="mb-0">Doctor Registration</h4>
+          <p class="mb-0" style="font-size: 0.95rem;">Please fill in your details to apply for a doctor account.</p>
+        </div>
+        <div class="card-body px-4">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-    .errorlist {
-      color: red;
-      list-style: none;
-      padding-left: 0;
-    }
-  </style>
-</head>
-
-<body>
-  {% include "hospital/navbar.html" %}
-  <br><br>
-
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card shadow-lg">
-          <div class="card-header py-3">
-            <h4 class="mb-0">Doctor Registration</h4>
-            <p class="mb-0" style="font-size: 0.95rem;">Please fill in your details to apply for a doctor account.</p>
-          </div>
-          <div class="card-body px-4">
-            <form method="post" enctype="multipart/form-data">
-              {% csrf_token %}
-
-              {% if userForm.errors or doctorForm.errors %}
-                <div class="alert alert-danger">
-                  <strong>Oops!</strong> Please correct the errors below.
-                </div>
-              {% endif %}
-
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="first_name" class="form-label">First Name</label>
-                  {% render_field userForm.first_name class="form-control" placeholder="Enter First Name" %}
-                  {{ userForm.first_name.errors }}
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="last_name" class="form-label">Last Name</label>
-                  {% render_field userForm.last_name class="form-control" placeholder="Enter Last Name" %}
-                  {{ userForm.last_name.errors }}
-                </div>
+            {% if userForm.errors or doctorForm.errors %}
+              <div class="alert alert-danger">
+                <strong>Oops!</strong> Please correct the errors below.
               </div>
+            {% endif %}
 
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="username" class="form-label">Username</label>
-                  {% render_field userForm.username class="form-control" placeholder="Choose a Username" %}
-                  {{ userForm.username.errors }}
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="password" class="form-label">Password</label>
-                  {% render_field userForm.password class="form-control" placeholder="Enter Password" %}
-                  {{ userForm.password.errors }}
-                </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="first_name" class="form-label">First Name</label>
+                {% render_field userForm.first_name class="form-control" placeholder="Enter First Name" %}
+                {{ userForm.first_name.errors }}
               </div>
+              <div class="form-group col-md-6">
+                <label for="last_name" class="form-label">Last Name</label>
+                {% render_field userForm.last_name class="form-control" placeholder="Enter Last Name" %}
+                {{ userForm.last_name.errors }}
+              </div>
+            </div>
 
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="department" class="form-label">Department</label>
-                  {% render_field doctorForm.department class="form-control" placeholder="Enter Department" %}
-                  {{ doctorForm.department.errors }}
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="mobile" class="form-label">Mobile Number</label>
-                  {% render_field doctorForm.mobile class="form-control" placeholder="Enter Mobile Number" %}
-                  {{ doctorForm.mobile.errors }}
-                </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="username" class="form-label">Username</label>
+                {% render_field userForm.username class="form-control" placeholder="Choose a Username" %}
+                {{ userForm.username.errors }}
               </div>
+              <div class="form-group col-md-6">
+                <label for="password" class="form-label">Password</label>
+                {% render_field userForm.password class="form-control" placeholder="Enter Password" %}
+                {{ userForm.password.errors }}
+              </div>
+            </div>
 
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="address" class="form-label">Address</label>
-                  {% render_field doctorForm.address class="form-control" placeholder="Enter Address" %}
-                  {{ doctorForm.address.errors }}
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="profile_pic" class="form-label">Profile Picture</label>
-                  {% render_field doctorForm.profile_pic class="form-control" %}
-                  {{ doctorForm.profile_pic.errors }}
-                </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="department" class="form-label">Department</label>
+                {% render_field doctorForm.department class="form-control" placeholder="Enter Department" %}
+                {{ doctorForm.department.errors }}
               </div>
+              <div class="form-group col-md-6">
+                <label for="mobile" class="form-label">Mobile Number</label>
+                {% render_field doctorForm.mobile class="form-control" placeholder="Enter Mobile Number" %}
+                {{ doctorForm.mobile.errors }}
+              </div>
+            </div>
 
-              <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary btn-signup">Register</button>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="address" class="form-label">Address</label>
+                {% render_field doctorForm.address class="form-control" placeholder="Enter Address" %}
+                {{ doctorForm.address.errors }}
               </div>
-              <p class="text-center mt-3 form-note">
-                Already have an account? <a href="{% url 'doctorlogin' %}">Login here</a>
-              </p>
-            </form>
-          </div>
+              <div class="form-group col-md-6">
+                <label for="profile_pic" class="form-label">Profile Picture</label>
+                {% render_field doctorForm.profile_pic class="form-control" %}
+                {{ doctorForm.profile_pic.errors }}
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <button type="submit" class="btn btn-primary btn-signup">Register</button>
+            </div>
+            <p class="text-center mt-3 form-note">
+              Already have an account? <a href="{% url 'doctorlogin' %}">Login here</a>
+            </p>
+          </form>
         </div>
       </div>
     </div>
   </div>
-
-  <br><br>
-  {% include "hospital/footer.html" %}
-</body>
-
-</html>
+</div>
+{% endblock content %}

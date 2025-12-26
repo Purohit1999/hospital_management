@@ -275,7 +275,7 @@ def doctor_login_view(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            if user and is_doctor(user):
+            if user and is_doctor(user) and Doctor.objects.filter(user=user).exists():
                 login(request, user)
                 redirect_to = request.POST.get("next") or request.GET.get("next")
                 if redirect_to and url_has_allowed_host_and_scheme(
@@ -283,7 +283,9 @@ def doctor_login_view(request):
                 ):
                     return redirect(redirect_to)
                 return redirect("doctor-dashboard")
-            error_message = "Access denied: You are not a doctor."
+            error_message = (
+                "Access denied: Your doctor profile is missing or not approved."
+            )
         else:
             error_message = "Invalid credentials. Please try again."
     else:
