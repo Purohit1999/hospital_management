@@ -52,6 +52,11 @@ def _ensure_patient_for_user(user):
                 "Patient profile already exists",
                 extra={"user_id": user.id, "patient_id": patient.id},
             )
+        logger.info(
+            "Patient profile ensured (created=%s)",
+            created,
+            extra={"user_id": user.id},
+        )
     except Exception:
         logger.exception(
             "Failed to auto-create Patient profile",
@@ -64,8 +69,8 @@ def ensure_patient_on_user_create(sender, instance, created, **kwargs):
     if not created:
         return
     logger.info(
-        "User created; checking PATIENT group for Patient auto-create",
-        extra={"user_id": instance.id, "username": instance.username},
+        "User saved; checking PATIENT group for Patient auto-create",
+        extra={"user_id": instance.id},
     )
     _ensure_patient_for_user(instance)
 
@@ -74,15 +79,20 @@ def ensure_patient_on_user_create(sender, instance, created, **kwargs):
 def ensure_patient_on_group_add(sender, instance, action, pk_set, **kwargs):
     if action != "post_add" or not pk_set:
         return
+    logger.info(
+        "User groups post_add fired; pk_set=%s",
+        pk_set,
+        extra={"user_id": instance.id},
+    )
     patient_group = Group.objects.filter(name="PATIENT").first()
     if not patient_group or patient_group.id not in pk_set:
         logger.info(
             "Group add does not include PATIENT; skipping Patient auto-create",
-            extra={"user_id": instance.id, "username": instance.username},
+            extra={"user_id": instance.id},
         )
         return
     logger.info(
         "PATIENT group added to user; ensuring Patient profile",
-        extra={"user_id": instance.id, "username": instance.username},
+        extra={"user_id": instance.id},
     )
     _ensure_patient_for_user(instance)
