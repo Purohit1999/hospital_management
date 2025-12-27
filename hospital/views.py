@@ -566,7 +566,12 @@ def admin_patient_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def admin_view_patient_view(request):
-    patients = Patient.objects.select_related("user").all()
+    patients = Patient.objects.select_related("user").order_by("-id")
+    logger.info(
+        "admin_view_patient_view count=%s",
+        patients.count(),
+        extra={"path": request.path, "user": request.user.username},
+    )
     return render(
         request, "hospital/admin_view_patient.html", {"patients": patients}
     )
@@ -702,7 +707,17 @@ def patient_discharge_summary_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def admin_approve_patient_view(request):
-    patients = Patient.objects.filter(dischargedetails__isnull=True)
+    patients = (
+        Patient.objects.filter(status=False)
+        .filter(dischargedetails__isnull=True)
+        .select_related("user")
+        .order_by("-id")
+    )
+    logger.info(
+        "admin_approve_patient_view pending_count=%s",
+        patients.count(),
+        extra={"path": request.path, "user": request.user.username},
+    )
     return render(
         request,
         "hospital/admin_approve_patient.html",
@@ -713,9 +728,17 @@ def admin_approve_patient_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def admin_discharge_patient_view(request):
-    patients = Patient.objects.filter(
-        status=True, dischargedetails__isnull=True
-    ).select_related("user")
+    patients = (
+        Patient.objects.filter(status=True)
+        .filter(dischargedetails__isnull=True)
+        .select_related("user")
+        .order_by("-id")
+    )
+    logger.info(
+        "admin_discharge_patient_view eligible_count=%s",
+        patients.count(),
+        extra={"path": request.path, "user": request.user.username},
+    )
     return render(
         request,
         "hospital/admin_discharge_patient.html",

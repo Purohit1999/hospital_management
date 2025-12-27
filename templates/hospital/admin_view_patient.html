@@ -71,12 +71,18 @@
         <tbody>
           {% for patient in patients %}
           <tr>
-            <td>{{ patient.user.get_full_name|default:patient.user.username }}</td>
+            <td>
+              {% if patient.user %}
+                {{ patient.user.get_full_name|default:patient.user.username }}
+              {% else %}
+                <span class="text-muted">N/A</span>
+              {% endif %}
+            </td>
             <td>
               {% if patient.profile_pic %}
                 <img src="{{ patient.profile_pic.url }}" alt="Profile" class="profile-pic">
               {% else %}
-                <img src="{% static 'images/default_avatar.png' %}" alt="No Pic" class="profile-pic">
+                <span class="text-muted">No Image</span>
               {% endif %}
             </td>
             <td>{{ patient.symptoms }}</td>

@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     "hospital.apps.HospitalConfig",
     "payments",  # Stripe / payments app
 ]
+#
+# Signals are loaded via HospitalConfig.ready().
 
 # ─────────────────────────────────────────────
 # MIDDLEWARE
