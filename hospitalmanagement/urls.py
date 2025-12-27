@@ -141,6 +141,8 @@ urlpatterns = [
 
     # Payments
     path('payments/', include('payments.urls')),
+    # Custom admin dashboard v2 (add-only routes)
+    path('adm2/', include('hospital.admin_dashboard_urls')),
 ]
 
 # Serve media files during development

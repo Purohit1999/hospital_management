@@ -101,6 +101,8 @@ class Invoice(models.Model):
     issued_date = models.DateField(default=timezone.now)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     paid = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, null=True, blank=True)
+    pdf_file = models.FileField(upload_to="invoices/", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='invoices_created')
 
@@ -143,3 +145,20 @@ class ConsultationRequest(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - {self.preferred_date} {self.preferred_time}"
+
+
+class EmailLog(models.Model):
+    STATUS_CHOICES = [
+        ("SUCCESS", "Success"),
+        ("FAILED", "Failed"),
+    ]
+
+    to_email = models.EmailField(blank=True)
+    subject = models.CharField(max_length=255)
+    event_type = models.CharField(max_length=100)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
+    error_message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.event_type} - {self.status}"

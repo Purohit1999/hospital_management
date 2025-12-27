@@ -1,0 +1,44 @@
+{% extends "hospital/admin_base.html" %}
+{% block content %}
+
+<div class="container mt-4 mb-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Invoices</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Patient</th>
+            <th>Amount</th>
+            <th>Issued</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for invoice in invoices %}
+          <tr>
+            <td>{{ invoice.id }}</td>
+            <td>{{ invoice.patient.user.get_full_name }}</td>
+            <td>{{ invoice.amount }}</td>
+            <td>{{ invoice.issued_date }}</td>
+            <td>{{ invoice.status|default:"-" }}</td>
+            <td>
+              <a class="btn btn-sm btn-info" href="{% url 'adm2_invoice_detail' invoice.id %}">View</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted">No invoices found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

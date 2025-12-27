@@ -1,0 +1,30 @@
+{% extends "hospital/admin_base.html" %}
+{% block content %}
+
+<div class="container mt-4 mb-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Invoice #{{ invoice.id }}</h5>
+    </div>
+    <div class="card-body">
+      <p><strong>Patient:</strong> {{ invoice.patient.user.get_full_name }}</p>
+      <p><strong>Amount:</strong> {{ invoice.amount }}</p>
+      <p><strong>Issued:</strong> {{ invoice.issued_date }}</p>
+      <p><strong>Status:</strong> {{ invoice.status|default:"-" }}</p>
+
+      {% if discharge %}
+        <p><strong>Admit:</strong> {{ discharge.admission_date }}</p>
+        <p><strong>Discharge:</strong> {{ discharge.discharge_date }}</p>
+        <p><strong>Days:</strong> {{ total_days }}</p>
+      {% endif %}
+
+      <div class="mt-3">
+        <a class="btn btn-outline-primary" href="{% url 'adm2_download_pdf' invoice.id %}">Download PDF</a>
+        <a class="btn btn-outline-secondary" href="{% url 'adm2_invoice_resend_email' invoice.id %}">Resend Email</a>
+        <a class="btn btn-link" href="{% url 'adm2_invoice_list' %}">Back to list</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
