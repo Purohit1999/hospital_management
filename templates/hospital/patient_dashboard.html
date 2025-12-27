@@ -149,4 +149,100 @@
   </a>
 </div>
 
+<div class="container mt-5">
+  <h4 class="mb-3">Your Profile</h4>
+  <div class="card mb-4">
+    <div class="card-body">
+      <p><strong>Name:</strong>
+        {% if patient.user %}
+          {{ patient.user.get_full_name|default:patient.user.username }}
+        {% else %}
+          N/A
+        {% endif %}
+      </p>
+      <p><strong>Mobile:</strong> {{ patient.mobile|default:"-" }}</p>
+      <p><strong>Address:</strong> {{ patient.address|default:"-" }}</p>
+      <p><strong>Symptoms:</strong> {{ patient.symptoms|default:"-" }}</p>
+    </div>
+  </div>
+
+  <h4 class="mb-3">Invoices</h4>
+  {% if invoices %}
+    <div class="table-responsive mb-4">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Amount</th>
+            <th>Issued</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for invoice in invoices %}
+          <tr>
+            <td>{{ invoice.id }}</td>
+            <td>{{ invoice.amount }}</td>
+            <td>{{ invoice.issued_date }}</td>
+            <td>{{ invoice.status|default:"-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">No invoices yet.</p>
+  {% endif %}
+
+  <h4 class="mb-3">Discharge Records</h4>
+  {% if discharges %}
+    <div class="table-responsive mb-4">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for discharge in discharges %}
+          <tr>
+            <td>{{ discharge.discharge_date }}</td>
+            <td>{{ discharge.total }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">No discharge records yet.</p>
+  {% endif %}
+
+  <h4 class="mb-3">Email Logs</h4>
+  {% if email_logs %}
+    <div class="table-responsive mb-4">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Sent</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in email_logs %}
+          <tr>
+            <td>{{ log.subject }}</td>
+            <td>{{ log.status }}</td>
+            <td>{{ log.created_at }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">No email records yet.</p>
+  {% endif %}
+</div>
+
 {% endblock %}

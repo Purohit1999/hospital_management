@@ -35,7 +35,7 @@ from io import BytesIO
 # ==============================
 # App-Specific Imports
 # ==============================
-from .models import Doctor, Patient, Appointment, DischargeDetails
+from .models import Doctor, Patient, Appointment, DischargeDetails, Invoice, EmailLog
 from .models import ConsultationRequest
 from payments.models import Payment
 from .forms import (
@@ -102,6 +102,20 @@ def contactus_view(request):
 def contact_success_view(request):
     """ Simple success page after contact form submission. """
     return render(request, "hospital/contactussuccess.html")
+
+
+# ---------------- DEMO LOGINS ----------------
+def demo_logins_view(request):
+    demo_users = (
+        User.objects.filter(username__startswith="demo_p", groups__name="PATIENT")
+        .distinct()
+        .order_by("username")
+    )
+    return render(
+        request,
+        "hospital/demo_logins.html",
+        {"demo_users": demo_users},
+    )
 
 
 # ---------------- PUBLIC CONSULTATION ----------------
@@ -216,9 +230,11 @@ def patient_signup_view(request):
             patient = patient_form.save(commit=False)
             patient.user = user
             patient.save()
+            Patient.objects.get_or_create(user=user)
             login(request, user)
+            logger.info("Auto-login after signup", extra={"user_id": user.id})
             messages.success(request, "Registration successful. Welcome!")
-            return redirect("afterlogin")
+            return redirect("patient-dashboard")
     else:
         user_form = PatientUserForm()
         patient_form = PatientForm()
@@ -315,7 +331,7 @@ def patient_login_view(request):
         form = AuthenticationForm(request=request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            if user and is_patient(user):
+            if user and (is_patient(user) or Patient.objects.filter(user=user).exists()):
                 login(request, user)
                 redirect_to = request.POST.get("next") or request.GET.get("next")
                 if redirect_to and url_has_allowed_host_and_scheme(
@@ -326,6 +342,28 @@ def patient_login_view(request):
             error_message = "Access denied: Please log in using a patient account."
         else:
             error_message = "Invalid username or password."
+            if "@" in request.POST.get("username", ""):
+                email_input = request.POST.get("username", "").strip()
+                password_input = request.POST.get("password", "")
+                user_by_email = (
+                    User.objects.filter(email__iexact=email_input)
+                    .order_by("id")
+                    .first()
+                )
+                if user_by_email:
+                    user = authenticate(
+                        request,
+                        username=user_by_email.username,
+                        password=password_input,
+                    )
+                    if user and (is_patient(user) or Patient.objects.filter(user=user).exists()):
+                        login(request, user)
+                        redirect_to = request.POST.get("next") or request.GET.get("next")
+                        if redirect_to and url_has_allowed_host_and_scheme(
+                            redirect_to, allowed_hosts={request.get_host()}
+                        ):
+                            return redirect(redirect_to)
+                        return redirect("patient-dashboard")
 
     context = {
         "error": error_message,
@@ -448,10 +486,23 @@ def patient_dashboard_view(request):
     )
     doctor = latest_appointment.doctor if latest_appointment else None
 
+    invoices = Invoice.objects.filter(patient=patient).order_by("-id")
+    discharges = DischargeDetails.objects.filter(patient=patient).order_by(
+        "-discharge_date"
+    )
+    email_logs = []
+    if patient.user and patient.user.email:
+        email_logs = EmailLog.objects.filter(
+            to_email=patient.user.email
+        ).order_by("-id")
+
     context = {
         "patient": patient,
         "doctor": doctor,
         "latest_appointment": latest_appointment,
+        "invoices": invoices,
+        "discharges": discharges,
+        "email_logs": email_logs,
     }
     return render(request, "hospital/patient_dashboard.html", context)
 
