@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
 
     # Local apps
-    "hospital",
+    "hospital.apps.HospitalConfig",
     "payments",  # Stripe / payments app
 ]
 
