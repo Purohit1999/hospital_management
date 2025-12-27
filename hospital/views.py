@@ -65,6 +65,17 @@ def is_patient(user):
     return user.groups.filter(name="PATIENT").exists()
 
 
+def get_current_patient(request):
+    patient = Patient.objects.select_related("user").filter(user=request.user).first()
+    if not patient:
+        messages.error(
+            request,
+            "Patient profile not found. Please complete registration.",
+        )
+        return None
+    return patient
+
+
 # ---------------- CUSTOM LOGOUT ----------------
 @method_decorator(csrf_exempt, name="dispatch")
 class CustomLogoutView(LogoutView):
@@ -476,7 +487,9 @@ def patient_dashboard_view(request):
     - Shows latest appointment's doctor & date (if any)
     - Displays any success messages (e.g., after booking)
     """
-    patient = get_object_or_404(Patient, user=request.user)
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect("patientsignup")
 
     latest_appointment = (
         Appointment.objects.filter(patient=patient)
@@ -503,6 +516,8 @@ def patient_dashboard_view(request):
         "invoices": invoices,
         "discharges": discharges,
         "email_logs": email_logs,
+        "appointments_count": Appointment.objects.filter(patient=patient).count(),
+        "invoices_count": invoices.count(),
     }
     return render(request, "hospital/patient_dashboard.html", context)
 
@@ -731,7 +746,9 @@ def reject_patient_view(request, pk):
 @login_required(login_url="patientlogin")
 @user_passes_test(is_patient)
 def patient_discharge_summary_view(request):
-    patient = get_object_or_404(Patient, user=request.user)
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect("patientsignup")
     discharges = DischargeDetails.objects.filter(
         patient=patient
     ).order_by("-discharge_date")
@@ -805,23 +822,34 @@ def patient_book_appointment_view(request):
     Patient-facing appointment booking.
     After successful booking, redirect to dashboard with a success message.
     """
-    patient = Patient.objects.filter(user=request.user).first()
+    patient = get_current_patient(request)
     if not patient:
-        return redirect("patient-dashboard")
+        return redirect("patientsignup")
 
     if request.method == "POST":
         form = AppointmentForm(request.POST)
+        if "patient" in form.fields:
+            form.fields["patient"].required = False
+        if "status" in form.fields:
+            form.fields["status"].required = False
         if form.is_valid():
             appointment = form.save(commit=False)
             appointment.patient = patient
             appointment.created_by = request.user
             appointment.updated_by = request.user
+            if hasattr(appointment, "status") and not appointment.status:
+                appointment.status = "pending"
             appointment.save()
 
             messages.success(request, "Your appointment has been booked successfully.")
-            return redirect("patient-dashboard")
+            return redirect("patient-appointment-list")
+        messages.error(request, "Please correct the errors and try again.")
     else:
         form = AppointmentForm()
+        if "patient" in form.fields:
+            form.fields["patient"].required = False
+        if "status" in form.fields:
+            form.fields["status"].required = False
 
     return render(
         request,
@@ -833,10 +861,10 @@ def patient_book_appointment_view(request):
 @login_required(login_url="patientlogin")
 @user_passes_test(is_patient)
 def patient_appointment_list_view(request):
-    patient = Patient.objects.get(user=request.user)
-    appointments = Appointment.objects.filter(patient=patient).order_by(
-        "-date_time"
-    )
+    patient = get_current_patient(request)
+    if not patient:
+        return redirect("patientsignup")
+    appointments = Appointment.objects.filter(patient=patient).order_by("-date_time")
     return render(
         request,
         "appointments/list.html",

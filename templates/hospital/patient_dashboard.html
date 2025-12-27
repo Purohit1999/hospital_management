@@ -149,6 +149,41 @@
   </a>
 </div>
 
+<div class="row g-3 mt-3">
+  <div class="col-md-3">
+    <a class="text-decoration-none" href="{% url 'patient-book-appointment' %}">
+      <div class="card-box bg-primary">
+        <i class="bi bi-calendar-plus"></i>
+        Book Appointment
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a class="text-decoration-none" href="{% url 'patient-appointment-list' %}">
+      <div class="card-box bg-success">
+        <i class="bi bi-card-list"></i>
+        Appointments ({{ appointments_count|default:0 }})
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a class="text-decoration-none" href="{% url 'patient-discharge-summary' %}">
+      <div class="card-box bg-warning">
+        <i class="bi bi-file-earmark-text"></i>
+        Discharge Summary
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a class="text-decoration-none" href="{% url 'payments-history' %}">
+      <div class="card-box bg-info">
+        <i class="bi bi-receipt"></i>
+        Payments ({{ invoices_count|default:0 }})
+      </div>
+    </a>
+  </div>
+</div>
+
 <div class="container mt-5">
   <h4 class="mb-3">Your Profile</h4>
   <div class="card mb-4">
