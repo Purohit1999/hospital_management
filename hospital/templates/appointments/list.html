@@ -18,12 +18,24 @@
       <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
         <div class="card mb-4 shadow-sm w-100 border-0">
           <div class="card-body">
+            {% with puser=appt.patient.user duser=appt.doctor.user %}
             <h5 class="card-title text-success">
-              Patient: {{ appt.patient.name }}
+              Patient:
+              {% if puser %}
+                {{ puser.get_full_name|default:puser.username }}
+              {% else %}
+                Patient
+              {% endif %}
             </h5>
             <h6 class="card-subtitle mb-2 text-muted">
-              With Dr. {{ appt.doctor.name }}
+              With Dr.
+              {% if duser %}
+                {{ duser.get_full_name|default:duser.username }}
+              {% else %}
+                Doctor
+              {% endif %}
             </h6>
+            {% endwith %}
 
             <p class="mb-2">
               <strong>Date & Time:</strong><br>
