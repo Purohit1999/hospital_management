@@ -1,0 +1,26 @@
+{% extends "hospital/homebase.html" %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-3">Complaint → Department Classifier</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Complaint</label>
+      <textarea class="form-control" name="complaint" rows="4"></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Override (optional)</label>
+      <input class="form-control" type="text" name="override">
+    </div>
+    <button type="submit" class="btn btn-primary">Classify</button>
+  </form>
+
+  {% if prediction %}
+    <div class="mt-4">
+      <h5>Prediction</h5>
+      <p>Department: {{ prediction.label }}</p>
+      <p>Confidence: {{ prediction.confidence }}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

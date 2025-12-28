@@ -1,0 +1,37 @@
+{% extends "hospital/homebase.html" %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-3">Policy / SOP Q&A</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Question</label>
+      <textarea class="form-control" name="query" rows="3">{{ query }}</textarea>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="redact" id="redact">
+      <label class="form-check-label" for="redact">PII Redaction</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Ask</button>
+    <a href="{% url 'ai-rag-upload' %}" class="btn btn-outline-secondary">Upload Docs</a>
+  </form>
+
+  {% if answer %}
+  <div class="mt-4">
+    <h5>Answer</h5>
+    <p>{{ answer }}</p>
+  </div>
+  {% endif %}
+
+  {% if citations %}
+  <div class="mt-3">
+    <h6>Citations</h6>
+    <ul>
+      {% for c in citations %}
+      <li><strong>{{ c.source }}</strong>: {{ c.snippet }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

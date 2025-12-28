@@ -1,0 +1,38 @@
+{% extends "hospital/homebase.html" %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-3">Policy Compliance Agent</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Discharge Summary Text</label>
+      <textarea class="form-control" name="text" rows="6"></textarea>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="redact" id="redact">
+      <label class="form-check-label" for="redact">PII Redaction</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Run Compliance Agent</button>
+  </form>
+
+  {% if trace %}
+    <div class="accordion mt-4" id="traceAccordion">
+      {% for step in trace %}
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+          <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
+            {{ step.step }}
+          </button>
+        </h2>
+        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
+          <div class="accordion-body">
+            <pre>{{ step.output }}</pre>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

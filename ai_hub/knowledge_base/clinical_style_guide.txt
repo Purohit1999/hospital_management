@@ -1,0 +1,23 @@
+CLINICAL STYLE GUIDE (DEMO / EDUCATIONAL)
+
+This style guide is for AI-assisted drafts only. AI output is not final.
+Clinician review and approval are required before use.
+
+1) Patient-Friendly Language Rules
+1. Use plain language and avoid jargon.
+2. Use short sentences and one idea per sentence.
+3. Prefer active voice and clear verbs.
+4. Define any necessary medical terms in simple words.
+
+2) Instructions Format
+1. Use numbered steps for patient instructions.
+2. Keep each step brief and actionable.
+3. Include who to contact for questions.
+
+3) Mandatory Follow-Up and Red Flags
+1. Always include follow-up timing or appointment details.
+2. Always list red flags that require urgent care.
+
+4) AI Assistive-Only Disclaimer
+- AI drafts are assistive and not final clinical documentation.
+- Clinician review is required before saving or sharing.

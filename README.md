@@ -712,3 +712,35 @@ This system demonstrates:
 A complete, secure, and production-ready application suitable for academic and professional use.
 
 ---
+
+
+# AI Hub Demo (RAG + Compliance Agent)
+
+RAG Q&A example queries:
+- What are the required sections of a discharge summary?
+- What is the appointment policy for no-shows and rescheduling?
+- What fields are required on an invoice?
+
+Compliance Agent demo inputs:
+
+Bad discharge summary (missing meds, follow-up, red flags):
+```text
+Patient admitted for pneumonia. Improved on IV antibiotics.
+Discharged home today. Diagnosis: pneumonia. Treatment: IV antibiotics.
+Signed by Dr. Smith.
+```
+
+Good discharge summary (fully compliant):
+```text
+Diagnosis: Community-acquired pneumonia.
+Treatment summary: IV antibiotics x3 days, improved symptoms, no complications.
+Medication list: Amoxicillin 500 mg PO TID x5 days (NEW).
+Follow-up: PCP visit in 7 days; chest X-ray in 4 weeks.
+Red flags: fever, worsening shortness of breath, chest pain.
+Sign-off: Dr. Smith, Attending Physician, 2024-06-01.
+```
+
+Governance and safety notes:
+- AI drafts are marked as not final and require clinician review.
+- No AI feature mutates existing patient records.
+- Feature flags are respected: AI_FEATURES_ENABLED and AGENTS_ENABLED.

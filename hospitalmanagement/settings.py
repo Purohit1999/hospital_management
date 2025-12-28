@@ -21,7 +21,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
 # Use environment variable to control DEBUG
 # Default = True for local dev. On Heroku set DEBUG=false in Config Vars.
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 # ✔ ALLOWED_HOSTS — LOCAL + HEROKU APPS
 ALLOWED_HOSTS = [
@@ -62,6 +62,7 @@ INSTALLED_APPS = [
 
     # Local apps
     "hospital.apps.HospitalConfig",
+    "ai_hub.apps.AiHubConfig",
     "payments",  # Stripe / payments app
 ]
 #
@@ -161,6 +162,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = MEDIA_DIR
 
+# Manifest storage fails in local dev if collectstatic was not run.
+if DEBUG:
+    STATICFILES_BACKEND = "django.contrib.staticfiles.storage.StaticFilesStorage"
+else:
+    STATICFILES_BACKEND = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 # Django 4.2+ storage settings
 STORAGES = {
     # Default storage for uploaded files (profile pictures, etc.)
@@ -172,7 +179,7 @@ STORAGES = {
     },
     # Storage for static files (served via WhiteNoise on Heroku)
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": STATICFILES_BACKEND,
     },
 }
 
@@ -222,6 +229,16 @@ if STRIPE_SECRET_KEY:
 # ─────────────────────────────────────────────
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# AI Hub feature flags and settings
+AI_FEATURES_ENABLED = os.getenv("AI_FEATURES_ENABLED", "True").lower() == "true"
+AGENTS_ENABLED = os.getenv("AGENTS_ENABLED", "True").lower() == "true"
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "mock")
+RAG_PROVIDER = os.getenv("RAG_PROVIDER", "faiss")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+
+AI_HUB_KB_DIR = BASE_DIR / "ai_hub" / "knowledge_base"
+AI_HUB_ARTIFACTS_DIR = BASE_DIR / "ai_hub" / "artifacts"
 
 # ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?ƒ"?
 # LOGGING (Heroku-friendly console logs)

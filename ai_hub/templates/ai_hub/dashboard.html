@@ -1,0 +1,53 @@
+{% extends "hospital/homebase.html" %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-4">AI Hub</h2>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Policy/SOP Q&A</h5>
+          <p class="card-text">Ask questions over uploaded policies.</p>
+          <a href="{% url 'ai-rag' %}" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Discharge Draft Assistant</h5>
+          <p class="card-text">Generate discharge summary drafts.</p>
+          <a href="{% url 'ai-draft' %}" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Policy Compliance Agent</h5>
+          <p class="card-text">Run compliance checks with trace.</p>
+          <a href="{% url 'ai-agent-compliance' %}" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">No‑Show Risk</h5>
+          <p class="card-text">Predict appointment no‑show risk.</p>
+          <a href="{% url 'ai-no-show' %}" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Complaint Classifier</h5>
+          <p class="card-text">Triage complaints to departments.</p>
+          <a href="{% url 'ai-triage' %}" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

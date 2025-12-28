@@ -1,0 +1,33 @@
+{% extends "hospital/homebase.html" %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-3">Discharge Summary Draft Assistant</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Doctor Notes</label>
+      <textarea class="form-control" name="notes" rows="6"></textarea>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="redact" id="redact">
+      <label class="form-check-label" for="redact">PII Redaction</label>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="reviewed" id="reviewed">
+      <label class="form-check-label" for="reviewed">Reviewed</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Draft</button>
+  </form>
+
+  {% if draft %}
+    <div class="mt-4">
+      <h5>Draft Summary</h5>
+      <pre>{{ draft }}</pre>
+    </div>
+    <div class="mt-3">
+      <h5>Patient Instructions</h5>
+      <pre>{{ instructions }}</pre>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

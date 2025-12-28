@@ -1,0 +1,91 @@
+HOSPITAL SOP AND POLICY (DEMO / EDUCATIONAL)
+
+This policy document is for demo and educational use only.
+All AI outputs are assistive drafts and require clinician review and sign-off.
+
+1) DISCHARGE SUMMARY SOP (REQUIRED SECTIONS)
+1.1 Required Sections Checklist (discharge summary policy)
+1. Diagnosis
+2. Treatment summary
+3. Medication list
+4. Follow-up plan
+5. Red flags / return precautions
+6. Sign-off
+
+1.2 Diagnosis
+- State the primary diagnosis and key secondary diagnoses.
+- Include relevant problem list items.
+
+1.3 Treatment Summary
+- Summarize procedures, hospital course, and response to treatment.
+- Note complications or significant events.
+
+1.4 Medication List
+- Provide a final medication list with dose, route, and frequency.
+- Clearly label NEW, CHANGED, and STOPPED medications.
+
+1.5 Follow-Up Plan
+- Document follow-up appointments, timeframe, and specialty.
+- Include required labs or imaging with timelines.
+
+1.6 Red Flags / Return Precautions
+- List red flags that require urgent evaluation.
+- Include clear instructions for when to return to the ED.
+
+1.7 Sign-Off
+- Discharging clinician name, role, and signature.
+- Date/time of discharge summary completion.
+
+Policy keywords: discharge summary, SOP, required sections, medication list, follow-up, red flags, sign-off.
+
+2) APPOINTMENT POLICY (NO-SHOWS, REMINDERS, RESCHEDULING)
+2.1 No-Shows
+- First no-show: send reminder and offer rescheduling.
+- Repeated no-shows require admin review and documentation.
+
+2.2 Reminders
+- Send reminders 24-48 hours before the appointment.
+- Include date, time, location, and preparation instructions.
+
+2.3 Rescheduling
+- Patients may reschedule up to 24 hours in advance.
+- Same-day rescheduling is subject to availability.
+
+Policy keywords: appointment policy, no-show, reminders, rescheduling.
+
+3) BILLING / INVOICE POLICY
+3.1 Required Invoice Fields
+- Patient name, patient ID (if available).
+- Date of service and invoice date.
+- Itemized charges (room, doctor fee, medication, other).
+- Total amount, payment status, and billing contact.
+
+3.2 Disputes
+- Disputes must be logged within 30 days.
+- Provide a written explanation and supporting documents.
+
+3.3 Refunds
+- Refunds require admin approval and documentation.
+- Record refund reason and amount in billing notes.
+
+Policy keywords: billing policy, invoice, disputes, refunds.
+
+4) DATA PRIVACY AND SECURITY
+4.1 Minimum Necessary Data
+- Include only the minimum necessary data in AI drafts and notes.
+- Avoid unnecessary PII when patient ID is sufficient.
+
+4.2 Access Control
+- Only authorized staff can access discharge summaries.
+- Audit access and edits when possible.
+
+4.3 Clinician Review Required
+- AI outputs are not final clinical documents.
+- Clinician review and sign-off are mandatory before saving or sharing.
+
+Policy keywords: privacy, security, clinician review, AI disclaimer, minimum necessary.
+
+5) DEMO / EDUCATIONAL DISCLAIMER
+- This content is for demonstration and educational purposes only.
+- It does not replace official hospital policy or legal guidance.
+- All AI outputs require clinician review and approval.

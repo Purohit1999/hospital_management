@@ -1,0 +1,31 @@
+{% extends "hospital/homebase.html" %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-3">Appointment No‑Show Risk</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Days until appointment</label>
+        <input class="form-control" type="number" name="days_until" value="2">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Appointment hour (0-23)</label>
+        <input class="form-control" type="number" name="hour" value="9">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Predict</button>
+  </form>
+
+  {% if scores %}
+    <div class="mt-4">
+      <h5>Predictions</h5>
+      <ul>
+        {% for row in scores %}
+          <li>{{ row.appointment_id }} — Risk: {{ row.risk }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
