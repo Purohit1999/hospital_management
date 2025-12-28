@@ -1,0 +1,49 @@
+{% extends "hospital/homebase.html" %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-3">AI Evaluation Dashboard</h2>
+  <p class="text-muted">Latest offline evaluation results. Run the commands if empty.</p>
+
+  <div class="row g-4 mt-2">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">RAG Evaluation</h5>
+          {% if rag_results %}
+            <p>Pass rate: {{ rag_results.pass_rate }}</p>
+            <p>Average latency (ms): {{ rag_results.avg_latency_ms }}</p>
+            <p>Failing questions: {{ rag_results.failing_count }}</p>
+          {% else %}
+            <p>No results yet; run command.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Compliance Agent Evaluation</h5>
+          {% if agent_results %}
+            <p>Average score: {{ agent_results.avg_score }}</p>
+            <p>Average hit rate: {{ agent_results.avg_hit_rate }}</p>
+            <p>Cases evaluated: {{ agent_results.count }}</p>
+          {% else %}
+            <p>No results yet; run command.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if rag_results and rag_results.failures %}
+    <div class="mt-4">
+      <h6>Top RAG Failures</h6>
+      <ul>
+        {% for item in rag_results.failures %}
+          <li>{{ item.question }} (hits: {{ item.hits }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

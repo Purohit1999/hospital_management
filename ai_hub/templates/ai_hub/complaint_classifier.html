@@ -22,5 +22,9 @@
       <p>Confidence: {{ prediction.confidence }}</p>
     </div>
   {% endif %}
+
+  {% if request_id %}
+  <div class="mt-3 text-muted small">Request ID: {{ request_id }}</div>
+  {% endif %}
 </div>
 {% endblock %}

@@ -44,4 +44,8 @@ def run_compliance_agent(draft_text: str, use_llm: bool = True) -> Dict:
     steps.append({"step": "REPORT", "output": report})
 
     total_latency_ms = int((time.time() - start) * 1000)
-    return {"steps": steps, "latency_ms": total_latency_ms}
+    return {
+        "steps": steps,
+        "latency_ms": total_latency_ms,
+        "citations": citations,
+    }

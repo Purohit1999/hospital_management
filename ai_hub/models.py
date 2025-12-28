@@ -71,3 +71,19 @@ class AgentStepTrace(models.Model):
     output_text = models.TextField(blank=True)
     latency_ms = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class AiRequestTrace(models.Model):
+    request_id = models.UUIDField(unique=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    route = models.CharField(max_length=200)
+    operation_type = models.CharField(max_length=50)
+    llm_provider = models.CharField(max_length=50, blank=True)
+    rag_provider = models.CharField(max_length=50, blank=True)
+    latency_ms = models.IntegerField(default=0)
+    success = models.BooleanField(default=True)
+    error_message = models.TextField(blank=True)
+    metadata = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)

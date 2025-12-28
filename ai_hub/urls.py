@@ -9,4 +9,5 @@ urlpatterns = [
     path("agent/compliance/", views.compliance_agent, name="ai-agent-compliance"),
     path("ml/no-show/", views.no_show_risk, name="ai-no-show"),
     path("nlp/triage/", views.complaint_classifier, name="ai-triage"),
+    path("eval/", views.eval_dashboard, name="ai-eval"),
 ]

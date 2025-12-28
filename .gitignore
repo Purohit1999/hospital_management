@@ -161,3 +161,8 @@ cython_debug/
 .abstra/
 static/images/responsive.png 
 git
+ai_hub/artifacts/
+*.jsonl
+ai_hub/artifacts/
+!.python-version
+!.python-version

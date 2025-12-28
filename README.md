@@ -744,3 +744,21 @@ Governance and safety notes:
 - AI drafts are marked as not final and require clinician review.
 - No AI feature mutates existing patient records.
 - Feature flags are respected: AI_FEATURES_ENABLED and AGENTS_ENABLED.
+
+# How This Maps to Roles
+
+Data Scientist:
+- Offline evaluation sets and pass rates for RAG and compliance checks.
+- Clear success metrics and repeatable experiments.
+
+ML Engineer:
+- Artifact-based pipelines (models, vector index, eval outputs).
+- Deterministic evaluations and model version tracking.
+
+Applied AI Engineer:
+- RAG with citations, observability traces, and safe defaults.
+- Feature flags and no-mutation design for production readiness.
+
+Agentic AI Engineer:
+- Policy compliance agent with plan, retrieval, validation, and reporting.
+- Human-in-the-loop controls with clinician review.
