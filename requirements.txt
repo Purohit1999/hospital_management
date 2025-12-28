@@ -41,7 +41,7 @@ django-widget-tweaks==1.5.0
 djangorestframework==3.15.2
 durationpy==0.10
 executing==2.2.0
-faiss-cpu==1.9.0.post1
+faiss-cpu==1.8.0.post1
 fastjsonschema==2.21.1
 flake8==7.3.0
 flatbuffers==25.9.23
