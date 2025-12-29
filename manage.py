@@ -23,7 +23,8 @@ def main():
 
     # Optional: Log environment info (useful in production logs)
     logging.basicConfig(level=logging.INFO)
-    logging.info(f"Using settings module: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
+    if is_truthy(os.getenv("DEBUG")) or is_truthy(os.getenv("LOG_SETTINGS_MODULE")):
+        logging.info(f"Using settings module: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
 
     # Environment warning for development
     if (
