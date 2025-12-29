@@ -3,6 +3,12 @@ from pathlib import Path
 import dj_database_url
 import stripe
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
 # ─────────────────────────────────────────────
 # BASE DIRECTORY
 # ─────────────────────────────────────────────
@@ -231,11 +237,20 @@ if STRIPE_SECRET_KEY:
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # AI Hub feature flags and settings
-AI_FEATURES_ENABLED = os.getenv("AI_FEATURES_ENABLED", "True").lower() == "true"
-AGENTS_ENABLED = os.getenv("AGENTS_ENABLED", "True").lower() == "true"
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "mock")
+def _truthy(value):
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"true", "1", "yes", "y", "on"}
+
+
+AI_FEATURES_ENABLED = _truthy(os.getenv("AI_FEATURES_ENABLED", "True"))
+AGENTS_ENABLED = _truthy(os.getenv("AGENTS_ENABLED", "True"))
+AI_MOCK_MODE = _truthy(os.getenv("AI_MOCK_MODE", "false"))
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").strip().lower()
+LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
 RAG_PROVIDER = os.getenv("RAG_PROVIDER", "faiss")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 
 AI_HUB_KB_DIR = BASE_DIR / "ai_hub" / "knowledge_base"
 AI_HUB_ARTIFACTS_DIR = BASE_DIR / "ai_hub" / "artifacts"

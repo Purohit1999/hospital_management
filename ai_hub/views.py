@@ -2,6 +2,7 @@ import json
 import os
 import time
 import re
+import logging
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -23,6 +24,9 @@ from .services import ml as ml_service
 from .services.ml import predict_no_show, predict_department
 from .services.agent import run_compliance_agent
 from .services.observability import new_request_id, trace_success, trace_error
+from .services.llm_client import generate_answer
+
+logger = logging.getLogger(__name__)
 
 
 def _ai_enabled():
@@ -70,12 +74,13 @@ def rag_qa(request):
     citations = []
     query = ""
     request_id = ""
+    error_message = ""
     if request.method == "POST":
         if not _rate_limit_ok(request):
             messages.error(request, "Rate limit exceeded. Please wait and try again.")
             return redirect("ai-rag")
         op_request_id = new_request_id()
-        request_id = str(op_request_id)
+        request_id = op_request_id
         start = time.time()
         try:
             top_k = 3
@@ -83,13 +88,30 @@ def rag_qa(request):
             redact = request.POST.get("redact") == "on"
             safe_query = _redact_pii(query) if redact else query
             citations, latency_ms = retrieve(safe_query, top_k=top_k)
+            context_lines = []
+            for c in citations:
+                context_lines.append(f"[{c.get('source')}] {c.get('snippet')}")
+            context_block = "\n".join(context_lines)
+
+            redaction_rules = ""
+            if redact:
+                redaction_rules = (
+                    "Redaction rules: replace any identifiers with placeholders like "
+                    "[PATIENT_NAME], [PATIENT_ID], [PHONE], [EMAIL].\n"
+                )
+
             prompt = (
-                "Answer the question using the provided policy snippets. "
-                "Include brief citations.\n\n"
+                "Use the provided context to answer the question. "
+                "Cite sources using [source] tags. Do not add facts.\n"
+                f"{redaction_rules}\n"
+                f"Context:\n{context_block}\n\n"
                 f"Question: {safe_query}\n"
-                f"Snippets: {citations}\n"
             )
-            answer = generate_text(prompt)
+            answer = generate_answer(
+                prompt,
+                model=getattr(settings, "LLM_MODEL", "gpt-4o-mini"),
+                provider=getattr(settings, "LLM_PROVIDER", "openai"),
+            )
             AgentQueryLog.objects.create(
                 user=request.user if request.user.is_authenticated else None,
                 query=query,
@@ -112,6 +134,29 @@ def rag_qa(request):
                     "redact": redact,
                 },
             )
+        except ValueError as exc:
+            error_message = str(exc)
+            logger.error("RAG LLM configuration error: %s", error_message)
+            trace_error(
+                request_id=op_request_id,
+                user=request.user,
+                route=request.path,
+                operation_type="rag_qa",
+                latency_ms=int((time.time() - start) * 1000),
+                error_message=error_message,
+            )
+            return render(
+                request,
+                "ai_hub/rag_qa.html",
+                {
+                    "answer": answer,
+                    "citations": citations,
+                    "query": query,
+                    "request_id": request_id,
+                    "error_message": error_message,
+                },
+                status=400,
+            )
         except Exception as exc:
             trace_error(
                 request_id=op_request_id,
@@ -125,7 +170,13 @@ def rag_qa(request):
     return render(
         request,
         "ai_hub/rag_qa.html",
-        {"answer": answer, "citations": citations, "query": query, "request_id": request_id},
+        {
+            "answer": answer,
+            "citations": citations,
+            "query": query,
+            "request_id": request_id,
+            "error_message": error_message,
+        },
     )
 
 

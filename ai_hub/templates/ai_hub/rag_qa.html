@@ -23,6 +23,12 @@
   </div>
   {% endif %}
 
+  {% if error_message %}
+  <div class="alert alert-danger mt-3">
+    {{ error_message }}
+  </div>
+  {% endif %}
+
   {% if citations %}
   <div class="mt-3">
     <h6>Citations</h6>
