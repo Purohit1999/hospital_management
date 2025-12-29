@@ -58,6 +58,10 @@ def dashboard(request):
     return render(request, "ai_hub/dashboard.html")
 
 
+def rag_compliance(request):
+    return render(request, "ai_hub/agent_compliance.html")
+
+
 def rag_qa(request):
     if not _ai_enabled():
         return render(request, "ai_hub/disabled.html")

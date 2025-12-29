@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path("", views.dashboard, name="ai-dashboard"),
     path("rag/", views.rag_qa, name="ai-rag"),
+    path("rag/compliance/", views.rag_compliance, name="rag-compliance"),
     path("rag/upload/", views.rag_upload, name="ai-rag-upload"),
     path("draft/", views.draft_assistant, name="ai-draft"),
     path("agent/compliance/", views.compliance_agent, name="ai-agent-compliance"),
