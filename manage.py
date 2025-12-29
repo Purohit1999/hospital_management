@@ -10,6 +10,11 @@ import os
 import sys
 import logging
 
+def is_truthy(value):
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
+
 def main():
     """Main entry point for Django administrative commands."""
     
@@ -21,7 +26,10 @@ def main():
     logging.info(f"Using settings module: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
 
     # Environment warning for development
-    if os.environ.get('DJANGO_SETTINGS_MODULE') == 'hospitalmanagement.settings':
+    if (
+        os.environ.get('DJANGO_SETTINGS_MODULE') == 'hospitalmanagement.settings'
+        and is_truthy(os.getenv("DEBUG"))
+    ):
         print("Running in development mode. Make sure to configure production settings before deployment.")
 
     try:
