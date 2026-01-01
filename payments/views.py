@@ -1,4 +1,5 @@
 from decimal import Decimal
+import logging
 
 import stripe
 from django.conf import settings
@@ -14,6 +15,8 @@ from django.http import HttpResponse
 from hospital.models import DischargeDetails
 from .models import Payment
 
+logger = logging.getLogger(__name__)
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def is_patient(user):
     return user.groups.filter(name="PATIENT").exists()
@@ -38,7 +41,6 @@ def create_checkout_session(request, discharge_id):
         messages.error(request, "Stripe is not configured. Please contact support.")
         return redirect("patient-discharge-summary")
 
-    stripe.api_key = settings.STRIPE_SECRET_KEY
     amount_pence = int(Decimal(discharge.total) * 100)
     if amount_pence <= 0:
         messages.error(request, "Invalid payment amount.")
@@ -58,27 +60,46 @@ def create_checkout_session(request, discharge_id):
     ) + "?session_id={CHECKOUT_SESSION_ID}"
     cancel_url = request.build_absolute_uri(reverse("payment-cancel"))
 
-    session = stripe.checkout.Session.create(
-        mode="payment",
-        payment_method_types=["card"],
-        line_items=[
-            {
-                "price_data": {
-                    "currency": settings.STRIPE_CURRENCY,
-                    "unit_amount": amount_pence,
-                    "product_data": {
-                        "name": "Hospital discharge bill",
-                        "description": f"Discharge summary #{discharge.id}",
-                    },
-                },
-                "quantity": 1,
-            }
-        ],
-        success_url=success_url,
-        cancel_url=cancel_url,
-        customer_email=request.user.email or None,
-        metadata={"discharge_id": str(discharge.id)},
+    logger.info(
+        "Stripe secret present=%s starts_sk=%s len=%s",
+        bool(settings.STRIPE_SECRET_KEY),
+        settings.STRIPE_SECRET_KEY.startswith("sk_"),
+        len(settings.STRIPE_SECRET_KEY),
     )
+    try:
+        session = stripe.checkout.Session.create(
+            mode="payment",
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": settings.STRIPE_CURRENCY,
+                        "unit_amount": amount_pence,
+                        "product_data": {
+                            "name": "Hospital discharge bill",
+                            "description": f"Discharge summary #{discharge.id}",
+                        },
+                    },
+                    "quantity": 1,
+                }
+            ],
+            success_url=success_url,
+            cancel_url=cancel_url,
+            customer_email=request.user.email or None,
+            metadata={"discharge_id": str(discharge.id)},
+        )
+    except stripe.error.AuthenticationError:
+        messages.error(
+            request,
+            "Payment system configuration issue. Please contact admin.",
+        )
+        return redirect("patient-discharge-summary")
+    except stripe.error.StripeError:
+        messages.error(
+            request,
+            "Payment could not be processed at this time. Please try again later.",
+        )
+        return redirect("patient-discharge-summary")
 
     payment.stripe_session_id = session.id
     payment.save(update_fields=["stripe_session_id"])
@@ -99,7 +120,6 @@ def payment_success_view(request):
         messages.error(request, "Stripe is not configured. Please contact support.")
         return redirect("patient-discharge-summary")
 
-    stripe.api_key = settings.STRIPE_SECRET_KEY
     session = stripe.checkout.Session.retrieve(session_id)
 
     payment = Payment.objects.filter(
