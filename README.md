@@ -722,6 +722,21 @@ This project is licensed under the **MIT License**.
 
 ---
 
+## Evidence & Validation
+
+All feature claims in this README have been verified against:
+- Repository source code
+- Publicly accessible pages on the deployed application
+
+A read-only audit script (`tools/readme_audit.py`) generates
+`README_AUDIT_REPORT.md`, ensuring ongoing alignment between
+documentation and implementation.
+
+Sensitive operations (authentication, payments, admin actions)
+are intentionally excluded from public verification.
+
+--
+
 # 🎉 **Conclusion**
 
 This system demonstrates:
