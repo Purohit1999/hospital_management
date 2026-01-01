@@ -405,6 +405,30 @@ Patient 1--* Invoice
 * Download reports
 
 ---
+## System Architecture & Design
+
+### 1. High-Level System Architecture
+![System Architecture](static/images/diagram.png)
+
+This diagram summarizes how Admin, Doctor, and Patient roles interact with the system.
+Requests flow through Django views and templates, with data persisted via the ORM into the
+relational database for secure, role-aware operations.
+
+### 2. Data Flow Diagram (DFD)
+![Data Flow Diagram](static/images/data_flow.png)
+
+The DFD illustrates how user actions such as login, appointments, and billing
+travel from the UI to Django views and models, then into the database and back
+to templates for rendering.
+
+### 3. Entity Relationship Diagram (ERD)
+![Entity Relationship Diagram](static/images/erd.png)
+
+The ERD highlights the core entities (User, Patient, Doctor, Appointment, Prescription,
+Invoice, AuditLog) and their relationships, reflecting how clinical and administrative
+records are linked across the system.
+
+---
 
 # 💳 **Stripe Payment Integration**
 
