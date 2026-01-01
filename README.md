@@ -405,28 +405,82 @@ Patient 1--* Invoice
 * Download reports
 
 ---
-## System Architecture & Design
+
+## System Design & Architecture
 
 ### 1. High-Level System Architecture
+
 ![System Architecture](static/images/diagram.png)
 
-This diagram summarizes how Admin, Doctor, and Patient roles interact with the system.
-Requests flow through Django views and templates, with data persisted via the ORM into the
-relational database for secure, role-aware operations.
+This diagram presents an overall view of the Hospital Management System and illustrates how the three primary roles—**Admin**, **Doctor**, and **Patient**—interact with the application.
+
+At a high level:
+
+* Users access the system through a web browser using Django templates styled with Bootstrap.
+* Incoming requests are routed via **URLs → Views → Templates**, following Django’s MVC (MTV) architecture.
+* **Role-based access control** ensures that Admin, Doctor, and Patient users can only access permitted features.
+* Business logic is handled in Django views, while data persistence is managed through the **Django ORM**.
+* The relational database stores all clinical, administrative, and audit-related data securely.
+
+This architecture supports key workflows such as:
+
+* Admin approval and management of doctors and patients
+* Doctor access to appointments, patient records, and discharge workflows
+* Patient appointment booking, discharge summary access, and bill payment
+
+The separation of concerns (Models, Views, Templates, Forms) ensures maintainability, scalability, and secure handling of sensitive healthcare data.
+
+---
 
 ### 2. Data Flow Diagram (DFD)
+
 ![Data Flow Diagram](static/images/data_flow.png)
 
-The DFD illustrates how user actions such as login, appointments, and billing
-travel from the UI to Django views and models, then into the database and back
-to templates for rendering.
+The Data Flow Diagram illustrates how data moves through the system during common user interactions.
+
+Key data flows include:
+
+* **Authentication Flow**
+
+  * User submits login credentials → Django authentication validates the user → system redirects to the appropriate role-specific dashboard.
+* **Appointment Management Flow**
+
+  * Patient books an appointment → data is validated and stored → Doctor/Admin reviews and updates status → Patient views updated appointment information.
+* **Discharge & Billing Flow**
+
+  * Doctor/Admin generates discharge and billing details → invoice data is persisted → Patient views discharge summary and completes payment → system updates payment status.
+* **UI Rendering Flow**
+
+  * Updated data is passed from views to templates → user interface reflects the latest system state (e.g., approved, pending, paid).
+
+This diagram demonstrates a complete request lifecycle: **User Action → Processing → Database → Response**, highlighting that the application supports full transactional workflows rather than simple CRUD operations.
+
+---
 
 ### 3. Entity Relationship Diagram (ERD)
+
 ![Entity Relationship Diagram](static/images/erd.png)
 
-The ERD highlights the core entities (User, Patient, Doctor, Appointment, Prescription,
-Invoice, AuditLog) and their relationships, reflecting how clinical and administrative
-records are linked across the system.
+The ERD defines the database structure and relationships between core entities within the system.
+
+Key entities include:
+
+* **User** – Base authentication entity used for all roles.
+* **Patient** – Stores patient-specific profile information linked to a User.
+* **Doctor** – Stores doctor profile details, approval status, and permissions.
+* **Appointment** – Connects Patients and Doctors and records scheduling and status information.
+* **Prescription** – Captures medication and treatment details issued by doctors.
+* **Invoice / DischargeDetails** – Stores billing, discharge dates, charges, and payment status.
+* **AuditLog** – Records create/update actions for accountability and traceability.
+
+Relationship highlights:
+
+* A Patient can have multiple Appointments.
+* A Doctor can manage multiple Appointments.
+* Appointments can result in Prescriptions and Discharge/Invoice records.
+* Administrative and sensitive actions are tracked using Audit Logs.
+
+This relational design ensures data integrity, supports reporting and auditing, and allows the system to be extended easily with additional medical or administrative modules in the future.
 
 ---
 
