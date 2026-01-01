@@ -13,6 +13,11 @@ Default demo doctors created via the management command:
 
 If a username already exists, the command skips it and continues.
 
+## Notes for doctor1
+
+If doctor1 exists but is missing a Doctor profile, run:
+`heroku run python manage.py bootstrap_demo_doctors --count 5 --password "Test@12345" --approve --repair-existing -a hospital-management-web`
+
 ## Notes
 
 - These accounts are intended for assessment and demonstration.

@@ -76,6 +76,32 @@ def get_current_patient(request):
     return patient
 
 
+def _get_doctor_profile_or_redirect(request, redirect_name="doctorlogin"):
+    doctor = Doctor.objects.filter(user=request.user).first()
+    if not doctor:
+        messages.error(
+            request,
+            "Doctor profile missing or not approved. Please contact admin.",
+        )
+        logger.warning(
+            "Doctor profile missing for user_id=%s",
+            getattr(request.user, "id", None),
+        )
+        return redirect(redirect_name)
+    if hasattr(doctor, "status") and not doctor.status:
+        messages.error(
+            request,
+            "Doctor profile missing or not approved. Please contact admin.",
+        )
+        logger.warning(
+            "Doctor profile not approved for user_id=%s doctor_id=%s",
+            getattr(request.user, "id", None),
+            doctor.id,
+        )
+        return redirect(redirect_name)
+    return doctor
+
+
 # ---------------- CUSTOM LOGOUT ----------------
 @method_decorator(csrf_exempt, name="dispatch")
 class CustomLogoutView(LogoutView):
@@ -393,14 +419,9 @@ def doctor_dashboard_view(request):
     - Loads doctor profile linked to the logged-in user
     - If no doctor profile exists, show a friendly message instead of 404
     """
-    doctor = Doctor.objects.filter(user=request.user).select_related("user").first()
-    if not doctor:
-        messages.warning(
-            request,
-            "Your doctor profile is not found or is awaiting admin approval. "
-            "Please contact the administrator.",
-        )
-        return redirect("doctorclick")
+    doctor = _get_doctor_profile_or_redirect(request, redirect_name="doctorclick")
+    if not isinstance(doctor, Doctor):
+        return doctor
 
     return render(request, "hospital/doctor_dashboard.html", {"doctor": doctor})
 
@@ -408,10 +429,9 @@ def doctor_dashboard_view(request):
 @login_required(login_url="doctorlogin")
 @user_passes_test(is_doctor)
 def doctor_view_patient_view(request):
-    doctor = Doctor.objects.filter(user=request.user).first()
-    if not doctor:
-        messages.warning(request, "Doctor profile not found.")
-        return redirect("doctorclick")
+    doctor = _get_doctor_profile_or_redirect(request, redirect_name="doctorclick")
+    if not isinstance(doctor, Doctor):
+        return doctor
 
     patients = Patient.objects.filter(appointment__doctor=doctor).distinct()
     return render(request, "hospital/doctor_view_patient.html", {"patients": patients})
@@ -420,11 +440,15 @@ def doctor_view_patient_view(request):
 @login_required(login_url="doctorlogin")
 @user_passes_test(is_doctor)
 def doctor_view_appointment_view(request):
-    doctor = Doctor.objects.filter(user=request.user).first()
-    if not doctor:
-        messages.warning(request, "Doctor profile not found.")
-        return redirect("doctorclick")
+    doctor = _get_doctor_profile_or_redirect(request, redirect_name="doctorclick")
+    if not isinstance(doctor, Doctor):
+        return doctor
 
+    logger.info(
+        "Doctor appointment view user_id=%s doctor_id=%s",
+        getattr(request.user, "id", None),
+        doctor.id,
+    )
     appointments = Appointment.objects.filter(doctor=doctor).select_related(
         "patient__user"
     )
@@ -442,10 +466,9 @@ def doctor_view_discharge_patient_view(request):
     Doctor view of discharged patients.
     Uses DischargeDetails.doctor foreign key.
     """
-    doctor = Doctor.objects.filter(user=request.user).first()
-    if not doctor:
-        messages.warning(request, "Doctor profile not found.")
-        return redirect("doctor-dashboard")
+    doctor = _get_doctor_profile_or_redirect(request, redirect_name="doctor-dashboard")
+    if not isinstance(doctor, Doctor):
+        return doctor
 
     discharged_patients = DischargeDetails.objects.filter(
         doctor=doctor
@@ -1103,10 +1126,9 @@ def delete_doctor_view(request, pk):
 @user_passes_test(is_doctor)
 def doctor_search_patient_view(request):
     query = request.GET.get("query", "")
-    doctor = Doctor.objects.filter(user=request.user).first()
-    if not doctor:
-        messages.warning(request, "Doctor profile not found.")
-        return redirect("doctor-dashboard")
+    doctor = _get_doctor_profile_or_redirect(request, redirect_name="doctor-dashboard")
+    if not isinstance(doctor, Doctor):
+        return doctor
 
     patients = (
         Patient.objects.filter(assignedDoctorId=doctor)

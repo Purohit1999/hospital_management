@@ -19,6 +19,8 @@ class Command(BaseCommand):
         parser.add_argument("--start", type=int, default=1)
         parser.add_argument("--password", type=str, default="Test@12345")
         parser.add_argument("--approve", action="store_true")
+        parser.add_argument("--repair-existing", action="store_true")
+        parser.add_argument("--force-password", action="store_true")
         parser.add_argument("--delete-demo", action="store_true")
 
     def handle(self, *args, **options):
@@ -35,6 +37,8 @@ class Command(BaseCommand):
         start = max(options["start"], 1)
         password = options["password"]
         approve = options["approve"]
+        repair_existing = options["repair_existing"]
+        force_password = options["force_password"]
 
         created_usernames = []
         summary = []
@@ -42,10 +46,36 @@ class Command(BaseCommand):
         User = get_user_model()
         doctor_user_field = find_user_field(doctor_model)
         approval_field = find_approval_field(doctor_model)
+        processed = set()
 
         with transaction.atomic():
+            if repair_existing:
+                doctor_group = Group.objects.filter(name="DOCTOR").first()
+                group_users = doctor_group.user_set.all() if doctor_group else []
+                for user in group_users:
+                    if user.username in processed:
+                        continue
+                    doctor_profile, created_doctor = get_or_create_doctor(
+                        doctor_model, doctor_user_field, user
+                    )
+                    approved = False
+                    if approve and doctor_profile:
+                        approved = set_approved(doctor_profile, approval_field)
+                    processed.add(user.username)
+                    summary.append(
+                        {
+                            "username": user.username,
+                            "created_user": False,
+                            "created_doctor": created_doctor,
+                            "approved": approved,
+                            "notes": "repaired_profile" if created_doctor else "existing_profile",
+                        }
+                    )
+
             for i in range(start, start + count):
                 username = f"doctor{i}"
+                if username in processed:
+                    continue
                 user, created_user = User.objects.get_or_create(
                     username=username,
                     defaults={
@@ -58,10 +88,16 @@ class Command(BaseCommand):
                     user.set_password(password)
                     user.save(update_fields=["password"])
                     created_usernames.append(username)
+                elif force_password:
+                    user.set_password(password)
+                    user.save(update_fields=["password"])
 
                 doctor_profile, created_doctor = get_or_create_doctor(
                     doctor_model, doctor_user_field, user
                 )
+                repaired = False
+                if repair_existing and doctor_profile and not created_doctor:
+                    repaired = True
 
                 approved = False
                 if approve and doctor_profile:
@@ -74,6 +110,8 @@ class Command(BaseCommand):
                     notes.append("existing_user")
                 if doctor_profile is None:
                     notes.append("doctor_profile_missing")
+                if repaired:
+                    notes.append("repaired_profile")
 
                 summary.append(
                     {
@@ -84,6 +122,7 @@ class Command(BaseCommand):
                         "notes": ",".join(notes) or "-",
                     }
                 )
+                processed.add(username)
 
         write_demo_file(created_usernames)
         self._print_summary(summary)
