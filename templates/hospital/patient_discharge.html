@@ -116,15 +116,17 @@
         <div class="text-center mt-4">
           {% if discharge.is_paid %}
             <span class="badge bg-success">Paid ✅</span>
-          {% elif discharge.payment and discharge.payment.status == "pending" %}
-            <span class="badge bg-warning text-dark">Payment pending</span>
           {% else %}
-            <form method="post" action="{% url 'create-checkout-session' discharge.id %}" class="d-inline">
+            <form method="post" action="{% url 'create-checkout-session' discharge.id %}" class="d-inline-block">
               {% csrf_token %}
-              <button type="submit" class="btn btn-primary">Pay Bill</button>
+              {% if discharge.payment and discharge.payment.status == "pending" %}
+                <button type="submit" class="btn btn-primary">Continue / Retry Payment</button>
+              {% else %}
+                <button type="submit" class="btn btn-primary">Pay Bill</button>
+              {% endif %}
             </form>
           {% endif %}
-          <button onclick="printInvoice('{{ forloop.counter }}')" class="btn btn-secondary">Print Invoice</button>
+          <button type="button" onclick="printInvoice('{{ forloop.counter }}')" class="btn btn-secondary">Print Invoice</button>
         </div>
       </div>
     {% endfor %}
