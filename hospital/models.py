@@ -47,6 +47,9 @@ class DischargeDetails(models.Model):
     medicine_cost = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     other_charge = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    is_paid = models.BooleanField(default=False)
+    stripe_session_id = models.CharField(max_length=255, blank=True, null=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

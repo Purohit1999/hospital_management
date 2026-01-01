@@ -503,6 +503,7 @@ def patient_dashboard_view(request):
     discharges = DischargeDetails.objects.filter(patient=patient).order_by(
         "-discharge_date"
     )
+    payments_count = Payment.objects.filter(patient=patient, status="paid").count()
     email_logs = []
     if patient.user and patient.user.email:
         email_logs = EmailLog.objects.filter(
@@ -518,6 +519,7 @@ def patient_dashboard_view(request):
         "email_logs": email_logs,
         "appointments_count": Appointment.objects.filter(patient=patient).count(),
         "invoices_count": invoices.count(),
+        "payments_count": payments_count,
     }
     return render(request, "hospital/patient_dashboard.html", context)
 
@@ -762,6 +764,8 @@ def patient_discharge_summary_view(request):
             discharge.discharge_date - discharge.admission_date
         ).days or 1
         discharge.payment = payments_by_discharge.get(discharge.id)
+        if discharge.payment and discharge.payment.status == "paid":
+            discharge.is_paid = True
 
     context = {
         "discharges": discharges,

@@ -114,12 +114,12 @@
         </table>
 
         <div class="text-center mt-4">
-          {% if discharge.payment and discharge.payment.status == "paid" %}
-            <span class="badge bg-success">Paid</span>
+          {% if discharge.is_paid %}
+            <span class="badge bg-success">Paid ✅</span>
           {% elif discharge.payment and discharge.payment.status == "pending" %}
             <span class="badge bg-warning text-dark">Payment pending</span>
           {% else %}
-            <form method="post" action="{% url 'payments-checkout' discharge.id %}" class="d-inline">
+            <form method="post" action="{% url 'create-checkout-session' discharge.id %}" class="d-inline">
               {% csrf_token %}
               <button type="submit" class="btn btn-primary">Pay Bill</button>
             </form>

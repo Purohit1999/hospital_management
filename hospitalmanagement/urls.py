@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LogoutView
 from hospital import views, views_stripe_test
+from payments import views as payment_views
 
 urlpatterns = [
     # Admin site
@@ -99,6 +100,15 @@ urlpatterns = [
         views.patient_discharge_summary_view,
         name='patient-discharge-summary'
     ),
+    path("patient/payments/", payment_views.patient_payments_view, name="patient-payments"),
+    path(
+        "patient/create-checkout-session/<int:discharge_id>/",
+        payment_views.create_checkout_session,
+        name="create-checkout-session",
+    ),
+    path("patient/payment-success/", payment_views.payment_success_view, name="payment-success"),
+    path("patient/payment-cancel/", payment_views.payment_cancel_view, name="payment-cancel"),
+    path("stripe/webhook/", payment_views.stripe_webhook, name="stripe-webhook"),
     path('discharge-patient/<int:pk>/', views.discharge_patient_view, name='discharge-patient'),
     path('generate-bill/<int:pk>/', views.generate_patient_bill_view, name='generate-bill'),
     path('download-pdf/<int:pk>/', views.download_invoice_pdf_view, name='download-pdf'),
