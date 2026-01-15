@@ -19,7 +19,7 @@ from django.template.loader import render_to_string
 # ==============================
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Group
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -100,6 +100,21 @@ def _get_doctor_profile_or_redirect(request, redirect_name="doctorlogin"):
         )
         return redirect(redirect_name)
     return doctor
+
+
+def _normalize_login_data(request):
+    if request.method != "POST":
+        return None
+    login_value = request.POST.get("username", "").strip()
+    if "@" in login_value:
+        user_by_email = (
+            User.objects.filter(email__iexact=login_value).order_by("id").first()
+        )
+        if user_by_email:
+            data = request.POST.copy()
+            data["username"] = user_by_email.username
+            return data
+    return request.POST
 
 
 # ---------------- CUSTOM LOGOUT ----------------
@@ -234,8 +249,20 @@ def doctor_signup_view(request):
             doctor_group, _ = Group.objects.get_or_create(name="DOCTOR")
             user.groups.add(doctor_group)
 
-            doctor = doctor_form.save(commit=False)
-            doctor.user = user
+            doctor, _ = Doctor.objects.get_or_create(
+                user=user, defaults={"status": False}
+            )
+            department = (doctor_form.cleaned_data.get("department") or "").strip()
+            if department:
+                doctor.department = department
+            address = (doctor_form.cleaned_data.get("address") or "").strip()
+            if address:
+                doctor.address = address
+            mobile = (doctor_form.cleaned_data.get("mobile") or "").strip()
+            if mobile:
+                doctor.mobile = mobile
+            if request.FILES.get("profile_pic"):
+                doctor.profile_pic = doctor_form.cleaned_data.get("profile_pic")
             doctor.status = False
             doctor.save()
             login(request, user)
@@ -289,7 +316,7 @@ def afterlogin_view(request):
         return redirect("doctor-dashboard")
     elif request.user.groups.filter(name="PATIENT").exists():
         return redirect("patient-dashboard")
-    elif request.user.is_superuser:
+    elif request.user.is_superuser or request.user.is_staff:
         return redirect("admin-dashboard")
     return redirect("home")
 
@@ -300,28 +327,27 @@ def adminlogin_view(request):
     Admin login view.
     Allows staff/superusers to log in and then routes via `afterlogin_view`.
     """
+    error_message = None
     if request.method == "POST":
-        form = AuthenticationForm(request=request, data=request.POST)
+        form = AuthenticationForm(request=request, data=_normalize_login_data(request))
         if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-            user = authenticate(request, username=username, password=password)
+            user = form.get_user()
 
             # Only allow staff/superuser as admin
             if user is not None and user.is_staff:
                 login(request, user)
                 return redirect("afterlogin")
-            else:
-                messages.error(
-                    request,
-                    "Access denied: You are not an admin user.",
-                )
+            error_message = "Access denied: You are not an admin user."
         else:
-            messages.error(request, "Invalid credentials. Please try again.")
+            error_message = "Invalid credentials. Please try again."
     else:
         form = AuthenticationForm()
 
-    return render(request, "hospital/adminlogin.html", {"form": form})
+    return render(
+        request,
+        "hospital/adminlogin.html",
+        {"form": form, "error": error_message},
+    )
 
 
 # ---------------- DOCTOR LOGIN ----------------
@@ -330,10 +356,21 @@ def doctor_login_view(request):
     error_message = None
 
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
+        form = AuthenticationForm(request, data=_normalize_login_data(request))
         if form.is_valid():
             user = form.get_user()
-            if user and is_doctor(user) and Doctor.objects.filter(user=user).exists():
+            if user and is_doctor(user):
+                Doctor.objects.get_or_create(user=user, defaults={"status": False})
+                login(request, user)
+                redirect_to = request.POST.get("next") or request.GET.get("next")
+                if redirect_to and url_has_allowed_host_and_scheme(
+                    redirect_to, allowed_hosts={request.get_host()}
+                ):
+                    return redirect(redirect_to)
+                return redirect("doctor-dashboard")
+            if user and Doctor.objects.filter(user=user).exists():
+                doctor_group, _ = Group.objects.get_or_create(name="DOCTOR")
+                user.groups.add(doctor_group)
                 login(request, user)
                 redirect_to = request.POST.get("next") or request.GET.get("next")
                 if redirect_to and url_has_allowed_host_and_scheme(
@@ -365,10 +402,13 @@ def patient_login_view(request):
     username_value = request.POST.get("username", "") if request.method == "POST" else ""
 
     if request.method == "POST":
-        form = AuthenticationForm(request=request, data=request.POST)
+        form = AuthenticationForm(request=request, data=_normalize_login_data(request))
         if form.is_valid():
             user = form.get_user()
             if user and (is_patient(user) or Patient.objects.filter(user=user).exists()):
+                if not is_patient(user):
+                    patient_group, _ = Group.objects.get_or_create(name="PATIENT")
+                    user.groups.add(patient_group)
                 login(request, user)
                 redirect_to = request.POST.get("next") or request.GET.get("next")
                 if redirect_to and url_has_allowed_host_and_scheme(
@@ -379,28 +419,6 @@ def patient_login_view(request):
             error_message = "Access denied: Please log in using a patient account."
         else:
             error_message = "Invalid username or password."
-            if "@" in request.POST.get("username", ""):
-                email_input = request.POST.get("username", "").strip()
-                password_input = request.POST.get("password", "")
-                user_by_email = (
-                    User.objects.filter(email__iexact=email_input)
-                    .order_by("id")
-                    .first()
-                )
-                if user_by_email:
-                    user = authenticate(
-                        request,
-                        username=user_by_email.username,
-                        password=password_input,
-                    )
-                    if user and (is_patient(user) or Patient.objects.filter(user=user).exists()):
-                        login(request, user)
-                        redirect_to = request.POST.get("next") or request.GET.get("next")
-                        if redirect_to and url_has_allowed_host_and_scheme(
-                            redirect_to, allowed_hosts={request.get_host()}
-                        ):
-                            return redirect(redirect_to)
-                        return redirect("patient-dashboard")
 
     context = {
         "error": error_message,

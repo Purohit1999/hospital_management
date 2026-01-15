@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import Group, User
 from django.utils import timezone
 
-from .models import Prescription, Invoice, Patient
+from .models import Prescription, Invoice, Patient, Doctor
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +64,48 @@ def _ensure_patient_for_user(user):
         )
 
 
+def _ensure_doctor_for_user(user):
+    if not user or user.is_staff or user.is_superuser:
+        logger.info(
+            "Skipping Doctor auto-create for staff/superuser or missing user",
+            extra={"user_id": getattr(user, "id", None)},
+        )
+        return
+
+    doctor_group = Group.objects.filter(name="DOCTOR").first()
+    if not doctor_group or not user.groups.filter(id=doctor_group.id).exists():
+        logger.info(
+            "User not in DOCTOR group; skipping Doctor auto-create",
+            extra={"user_id": user.id, "username": user.username},
+        )
+        return
+
+    try:
+        doctor, created = Doctor.objects.get_or_create(
+            user=user, defaults={"status": False}
+        )
+        if created:
+            logger.info(
+                "Created Doctor profile",
+                extra={"user_id": user.id, "doctor_id": doctor.id},
+            )
+        else:
+            logger.info(
+                "Doctor profile already exists",
+                extra={"user_id": user.id, "doctor_id": doctor.id},
+            )
+        logger.info(
+            "Doctor profile ensured (created=%s)",
+            created,
+            extra={"user_id": user.id},
+        )
+    except Exception:
+        logger.exception(
+            "Failed to auto-create Doctor profile",
+            extra={"user_id": user.id, "username": user.username},
+        )
+
+
 @receiver(post_save, sender=User)
 def ensure_patient_on_user_create(sender, instance, created, **kwargs):
     if not created:
@@ -85,14 +127,28 @@ def ensure_patient_on_group_add(sender, instance, action, pk_set, **kwargs):
         extra={"user_id": instance.id},
     )
     patient_group = Group.objects.filter(name="PATIENT").first()
-    if not patient_group or patient_group.id not in pk_set:
+    doctor_group = Group.objects.filter(name="DOCTOR").first()
+
+    if patient_group and patient_group.id in pk_set:
+        logger.info(
+            "PATIENT group added to user; ensuring Patient profile",
+            extra={"user_id": instance.id},
+        )
+        _ensure_patient_for_user(instance)
+    else:
         logger.info(
             "Group add does not include PATIENT; skipping Patient auto-create",
             extra={"user_id": instance.id},
         )
-        return
-    logger.info(
-        "PATIENT group added to user; ensuring Patient profile",
-        extra={"user_id": instance.id},
-    )
-    _ensure_patient_for_user(instance)
+
+    if doctor_group and doctor_group.id in pk_set:
+        logger.info(
+            "DOCTOR group added to user; ensuring Doctor profile",
+            extra={"user_id": instance.id},
+        )
+        _ensure_doctor_for_user(instance)
+    else:
+        logger.info(
+            "Group add does not include DOCTOR; skipping Doctor auto-create",
+            extra={"user_id": instance.id},
+        )

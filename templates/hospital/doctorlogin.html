@@ -70,8 +70,8 @@
             {% csrf_token %}
 
             <div class="form-group">
-              <label for="id_username" class="form-label">Username</label>
-              {% render_field form.username class="form-control" placeholder="Enter username" %}
+              <label for="id_username" class="form-label">Username or Email</label>
+              {% render_field form.username class="form-control" placeholder="Enter username or email" %}
               {% if form.username.errors %}
                 <div class="error-message">
                   {% for error in form.username.errors %}
