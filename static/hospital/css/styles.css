@@ -9,6 +9,16 @@ body {
     flex-direction: column;
 }
 
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    flex: 1;
+}
+
 .site-footer {
     background-color: #000;
     color: #fff;
@@ -46,7 +56,7 @@ body {
     text-decoration: none;
 }
 .site-footer .footer-social a i {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     color: #ffffff;
     line-height: 1;
     font-family: "Font Awesome 6 Brands", "Font Awesome 6 Free", sans-serif !important;
