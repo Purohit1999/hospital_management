@@ -242,7 +242,10 @@ def admin_signup_view(request):
             user.set_password(user.password)
             user.is_staff = True
             user.save()
-            messages.success(request, "Admin registration successful. Please log in.")
+            messages.success(
+                request,
+                "Registration successful! Your account is pending admin approval. Please try logging in after approval.",
+            )
             return redirect("adminlogin")
     else:
         form = AdminUserForm()
