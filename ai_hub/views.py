@@ -18,11 +18,9 @@ from .models import (
     AgentRun,
     AgentStepTrace,
 )
-from .services.rag import load_docs_from_dir, build_index, retrieve
 from .services.llm import generate_text
 from .services import ml as ml_service
 from .services.ml import predict_no_show, predict_department
-from .services.agent import run_compliance_agent
 from .services.observability import new_request_id, trace_success, trace_error
 from .services.llm_client import generate_answer
 
@@ -68,6 +66,12 @@ def rag_compliance(request):
 
 def rag_qa(request):
     if not _ai_enabled():
+        return render(request, "ai_hub/disabled.html")
+
+    try:
+        from .services.rag import retrieve
+    except ModuleNotFoundError:
+        messages.error(request, "AI features are unavailable on this deployment.")
         return render(request, "ai_hub/disabled.html")
 
     answer = ""
@@ -269,6 +273,12 @@ def draft_assistant(request):
 
 def compliance_agent(request):
     if not _ai_enabled() or not _agents_enabled():
+        return render(request, "ai_hub/disabled.html")
+
+    try:
+        from .services.agent import run_compliance_agent
+    except ModuleNotFoundError:
+        messages.error(request, "AI features are unavailable on this deployment.")
         return render(request, "ai_hub/disabled.html")
 
     trace = []
