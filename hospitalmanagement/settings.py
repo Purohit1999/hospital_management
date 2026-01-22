@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import dj_database_url
-import stripe
 
 try:
     from dotenv import load_dotenv
@@ -116,22 +115,14 @@ TEMPLATES = [
 # DATABASE — SQLite locally, PostgreSQL on Heroku
 # ─────────────────────────────────────────────
 
-# If Heroku has set DATABASE_URL (when Postgres add-on is attached),
-# use that. Otherwise fall back to local SQLite.
-if "DATABASE_URL" in os.environ:
-    DATABASES = {
-        "default": dj_database_url.config(
-            conn_max_age=600,
-            ssl_require=True,
-        )
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+# Use DATABASE_URL when set (Heroku), otherwise default to local SQLite.
+DATABASES = {
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=True,
+    )
+}
 
 # ─────────────────────────────────────────────
 # PASSWORD VALIDATION
@@ -227,9 +218,6 @@ STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_CURRENCY = "gbp"
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 
-# Configure Stripe SDK only if we actually have a key
-if STRIPE_SECRET_KEY:
-    stripe.api_key = STRIPE_SECRET_KEY
 
 # ─────────────────────────────────────────────
 # DEFAULT FIELD TYPE
