@@ -1,8 +1,19 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 .site-footer {
     background-color: #000;
     color: #fff;
     padding: 10px 20px;
-    margin-top: 40px;
+    margin-top: auto;
 }
 .site-footer .footer-content {
     max-width: 1200px;

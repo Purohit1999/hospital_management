@@ -19,6 +19,21 @@ class UserForm(forms.ModelForm):
         }
 
 # ------------------------------------------------------------
+# Admin Registration - User Creation
+# ------------------------------------------------------------
+class AdminUserForm(forms.ModelForm):
+    """ Used to register a new Admin user. """
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'password']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
+        }
+
+# ------------------------------------------------------------
 # 🔹 Appointment Form (Used by Admin or Patient)
 # ------------------------------------------------------------
 class AppointmentForm(forms.ModelForm):

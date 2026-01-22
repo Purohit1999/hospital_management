@@ -43,6 +43,7 @@ from .forms import (
     PatientUserForm, PatientForm,
     DoctorUserForm, DoctorForm,
     UserForm,
+    AdminUserForm,
     ConsultationRequestForm,
     ContactForm,          # 👈 contact form import
 )
@@ -234,7 +235,23 @@ def patientclick_view(request):
 
 # ---------------- SIGNUP ----------------
 def admin_signup_view(request):
-    return render(request, "hospital/adminsignup.html")
+    if request.method == "POST":
+        form = AdminUserForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(user.password)
+            user.is_staff = True
+            user.save()
+            messages.success(request, "Admin registration successful. Please log in.")
+            return redirect("adminlogin")
+    else:
+        form = AdminUserForm()
+
+    return render(
+        request,
+        "hospital/adminsignup.html",
+        {"form": form},
+    )
 
 
 def doctor_signup_view(request):
