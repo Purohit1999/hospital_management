@@ -22,11 +22,16 @@ MEDIA_DIR = BASE_DIR / "media"
 # SECURITY
 # ─────────────────────────────────────────────
 
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-# Use environment variable to control DEBUG
-# Default = True for local dev. On Heroku set DEBUG=false in Config Vars.
-DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+# Use environment variable to control DEBUG.
+# Default = True for local dev. On Heroku set DEBUG=0 in Config Vars.
+DEBUG = os.getenv("DEBUG", "1") == "1"
+
+if not SECRET_KEY and DEBUG:
+    SECRET_KEY = "dev-only-insecure-key"
+elif not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY env var is required in production")
 
 # ✔ ALLOWED_HOSTS — LOCAL + HEROKU APPS
 ALLOWED_HOSTS = [
@@ -42,6 +47,9 @@ CSRF_TRUSTED_ORIGINS = [
     for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
     if origin.strip()
 ]
+HEROKU_HOST = os.getenv("HEROKU_APP_HOSTNAME", "").strip()
+if HEROKU_HOST:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{HEROKU_HOST}")
 
 # ✔ Needed for Heroku reverse proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
