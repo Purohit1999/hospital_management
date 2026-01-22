@@ -1,101 +1,16 @@
-<!DOCTYPE html>
-{% load static %}
+{% extends "hospital/homebase.html" %}
 {% load widget_tweaks %}
-<html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Admin Login | Hospital Management</title>
+{% block extra_css %}{% endblock %}
 
-  <!-- Bootstrap & Font Awesome -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-dhnY6cnN6TqO3Y4+Q3K7S8q5bgZp3ynjTEK2XsyKMmuc/6Wn0GCLYKnrSc7hhV9x/eEwVxOUYvE2QFZ3gk9c5A==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-  <link rel="stylesheet" href="{% static 'style.css' %}">
-  <link rel="stylesheet" href="{% static 'hospital/css/styles.css' %}">
-
-  <style>
-    body {
-      background: linear-gradient(to right, #0072ff, #8811c5);
-      min-height: 100vh;
-      font-family: 'Roboto', sans-serif;
-    }
-
-    .login-container {
-      margin-top: 100px;
-    }
-
-    .login-card {
-      background: #fff;
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .login-title {
-      text-align: center;
-      color: #5e5e5e;
-      font-weight: 600;
-      margin-bottom: 30px;
-      font-size: 24px;
-    }
-
-    .form-control {
-      border-radius: 1.25rem;
-    }
-
-    .btn-login {
-      background-color: #007bff;
-      color: white;
-      border-radius: 1.25rem;
-      padding: 10px 25px;
-      font-size: 1rem;
-      transition: 0.3s;
-    }
-
-    .btn-login:hover {
-      background-color: #0056b3;
-    }
-
-    .signup-link {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .signup-link a {
-      color: #007bff;
-      font-weight: bold;
-    }
-
-    .signup-link a:hover {
-      text-decoration: underline;
-    }
-
-    .error-message {
-      color: red;
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="page-wrapper">
-    {% include "hospital/navbar.html" %}
-
-  <main class="page-content">
-    <div class="container login-container">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="login-card">
+{% block content %}
+  <div class="auth-page">
+    <div class="auth-content">
+      <div class="container login-container">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="login-card">
           <h3 class="login-title"><i class="fas fa-user-shield"></i> Admin Login</h3>
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
           <form method="post" novalidate>
             {% csrf_token %}
 
@@ -140,17 +55,13 @@
             </div>
 
             <div class="signup-link">
-              Don’t have an account? <a href="{% url 'adminsignup' %}">Signup here</a>
+              Don't have an account? <a href="{% url 'adminsignup' %}">Signup here</a>
             </div>
           </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    </div>
-  </main>
-
-    {% include "hospital/footer.html" %}
   </div>
-</body>
-
-</html>
+{% endblock %}
