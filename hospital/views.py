@@ -309,23 +309,67 @@ def patient_signup_view(request):
         user_form = PatientUserForm(request.POST)
         patient_form = PatientForm(request.POST, request.FILES)
         if user_form.is_valid() and patient_form.is_valid():
-            user = user_form.save(commit=False)
-            user.set_password(user.password)
-            user.save()
+            try:
+                with transaction.atomic():
+                    user = user_form.save(commit=False)
+                    user.set_password(user.password)
+                    user.save()
 
-            group, _ = Group.objects.get_or_create(name="PATIENT")
-            user.groups.add(group)
+                    group, _ = Group.objects.get_or_create(name="PATIENT")
+                    user.groups.add(group)
 
-            patient = patient_form.save(commit=False)
-            patient.user = user
-            # Keep a copy of email on the patient profile for safe access later.
-            patient.email = user_form.cleaned_data.get("email") or user.email
-            patient.save()
-            Patient.objects.get_or_create(user=user)
-            login(request, user)
-            logger.info("Auto-login after signup", extra={"user_id": user.id})
-            messages.success(request, "Registration successful. Welcome!")
-            return redirect("patient-dashboard")
+                    patient, created = Patient.objects.get_or_create(user=user)
+                    patient.address = patient_form.cleaned_data.get("address") or ""
+                    patient.mobile = patient_form.cleaned_data.get("mobile") or ""
+                    patient.symptoms = patient_form.cleaned_data.get("symptoms") or ""
+                    patient.assignedDoctorId = patient_form.cleaned_data.get(
+                        "assignedDoctorId"
+                    )
+                    if patient_form.cleaned_data.get("profile_pic"):
+                        patient.profile_pic = patient_form.cleaned_data.get(
+                            "profile_pic"
+                        )
+                    patient.email = user_form.cleaned_data.get("email") or user.email
+                    patient.save()
+                login(request, user)
+                logger.info("Auto-login after signup", extra={"user_id": user.id})
+                messages.success(request, "Registration successful. Welcome!")
+                return redirect("patient-dashboard")
+            except IntegrityError:
+                logger.exception("patient_signup_view IntegrityError")
+                try:
+                    patient = Patient.objects.get(user=user)
+                    patient.address = patient_form.cleaned_data.get("address") or ""
+                    patient.mobile = patient_form.cleaned_data.get("mobile") or ""
+                    patient.symptoms = patient_form.cleaned_data.get("symptoms") or ""
+                    patient.assignedDoctorId = patient_form.cleaned_data.get(
+                        "assignedDoctorId"
+                    )
+                    if patient_form.cleaned_data.get("profile_pic"):
+                        patient.profile_pic = patient_form.cleaned_data.get(
+                            "profile_pic"
+                        )
+                    patient.email = user_form.cleaned_data.get("email") or user.email
+                    patient.save()
+                    login(request, user)
+                    logger.info(
+                        "Auto-login after signup (recovered)",
+                        extra={"user_id": user.id},
+                    )
+                    messages.success(request, "Registration successful. Welcome!")
+                    return redirect("patient-dashboard")
+                except Exception:
+                    logger.exception("patient_signup_view recovery failed")
+                    messages.error(
+                        request, "Registration failed. Please try again."
+                    )
+                    return redirect("patientsignup")
+            except Exception:
+                logger.exception("patient_signup_view failed")
+                messages.error(
+                    request, "Registration failed. Please try again."
+                )
+                return redirect("patientsignup")
     else:
         user_form = PatientUserForm()
         patient_form = PatientForm()
