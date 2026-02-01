@@ -1,0 +1,24 @@
+{% extends 'hospital/admin_base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="mb-0">Add Patient Email</h4>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="{{ email_form.email.id_for_label }}" class="form-label">Email</label>
+          {{ email_form.email }}
+          {% if email_form.email.errors %}
+            <div class="text-danger small">{{ email_form.email.errors }}</div>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Save &amp; Send Invoice Email</button>
+        <a href="{% url 'admin-view-patient' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}

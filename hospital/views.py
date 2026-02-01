@@ -9,7 +9,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.db import IntegrityError, transaction
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.forms import EmailField
+from django import forms
 from django.utils.crypto import get_random_string
 import re
 from django.db.models import Q
@@ -54,6 +54,10 @@ from .forms import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class PatientEmailForm(forms.Form):
+    email = forms.EmailField(required=True)
 
 
 # ==============================
@@ -1513,7 +1517,7 @@ def discharge_patient_view(request, pk):
             posted_email = request.POST.get("email", "").strip()
             if posted_email:
                 context["patientEmail"] = posted_email
-            email_field = EmailField()
+            email_field = forms.EmailField()
             try:
                 cleaned_email = email_field.clean(request.POST.get("email", ""))
             except ValidationError as exc:
@@ -1531,15 +1535,15 @@ def discharge_patient_view(request, pk):
                     event_type = (
                         f"INVOICE_EMAIL_ON_DISCHARGE:{patient.id}:{discharge.id}"
                     )
-                    pdf_content = _render_invoice_pdf(context)
-                    sent, _error, recipient = _safe_send_invoice_email(
-                        patient, pdf_content, event_type=event_type
+                    sent, _error, recipient = send_invoice_email(
+                        patient, discharge, event_type=event_type
                     )
                 if sent:
                     messages.success(request, f"Invoice emailed to {recipient}.")
                 else:
                     messages.error(
-                        request, "Invoice generated but email delivery failed."
+                        request,
+                        "Invoice email could not be sent. Admin: check email settings.",
                     )
             except Exception:
                 logger.exception(
@@ -1548,7 +1552,8 @@ def discharge_patient_view(request, pk):
                     getattr(discharge, "id", None),
                 )
                 messages.error(
-                    request, "Invoice generated but email delivery failed."
+                    request,
+                    "Invoice email could not be sent. Admin: check email settings.",
                 )
             return render(request, "hospital/patient_final_bill.html", context)
 
@@ -1622,9 +1627,8 @@ def discharge_patient_view(request, pk):
                         "Add an email on the invoice page and click Email Invoice.",
                     )
                 else:
-                    pdf_content = _render_invoice_pdf(context)
-                    sent, _error, _recipient = _safe_send_invoice_email(
-                        patient, pdf_content, event_type=event_type
+                    sent, _error, _recipient = send_invoice_email(
+                        patient, discharge, event_type=event_type
                     )
                     if not sent:
                         messages.warning(
@@ -1668,6 +1672,8 @@ def _render_invoice_pdf(context):
 def _log_invoice_email_attempt(patient, recipient, status, message, event_type=None):
     """Record invoice email attempts without raising."""
     try:
+        if message and len(message) > 500:
+            message = message[:500]
         EmailLog.objects.create(
             to_email=recipient or "",
             subject="Your Hospital Invoice",
@@ -1683,7 +1689,27 @@ def _log_invoice_email_attempt(patient, recipient, status, message, event_type=N
         )
 
 
-def _safe_send_invoice_email(patient, pdf_content, event_type=None):
+def _build_invoice_email_context(patient, discharge):
+    return {
+        "patientName": patient.user.get_full_name(),
+        "mobile": patient.mobile,
+        "address": patient.address,
+        "assignedDoctorName": discharge.doctor.user.get_full_name()
+        if discharge.doctor and discharge.doctor.user
+        else "N/A",
+        "admitDate": discharge.admission_date,
+        "releaseDate": discharge.discharge_date,
+        "daySpent": max(1, (discharge.discharge_date - discharge.admission_date).days),
+        "symptoms": patient.symptoms,
+        "roomCharge": discharge.room_charge,
+        "doctorFee": discharge.doctor_fee,
+        "medicineCost": discharge.medicine_cost,
+        "OtherCharge": discharge.other_charge,
+        "total": discharge.total,
+    }
+
+
+def send_invoice_email(patient, discharge, event_type=None):
     """Best-effort invoice email; never raises to avoid breaking the request."""
     to_email = ""
     if patient and patient.email:
@@ -1695,9 +1721,11 @@ def _safe_send_invoice_email(patient, pdf_content, event_type=None):
         _log_invoice_email_attempt(
             patient, "", "FAILED", "missing_recipient_email", event_type=event_type
         )
-        return False, "missing_email", ""
+        return False, "missing_recipient_email", ""
 
     try:
+        context = _build_invoice_email_context(patient, discharge)
+        pdf_content = _render_invoice_pdf(context)
         email = EmailMessage(
             subject="Your Hospital Invoice",
             body="Please find attached your hospital invoice.\nIf you have any questions, contact us.",
@@ -1711,11 +1739,26 @@ def _safe_send_invoice_email(patient, pdf_content, event_type=None):
                 content=pdf_content,
                 mimetype="application/pdf",
             )
-        email.send(fail_silently=False)
+        sent_count = email.send(fail_silently=False)
+        if sent_count and sent_count > 0:
+            _log_invoice_email_attempt(
+                patient, to_email, "SUCCESS", "", event_type=event_type
+            )
+            logger.info(
+                "Invoice email sent patient_id=%s recipient=%s",
+                getattr(patient, "id", None),
+                to_email,
+            )
+            return True, "", to_email
         _log_invoice_email_attempt(
-            patient, to_email, "SUCCESS", "", event_type=event_type
+            patient, to_email, "FAILED", "send_returned_0", event_type=event_type
         )
-        return True, "", to_email
+        logger.warning(
+            "Invoice email send returned 0 patient_id=%s recipient=%s",
+            getattr(patient, "id", None),
+            to_email,
+        )
+        return False, "send_returned_0", to_email
     except Exception as exc:
         logger.exception(
             "Invoice email send failed patient_id=%s recipient=%s",
@@ -1726,7 +1769,7 @@ def _safe_send_invoice_email(patient, pdf_content, event_type=None):
             patient,
             to_email,
             "FAILED",
-            exc.__class__.__name__,
+            str(exc),
             event_type=event_type,
         )
         return False, str(exc), to_email
@@ -1780,41 +1823,48 @@ def email_invoice_view(request, pk):
     backend = (getattr(settings, "EMAIL_BACKEND", "") or "").lower()
     backend_is_console = "console" in backend or "dummy" in backend
 
-    if not ((patient.user and patient.user.email) or patient.email):
-        messages.info(
-            request,
-            "Invoice generated, but no email address is on record for this patient.",
-        )
-        _log_invoice_email_attempt(patient, "", "FAILED", "missing_recipient_email")
-        return redirect("admin-view-patient")
+    if not patient.email:
+        if request.method == "POST":
+            form = PatientEmailForm(request.POST)
+            if form.is_valid():
+                cleaned_email = form.cleaned_data["email"]
+                try:
+                    with transaction.atomic():
+                        if patient.email != cleaned_email:
+                            patient.email = cleaned_email
+                            patient.save(update_fields=["email"])
+                        event_type = (
+                            f"invoice_email_manual_update patient_id={patient.id}"
+                        )
+                        sent, _error, recipient = send_invoice_email(
+                            patient, discharge, event_type=event_type
+                        )
+                    if sent:
+                        messages.success(
+                            request, f"Invoice email sent to {recipient}."
+                        )
+                    else:
+                        messages.error(
+                            request,
+                            "Invoice email could not be sent. Admin: check email settings.",
+                        )
+                except Exception:
+                    logger.exception(
+                        "email_invoice_view save_email failed patient_id=%s",
+                        getattr(patient, "id", None),
+                    )
+                    messages.error(
+                        request,
+                        "Invoice email could not be sent. Admin: check email settings.",
+                    )
+                return redirect("admin-view-patient")
+        else:
+            initial_email = patient.user.email if patient.user else ""
+            form = PatientEmailForm(initial={"email": initial_email})
+        context = {"patient": patient, "email_form": form}
+        return render(request, "hospital/email_invoice.html", context)
 
-    context = {
-        "patientName": patient.user.get_full_name(),
-        "mobile": patient.mobile,
-        "address": patient.address,
-        "assignedDoctorName": discharge.doctor.user.get_full_name()
-        if discharge.doctor and discharge.doctor.user
-        else "N/A",
-        "admitDate": discharge.admission_date,
-        "releaseDate": discharge.discharge_date,
-        "daySpent": max(1, (discharge.discharge_date - discharge.admission_date).days),
-        "symptoms": patient.symptoms,
-        "roomCharge": discharge.room_charge,
-        "doctorFee": discharge.doctor_fee,
-        "medicineCost": discharge.medicine_cost,
-        "OtherCharge": discharge.other_charge,
-        "total": discharge.total,
-    }
-    pdf_content = _render_invoice_pdf(context)
-    if not pdf_content:
-        messages.info(
-            request,
-            "Invoice PDF could not be generated; sending email without attachment.",
-        )
-    else:
-        messages.success(request, "Invoice PDF generated successfully.")
-
-    sent, _error, recipient = _safe_send_invoice_email(patient, pdf_content)
+    sent, _error, recipient = send_invoice_email(patient, discharge)
     if sent:
         messages.success(request, f"Invoice email sent to {recipient}.")
         if backend_is_console:
@@ -1829,9 +1879,8 @@ def email_invoice_view(request, pk):
                 "Email backend is set to console; email content will appear in server logs, not in inbox.",
             )
         else:
-            messages.info(
+            messages.error(
                 request,
-                "Invoice generated. Email delivery is temporarily unavailable; "
-                "please try again later.",
+                "Invoice email could not be sent. Admin: check email settings.",
             )
     return redirect("admin-view-patient")
