@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
 from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.contrib import messages
@@ -722,20 +722,61 @@ def admin_add_patient_view(request):
         patient_form = PatientForm(request.POST, request.FILES)
         if user_form.is_valid() and patient_form.is_valid():
             try:
-                user = user_form.save(commit=False)
-                user.set_password(user.password)
-                user.save()
+                with transaction.atomic():
+                    user = user_form.save(commit=False)
+                    user.set_password(user.password)
+                    user.save()
 
-                group, _ = Group.objects.get_or_create(name="PATIENT")
-                user.groups.add(group)
+                    group, _ = Group.objects.get_or_create(name="PATIENT")
+                    user.groups.add(group)
 
-                patient = patient_form.save(commit=False)
-                patient.user = user
-                # Store email on patient profile to avoid missing data later.
-                patient.email = user_form.cleaned_data.get("email") or user.email
-                patient.save()
+                    patient, created = Patient.objects.get_or_create(user=user)
+                    patient.address = patient_form.cleaned_data.get("address") or ""
+                    patient.mobile = patient_form.cleaned_data.get("mobile") or ""
+                    patient.symptoms = patient_form.cleaned_data.get("symptoms") or ""
+                    patient.assignedDoctorId = patient_form.cleaned_data.get(
+                        "assignedDoctorId"
+                    )
+                    if patient_form.cleaned_data.get("profile_pic"):
+                        patient.profile_pic = patient_form.cleaned_data.get(
+                            "profile_pic"
+                        )
+                    # Store email on patient profile to avoid missing data later.
+                    patient.email = user_form.cleaned_data.get("email") or user.email
+                    patient.save()
+                    logger.info(
+                        "admin_add_patient_view patient_%s user_id=%s",
+                        "created" if created else "updated",
+                        user.id,
+                    )
                 messages.success(request, "Patient admitted successfully.")
                 return redirect("admin-view-patient")
+            except IntegrityError:
+                logger.exception("admin_add_patient_view IntegrityError")
+                try:
+                    patient = Patient.objects.get(user=user)
+                    patient.address = patient_form.cleaned_data.get("address") or ""
+                    patient.mobile = patient_form.cleaned_data.get("mobile") or ""
+                    patient.symptoms = patient_form.cleaned_data.get("symptoms") or ""
+                    patient.assignedDoctorId = patient_form.cleaned_data.get(
+                        "assignedDoctorId"
+                    )
+                    if patient_form.cleaned_data.get("profile_pic"):
+                        patient.profile_pic = patient_form.cleaned_data.get(
+                            "profile_pic"
+                        )
+                    patient.email = user_form.cleaned_data.get("email") or user.email
+                    patient.save()
+                    logger.info(
+                        "admin_add_patient_view patient_updated_after_integrity user_id=%s",
+                        user.id,
+                    )
+                    messages.success(request, "Patient admitted successfully.")
+                    return redirect("admin-view-patient")
+                except Exception:
+                    logger.exception("admin_add_patient_view recovery failed")
+                    messages.error(request, "Unable to admit patient right now.")
+                    return redirect("admin-add-patient")
             except Exception:
                 logger.exception("admin_add_patient_view failed")
                 messages.error(request, "Unable to admit patient right now.")
