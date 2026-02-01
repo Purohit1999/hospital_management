@@ -754,6 +754,17 @@ def admin_add_patient_view(request):
 
         if email_value:
             existing_user = User.objects.filter(email__iexact=email_value).first()
+            if existing_user and (existing_user.is_staff or existing_user.is_superuser):
+                logger.warning(
+                    "admin_add_patient_view blocked staff reuse email=%s username=%s",
+                    email_value,
+                    existing_user.username,
+                )
+                messages.error(
+                    request,
+                    "That email belongs to a staff/admin account. Please use a different email.",
+                )
+                return redirect("admin-add-patient")
 
         username_taken = False
         if raw_username:
