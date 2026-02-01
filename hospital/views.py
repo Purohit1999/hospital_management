@@ -7,6 +7,10 @@ from django.utils import timezone
 from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.db import IntegrityError, transaction
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.utils.crypto import get_random_string
+import re
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.contrib import messages
@@ -718,13 +722,73 @@ def admin_view_patient_view(request):
 @user_passes_test(is_admin)
 def admin_add_patient_view(request):
     if request.method == "POST":
-        user_form = PatientUserForm(request.POST)
+        data = request.POST.copy()
+        generated_username = None
+        generated_password = None
+
+        first_name = (data.get("first_name") or "").strip()
+        last_name = (data.get("last_name") or "").strip()
+        raw_username = (data.get("username") or "").strip()
+
+        def _build_username_base():
+            base = f"{first_name}_{last_name}".strip("_")
+            base = re.sub(r"[^a-zA-Z0-9_]+", "", base).lower() or "patient"
+            return base
+
+        def _unique_username():
+            base = _build_username_base()
+            while True:
+                candidate = f"{base}_{get_random_string(4).lower()}"
+                if not User.objects.filter(username=candidate).exists():
+                    return candidate
+
+        def _generate_password(base_name):
+            prefix = (base_name or "Patient").strip().title()
+            digits = get_random_string(4, allowed_chars="0123456789")
+            letters = get_random_string(
+                2, allowed_chars="abcdefghijklmnopqrstuvwxyz"
+            ).title()
+            return f"{prefix}@{digits}{letters}!"
+
+        if not raw_username or User.objects.filter(username=raw_username).exists():
+            generated_username = _unique_username()
+            data["username"] = generated_username
+
+        weak_passwords = {"password", "password1", "password123", "12345678"}
+        raw_password = (data.get("password") or "").strip()
+        if not raw_password or raw_password.lower() in weak_passwords:
+            generated_password = True
+            data["password"] = _generate_password(first_name)
+
+        user_form = PatientUserForm(data)
         patient_form = PatientForm(request.POST, request.FILES)
         if user_form.is_valid() and patient_form.is_valid():
+            final_password = (data.get("password") or "").strip()
             try:
+                if not final_password:
+                    for base in (first_name, "Patient"):
+                        candidate = _generate_password(base)
+                        try:
+                            validate_password(candidate)
+                            final_password = candidate
+                            generated_password = True
+                            break
+                        except ValidationError:
+                            continue
+                    if not final_password:
+                        final_password = f"{get_random_string(12)}!"
+                        generated_password = True
+
+                user = user_form.save(commit=False)
+                user.username = data.get("username", user.username)
+                try:
+                    validate_password(final_password, user=user)
+                except ValidationError:
+                    candidate = _generate_password("Patient")
+                    final_password = candidate
+                    generated_password = True
                 with transaction.atomic():
-                    user = user_form.save(commit=False)
-                    user.set_password(user.password)
+                    user.set_password(final_password)
                     user.save()
 
                     group, _ = Group.objects.get_or_create(name="PATIENT")
@@ -749,7 +813,13 @@ def admin_add_patient_view(request):
                         "created" if created else "updated",
                         user.id,
                     )
-                messages.success(request, "Patient admitted successfully.")
+                success_message = f"Patient admitted successfully. Username: {user.username}."
+                if generated_password:
+                    success_message += (
+                        f" Temporary password: {final_password} "
+                        "(please change after first login)."
+                    )
+                messages.success(request, success_message)
                 return redirect("admin-view-patient")
             except IntegrityError:
                 logger.exception("admin_add_patient_view IntegrityError")
@@ -771,7 +841,13 @@ def admin_add_patient_view(request):
                         "admin_add_patient_view patient_updated_after_integrity user_id=%s",
                         user.id,
                     )
-                    messages.success(request, "Patient admitted successfully.")
+                    success_message = f"Patient admitted successfully. Username: {user.username}."
+                    if generated_password:
+                        success_message += (
+                            f" Temporary password: {final_password} "
+                            "(please change after first login)."
+                        )
+                    messages.success(request, success_message)
                     return redirect("admin-view-patient")
                 except Exception:
                     logger.exception("admin_add_patient_view recovery failed")
