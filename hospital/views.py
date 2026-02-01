@@ -724,11 +724,13 @@ def admin_add_patient_view(request):
     if request.method == "POST":
         data = request.POST.copy()
         generated_username = None
-        generated_password = None
+        generated_password = False
+        existing_user = None
 
         first_name = (data.get("first_name") or "").strip()
         last_name = (data.get("last_name") or "").strip()
         raw_username = (data.get("username") or "").strip()
+        email_value = (data.get("email") or "").strip()
 
         def _build_username_base():
             base = f"{first_name}_{last_name}".strip("_")
@@ -750,7 +752,16 @@ def admin_add_patient_view(request):
             ).title()
             return f"{prefix}@{digits}{letters}!"
 
-        if not raw_username or User.objects.filter(username=raw_username).exists():
+        if email_value:
+            existing_user = User.objects.filter(email__iexact=email_value).first()
+
+        username_taken = False
+        if raw_username:
+            username_qs = User.objects.filter(username=raw_username)
+            if existing_user:
+                username_qs = username_qs.exclude(id=existing_user.id)
+            username_taken = username_qs.exists()
+        if not raw_username or username_taken:
             generated_username = _unique_username()
             data["username"] = generated_username
 
@@ -762,8 +773,24 @@ def admin_add_patient_view(request):
 
         user_form = PatientUserForm(data)
         patient_form = PatientForm(request.POST, request.FILES)
-        if user_form.is_valid() and patient_form.is_valid():
+        user_form_valid = user_form.is_valid()
+        ignorable_user_errors = False
+        if not user_form_valid:
+            ignorable_user_errors = True
+            for field, errors in user_form.errors.items():
+                if field == "username":
+                    continue
+                if field == "email":
+                    if not any("already exists" in error for error in errors):
+                        ignorable_user_errors = False
+                        break
+                else:
+                    ignorable_user_errors = False
+                    break
+
+        if (user_form_valid or ignorable_user_errors) and patient_form.is_valid():
             final_password = (data.get("password") or "").strip()
+            user = None
             try:
                 if not final_password:
                     for base in (first_name, "Patient"):
@@ -779,7 +806,14 @@ def admin_add_patient_view(request):
                         final_password = f"{get_random_string(12)}!"
                         generated_password = True
 
-                user = user_form.save(commit=False)
+                user = existing_user or user_form.save(commit=False)
+                if existing_user:
+                    if first_name:
+                        user.first_name = first_name
+                    if last_name:
+                        user.last_name = last_name
+                    if email_value:
+                        user.email = email_value
                 user.username = data.get("username", user.username)
                 try:
                     validate_password(final_password, user=user)
@@ -806,14 +840,21 @@ def admin_add_patient_view(request):
                             "profile_pic"
                         )
                     # Store email on patient profile to avoid missing data later.
-                    patient.email = user_form.cleaned_data.get("email") or user.email
+                    patient.email = email_value or user.email
                     patient.save()
                     logger.info(
                         "admin_add_patient_view patient_%s user_id=%s",
                         "created" if created else "updated",
                         user.id,
                     )
-                success_message = f"Patient admitted successfully. Username: {user.username}."
+                if existing_user:
+                    success_message = (
+                        f"Existing patient account updated. Username: {user.username}."
+                    )
+                else:
+                    success_message = (
+                        f"Patient admitted successfully. Username: {user.username}."
+                    )
                 if generated_password:
                     success_message += (
                         f" Temporary password: {final_password} "
@@ -824,6 +865,8 @@ def admin_add_patient_view(request):
             except IntegrityError:
                 logger.exception("admin_add_patient_view IntegrityError")
                 try:
+                    if not user:
+                        user = existing_user
                     patient = Patient.objects.get(user=user)
                     patient.address = patient_form.cleaned_data.get("address") or ""
                     patient.mobile = patient_form.cleaned_data.get("mobile") or ""
@@ -835,13 +878,20 @@ def admin_add_patient_view(request):
                         patient.profile_pic = patient_form.cleaned_data.get(
                             "profile_pic"
                         )
-                    patient.email = user_form.cleaned_data.get("email") or user.email
+                    patient.email = email_value or user.email
                     patient.save()
                     logger.info(
                         "admin_add_patient_view patient_updated_after_integrity user_id=%s",
                         user.id,
                     )
-                    success_message = f"Patient admitted successfully. Username: {user.username}."
+                    if existing_user:
+                        success_message = (
+                            f"Existing patient account updated. Username: {user.username}."
+                        )
+                    else:
+                        success_message = (
+                            f"Patient admitted successfully. Username: {user.username}."
+                        )
                     if generated_password:
                         success_message += (
                             f" Temporary password: {final_password} "
