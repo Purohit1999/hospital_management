@@ -1559,46 +1559,33 @@ def discharge_patient_view(request, pk):
             }
         )
         try:
-            event_type = f"INVOICE_EMAIL_ON_DISCHARGE:{patient.id}:{discharge.id}"
-            if EmailLog.objects.filter(
-                event_type=event_type, status="SUCCESS"
-            ).exists():
+            event_type = (
+                f"DISCHARGE_INVOICE_AUTO:patient={patient.id}:discharge={discharge.id}"
+            )
+            if EmailLog.objects.filter(event_type=event_type).exists():
                 messages.info(
                     request,
-                    "Invoice email already sent for this discharge.",
+                    "Patient discharged. Invoice email already attempted.",
                 )
             else:
-                backend = (getattr(settings, "EMAIL_BACKEND", "") or "").lower()
-                backend_is_console = "console" in backend or "dummy" in backend
-                pdf_content = _render_invoice_pdf(context)
-                sent, _error, recipient = _safe_send_invoice_email(
-                    patient, pdf_content, event_type=event_type
+                recipient = patient.email or (
+                    patient.user.email if patient.user else ""
                 )
-                if sent:
-                    messages.success(
+                if not recipient:
+                    messages.info(
                         request,
-                        f"Invoice email sent to {recipient}.",
+                        "Patient discharged. Email not sent because no email is on file. "
+                        "Add an email on the invoice page and click Email Invoice.",
                     )
-                    if backend_is_console:
-                        messages.info(
-                            request,
-                            "Email backend is set to console; email content will appear in server logs, not in inbox.",
-                        )
                 else:
-                    if not recipient:
+                    pdf_content = _render_invoice_pdf(context)
+                    sent, _error, _recipient = _safe_send_invoice_email(
+                        patient, pdf_content, event_type=event_type
+                    )
+                    if not sent:
                         messages.warning(
                             request,
-                            "Patient discharged. No email address on record to send invoice.",
-                        )
-                    elif backend_is_console:
-                        messages.info(
-                            request,
-                            "Email backend is set to console; email content will appear in server logs, not in inbox.",
-                        )
-                    else:
-                        messages.info(
-                            request,
-                            "Patient discharged. Email delivery is temporarily unavailable; please try again later.",
+                            "Patient discharged. Invoice generated but email delivery failed.",
                         )
         except Exception:
             logger.exception(
