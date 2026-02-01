@@ -22,6 +22,7 @@ class Doctor(models.Model):
 # ------------------------------------------------------------
 class Patient(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email = models.EmailField(blank=True, null=True)
     address = models.TextField(blank=True)
     mobile = models.CharField(max_length=15, blank=True)
     symptoms = models.TextField(blank=True)

@@ -21,6 +21,37 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 def is_patient(user):
     return user.groups.filter(name="PATIENT").exists()
 
+def _safe_send_payment_receipt(payment, user):
+    """Best-effort receipt email; never raises to avoid breaking the request."""
+    to_email = ""
+    if user and user.email:
+        to_email = user.email
+    elif payment and payment.patient and payment.patient.email:
+        to_email = payment.patient.email
+    elif payment and payment.patient and payment.patient.user and payment.patient.user.email:
+        to_email = payment.patient.user.email
+
+    if not to_email:
+        logger.warning("Payment receipt email skipped: missing patient email.")
+        return False
+
+    try:
+        send_mail(
+            subject="Payment receipt - Hospital Management",
+            message=(
+                "Thank you for your payment.\n\n"
+                f"Amount: {payment.amount} {payment.currency.upper()}\n"
+                f"Status: {payment.get_status_display()}\n"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[to_email],
+            fail_silently=False,
+        )
+        return True
+    except Exception:
+        logger.exception("Failed to send payment receipt email")
+        return False
+
 
 @login_required
 @user_passes_test(is_patient)
@@ -139,20 +170,9 @@ def payment_success_view(request):
             payment.discharge.stripe_session_id = session_id
             payment.discharge.save(update_fields=["is_paid", "paid_at", "stripe_session_id"])
 
-        if request.user.email:
-            send_mail(
-                subject="Payment receipt - Hospital Management",
-                message=(
-                    "Thank you for your payment.\n\n"
-                    f"Amount: {payment.amount} {payment.currency.upper()}\n"
-                    f"Status: {payment.get_status_display()}\n"
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[request.user.email],
-                fail_silently=True,
-            )
-
-        messages.success(request, "Payment successful. Receipt sent to your email.")
+        if _safe_send_payment_receipt(payment, request.user):
+            messages.info(request, "Payment receipt emailed.")
+        messages.success(request, "Payment successful.")
     else:
         payment.status = "failed"
         payment.save(update_fields=["status"])

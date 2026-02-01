@@ -274,6 +274,7 @@ class AdminModuleTests(TestCase):
                 "first_name": "New",
                 "last_name": "Patient",
                 "username": "new_patient",
+                "email": "new_patient@example.com",
                 "password": "new_pass",
                 "address": "1 Street",
                 "mobile": "1234567890",

@@ -79,7 +79,7 @@ class AppointmentForm(forms.ModelForm):
 class PatientUserForm(forms.ModelForm):
     """ Used to register a new Patient's User. """
     email = forms.EmailField(
-        required=False,
+        required=True,
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
 

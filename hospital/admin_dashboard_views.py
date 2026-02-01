@@ -166,6 +166,9 @@ def adm2_patient_add(request):
                 if not user_form.cleaned_data.get("password"):
                     messages.error(request, "Password is required.")
                     return redirect("adm2_patient_add")
+                if not user_form.cleaned_data.get("email"):
+                    messages.error(request, "Email is required.")
+                    return redirect("adm2_patient_add")
                 user = user_form.save(commit=False)
                 user.set_password(user.password)
                 user.save()
@@ -173,6 +176,8 @@ def adm2_patient_add(request):
                 user.groups.add(group)
                 patient = patient_form.save(commit=False)
                 patient.user = user
+                # Store a copy of email on the patient profile.
+                patient.email = user_form.cleaned_data.get("email") or user.email
                 patient.save()
                 messages.success(request, "Patient created successfully.")
                 return redirect("adm2_patient_list")
@@ -204,7 +209,9 @@ def adm2_patient_edit(request, pk):
                 if user_form.cleaned_data.get("password"):
                     user.set_password(user_form.cleaned_data["password"])
                 user.save()
-                patient_form.save()
+                patient = patient_form.save(commit=False)
+                patient.email = user_form.cleaned_data.get("email") or user.email
+                patient.save()
                 messages.success(request, "Patient updated successfully.")
                 return redirect("adm2_patient_list")
             except Exception:
