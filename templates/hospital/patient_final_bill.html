@@ -127,7 +127,19 @@
   <div class="btn-group">
     <button onclick="printInvoice()">Print Invoice</button>
     <a href="{% url 'download-pdf' patientId %}">Download PDF</a>
-    <a href="{% url 'email-invoice' patientId %}">Email Invoice</a>
+    {% if patientEmail %}
+      <a href="{% url 'email-invoice' patientId %}">Email Invoice</a>
+    {% else %}
+      <form method="post" action="{% url 'discharge-patient' patientId %}" style="display:inline-block;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save_email_send">
+        <input type="email" name="email" class="form-control" placeholder="Patient email" required value="{{ patientEmail }}">
+        {% if email_error %}
+          <div class="text-danger small">{{ email_error.0 }}</div>
+        {% endif %}
+        <button type="submit">Save Email &amp; Send Invoice</button>
+      </form>
+    {% endif %}
   </div>
 </div>
 

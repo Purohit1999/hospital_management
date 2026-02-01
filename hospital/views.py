@@ -9,6 +9,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.db import IntegrityError, transaction
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.forms import EmailField
 from django.utils.crypto import get_random_string
 import re
 from django.db.models import Q
@@ -1439,6 +1440,74 @@ def discharge_patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
 
     if DischargeDetails.objects.filter(patient=patient).exists():
+        if request.method == "POST" and request.POST.get("action") == "save_email_send":
+            discharge = _get_discharge_details(patient)
+            if not discharge:
+                messages.error(request, "No discharge record found for this patient.")
+                return redirect("admin-view-patient")
+
+            total_days = max(
+                1, (discharge.discharge_date - discharge.admission_date).days
+            )
+            context = _build_bill_context(
+                patient,
+                discharge.admission_date.strftime("%Y-%m-%d"),
+                discharge.discharge_date.strftime("%Y-%m-%d"),
+                total_days,
+            )
+            context.update(
+                {
+                    "roomCharge": discharge.room_charge,
+                    "doctorFee": discharge.doctor_fee,
+                    "medicineCost": discharge.medicine_cost,
+                    "OtherCharge": discharge.other_charge,
+                    "total": discharge.total,
+                    "patientEmail": patient.email
+                    or (patient.user.email if patient.user else ""),
+                }
+            )
+            posted_email = request.POST.get("email", "").strip()
+            if posted_email:
+                context["patientEmail"] = posted_email
+            email_field = EmailField()
+            try:
+                cleaned_email = email_field.clean(request.POST.get("email", ""))
+            except ValidationError as exc:
+                context["email_error"] = exc.messages
+                return render(request, "hospital/patient_final_bill.html", context)
+
+            try:
+                with transaction.atomic():
+                    patient.email = cleaned_email
+                    patient.save(update_fields=["email"])
+                    if patient.user and patient.user.email != cleaned_email:
+                        patient.user.email = cleaned_email
+                        patient.user.save(update_fields=["email"])
+                    context["patientEmail"] = cleaned_email
+                    event_type = (
+                        f"INVOICE_EMAIL_ON_DISCHARGE:{patient.id}:{discharge.id}"
+                    )
+                    pdf_content = _render_invoice_pdf(context)
+                    sent, _error, recipient = _safe_send_invoice_email(
+                        patient, pdf_content, event_type=event_type
+                    )
+                if sent:
+                    messages.success(request, f"Invoice emailed to {recipient}.")
+                else:
+                    messages.error(
+                        request, "Invoice generated but email delivery failed."
+                    )
+            except Exception:
+                logger.exception(
+                    "save_email_send failed patient_id=%s discharge_id=%s",
+                    getattr(patient, "id", None),
+                    getattr(discharge, "id", None),
+                )
+                messages.error(
+                    request, "Invoice generated but email delivery failed."
+                )
+            return render(request, "hospital/patient_final_bill.html", context)
+
         messages.warning(request, "Patient already discharged.")
         messages.info(
             request,
@@ -1485,6 +1554,8 @@ def discharge_patient_view(request, pk):
                 "medicineCost": medicine_cost,
                 "OtherCharge": other_charge,
                 "total": total,
+                "patientEmail": patient.email
+                or (patient.user.email if patient.user else ""),
             }
         )
         try:
