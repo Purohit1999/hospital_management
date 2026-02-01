@@ -1,4 +1,5 @@
 import os
+import logging
 from pathlib import Path
 import dj_database_url
 
@@ -202,11 +203,24 @@ LOGOUT_REDIRECT_URL = "/"
 # ─────────────────────────────────────────────
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+
+EMAIL_PROVIDER = os.getenv("EMAIL_PROVIDER", "sendgrid").strip().lower()
+EMAIL_HOST = os.getenv("EMAIL_HOST", "").strip()
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").strip().lower() == "true"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
+
+if EMAIL_PROVIDER == "gmail":
+    EMAIL_HOST = EMAIL_HOST or "smtp.gmail.com"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+elif EMAIL_PROVIDER == "sendgrid":
+    EMAIL_HOST = EMAIL_HOST or "smtp.sendgrid.net"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = "apikey"
+    EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY", "").strip()
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
     EMAIL_HOST_USER or "no-reply@example.com",
@@ -216,6 +230,14 @@ ADMIN_INVOICE_EMAIL = os.getenv("ADMIN_INVOICE_EMAIL", ADMIN_EMAIL)
 EMAIL_RECEIVING_USER = [
     email for email in os.getenv("EMAIL_RECEIVING_USER", "").split(",") if email
 ]
+
+def _warn_if_email_disabled():
+    logger = logging.getLogger("hospitalmanagement.settings")
+    if not EMAIL_HOST or not EMAIL_PORT or not EMAIL_HOST_PASSWORD:
+        logger.warning("Email disabled: missing credentials.")
+
+
+_warn_if_email_disabled()
 
 # ─────────────────────────────────────────────
 # STRIPE SETTINGS
