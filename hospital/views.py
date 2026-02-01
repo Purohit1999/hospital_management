@@ -1741,9 +1741,9 @@ def send_invoice_email(patient, discharge, event_type=None):
     try:
         recent_success = (
             EmailLog.objects.filter(
+                Q(event_type__icontains="invoice_email")
+                & Q(event_type__icontains=str(patient.id)),
                 status="SUCCESS",
-                event_type__icontains="invoice_email",
-                event_type__icontains=str(patient.id),
                 created_at__gte=timezone.now() - timedelta(minutes=10),
             )
             .order_by("-created_at")
