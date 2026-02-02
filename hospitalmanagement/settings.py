@@ -209,7 +209,7 @@ EMAIL_HOST = os.getenv("EMAIL_HOST", "").strip()
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").strip().lower() == "true"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 
 if EMAIL_PROVIDER == "gmail":
     EMAIL_HOST = EMAIL_HOST or "smtp.gmail.com"
@@ -220,7 +220,6 @@ elif EMAIL_PROVIDER == "sendgrid":
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
     EMAIL_HOST_USER = "apikey"
-    EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY", "").strip()
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
     EMAIL_HOST_USER or "no-reply@example.com",
@@ -233,8 +232,9 @@ EMAIL_RECEIVING_USER = [
 
 def _warn_if_email_disabled():
     logger = logging.getLogger("hospitalmanagement.settings")
-    if not EMAIL_HOST or not EMAIL_PORT or not EMAIL_HOST_PASSWORD:
+    if not EMAIL_HOST_PASSWORD:
         logger.warning("Email disabled: missing credentials.")
+        globals()["EMAIL_BACKEND"] = "django.core.mail.backends.console.EmailBackend"
 
 
 _warn_if_email_disabled()
