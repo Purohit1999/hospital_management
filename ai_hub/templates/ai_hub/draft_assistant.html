@@ -78,19 +78,30 @@
     };
 
     const poll = () => {
-      fetch("{% url 'ai-draft-status' 'JOB_ID' %}".replace("JOB_ID", jobId))
-        .then((res) => res.json())
+      fetch("{% url 'draft-status' 'JOB_ID' %}".replace("JOB_ID", jobId))
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Bad response");
+          }
+          return res.json();
+        })
         .then((data) => {
-          if (data.status === "finished") {
+          if (data.state === "finished") {
             const { draft, instructions } = ensureOutput();
-            draft.textContent = data.draft || "";
-            instructions.textContent = data.instructions || "";
+            const result = data.result || {};
+            draft.textContent = result.draft || "";
+            instructions.textContent = result.instructions || "";
             statusEl.textContent = "Draft ready.";
             if (spinnerEl) spinnerEl.remove();
             return;
           }
-          if (data.status === "failed" || data.status === "error") {
+          if (data.state === "failed") {
             statusEl.textContent = data.error || "Draft generation failed.";
+            if (spinnerEl) spinnerEl.remove();
+            return;
+          }
+          if (data.state === "not_found") {
+            statusEl.textContent = "Draft job expired. Please retry.";
             if (spinnerEl) spinnerEl.remove();
             return;
           }

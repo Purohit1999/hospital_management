@@ -259,6 +259,7 @@ def draft_assistant(request):
                 },
             )
             job_id = job.get_id()
+            request_id = job_id
             logger.info(
                 "Draft job enqueued job_id=%s queue=%s redis_env=%s",
                 job_id,
@@ -309,16 +310,16 @@ def draft_assistant(request):
     )
 
 
-def draft_status(request, job_id):
-    redis_conn = _get_redis_connection()
-    if not redis_conn:
-        return JsonResponse({"status": "error", "error": "Drafts unavailable."}, status=200)
+def draft_status_view(request, request_id):
+    queue, _redis_key = get_queue("ai")
+    if not queue:
+        return JsonResponse({"state": "not_found"}, status=404)
     try:
         from rq.job import Job
 
-        job = Job.fetch(job_id, connection=redis_conn)
+        job = Job.fetch(str(request_id), connection=queue.connection)
     except Exception:
-        return JsonResponse({"status": "missing"}, status=200)
+        return JsonResponse({"state": "not_found"}, status=404)
 
     status = job.get_status()
     if status == "finished":
@@ -343,17 +344,22 @@ def draft_status(request, job_id):
                 job.meta["saved"] = True
                 job.save_meta()
             except Exception:
-                logger.exception("Failed to save draft from job_id=%s", job_id)
+                logger.exception("Failed to save draft from job_id=%s", request_id)
         return JsonResponse(
             {
-                "status": "finished",
-                "draft": result.get("draft", ""),
-                "instructions": result.get("instructions", ""),
+                "state": "finished",
+                "result": {
+                    "draft": result.get("draft", ""),
+                    "instructions": result.get("instructions", ""),
+                },
             }
         )
     if status == "failed":
-        return JsonResponse({"status": "failed", "error": "Draft generation failed."})
-    return JsonResponse({"status": status})
+        return JsonResponse(
+            {"state": "failed", "error": "Job failed"},
+            status=500,
+        )
+    return JsonResponse({"state": status})
 
 
 def compliance_agent(request):
