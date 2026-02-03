@@ -348,6 +348,7 @@ def no_show_risk(request):
         return render(request, "ai_hub/disabled.html")
     scores = []
     request_id = ""
+    model_error = ""
     if request.method == "POST":
         if not _rate_limit_ok(request):
             messages.error(request, "Rate limit exceeded. Please wait and try again.")
@@ -359,8 +360,12 @@ def no_show_risk(request):
             days_until = int(request.POST.get("days_until", "2") or 2)
             hour = int(request.POST.get("hour", "9") or 9)
             features = {"days_until": days_until, "hour": hour}
-            score = predict_no_show(features)
-            scores.append({"appointment_id": "demo", "risk": score})
+            score, error = predict_no_show(features, return_error=True)
+            if error:
+                model_error = error
+                messages.error(request, error)
+            else:
+                scores.append({"appointment_id": "demo", "risk": score})
             model_version = (
                 int(os.path.getmtime(ml_service.NO_SHOW_MODEL_PATH))
                 if os.path.exists(ml_service.NO_SHOW_MODEL_PATH)
@@ -388,7 +393,11 @@ def no_show_risk(request):
                 error_message=str(exc),
             )
             raise
-    return render(request, "ai_hub/no_show.html", {"scores": scores, "request_id": request_id})
+    return render(
+        request,
+        "ai_hub/no_show.html",
+        {"scores": scores, "request_id": request_id, "model_error": model_error},
+    )
 
 
 def complaint_classifier(request):

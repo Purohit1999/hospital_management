@@ -17,6 +17,10 @@
     <button type="submit" class="btn btn-primary">Predict</button>
   </form>
 
+  {% if model_error %}
+    <div class="alert alert-warning mt-3">{{ model_error }}</div>
+  {% endif %}
+
   {% if scores %}
     <div class="mt-4">
       <h5>Predictions</h5>
