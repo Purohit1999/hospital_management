@@ -3,7 +3,6 @@ import os
 import time
 import re
 import logging
-from redis import Redis
 from rq import Queue
 from django.conf import settings
 from django.contrib import messages
@@ -26,6 +25,7 @@ from .services import ml as ml_service
 from .services.ml import predict_no_show, predict_department
 from .services.observability import new_request_id, trace_success, trace_error
 from .services.llm_client import generate_answer
+from .services.redis_conn import get_redis_connection
 from .tasks import generate_draft_job
 
 logger = logging.getLogger(__name__)
@@ -39,11 +39,6 @@ def _agents_enabled():
     return getattr(settings, "AGENTS_ENABLED", False)
 
 
-def _get_redis_connection():
-    redis_url = os.getenv("REDIS_URL", "")
-    if not redis_url:
-        return None
-    return Redis.from_url(redis_url)
 
 
 def _rate_limit_ok(request, limit=10, window_seconds=60):
@@ -236,7 +231,7 @@ def draft_assistant(request):
             notes = request.POST.get("notes", "")
             redact = request.POST.get("redact") == "on"
             reviewed = request.POST.get("reviewed") == "on"
-            redis_conn = _get_redis_connection()
+            redis_conn = get_redis_connection()
             if not redis_conn:
                 error_message = "Drafts are unavailable on this deployment."
                 messages.error(request, error_message)
