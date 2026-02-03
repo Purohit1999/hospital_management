@@ -1,17 +1,17 @@
 from django.core.management.base import BaseCommand
-from rq import Worker, Queue
+from rq import Worker
 
-from ai_hub.services.redis_conn import get_redis_connection
+from ai_hub.services.redis_conn import get_queue
 
 
 class Command(BaseCommand):
     help = "Start an RQ worker for the ai queue using Redis URL settings."
 
     def handle(self, *args, **options):
-        redis_conn = get_redis_connection()
-        if not redis_conn:
+        queue, redis_key = get_queue("ai")
+        if not queue:
             self.stderr.write("Redis URL not configured. Worker cannot start.")
             return
-        queue = Queue("ai", connection=redis_conn)
-        worker = Worker([queue], connection=redis_conn)
+        self.stdout.write(f"RQ worker using queue={queue.name} redis_env={redis_key or 'unknown'}")
+        worker = Worker([queue], connection=queue.connection)
         worker.work()

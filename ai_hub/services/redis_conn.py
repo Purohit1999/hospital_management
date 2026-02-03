@@ -3,6 +3,7 @@ import ssl
 import logging
 
 from redis import Redis
+from rq import Queue
 
 logger = logging.getLogger(__name__)
 
@@ -24,3 +25,16 @@ def get_redis_connection():
     if url.startswith("rediss://"):
         return Redis.from_url(url, ssl_cert_reqs=ssl.CERT_NONE)
     return Redis.from_url(url)
+
+
+def get_queue(name="ai"):
+    key, url = _select_redis_url()
+    if not url:
+        logger.warning("Redis URL not configured.")
+        return None, ""
+    logger.info("Redis connection configured via %s", key)
+    if url.startswith("rediss://"):
+        connection = Redis.from_url(url, ssl_cert_reqs=ssl.CERT_NONE)
+    else:
+        connection = Redis.from_url(url)
+    return Queue(name, connection=connection), key

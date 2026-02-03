@@ -3,7 +3,6 @@ import os
 import time
 import re
 import logging
-from rq import Queue
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -25,7 +24,7 @@ from .services import ml as ml_service
 from .services.ml import predict_no_show, predict_department
 from .services.observability import new_request_id, trace_success, trace_error
 from .services.llm_client import generate_answer
-from .services.redis_conn import get_redis_connection
+from .services.redis_conn import get_queue
 from .tasks import generate_draft_job
 
 logger = logging.getLogger(__name__)
@@ -231,8 +230,8 @@ def draft_assistant(request):
             notes = request.POST.get("notes", "")
             redact = request.POST.get("redact") == "on"
             reviewed = request.POST.get("reviewed") == "on"
-            redis_conn = get_redis_connection()
-            if not redis_conn:
+            queue, redis_key = get_queue("ai")
+            if not queue:
                 error_message = "Drafts are unavailable on this deployment."
                 messages.error(request, error_message)
                 return render(
@@ -245,7 +244,6 @@ def draft_assistant(request):
                         "error_message": error_message,
                     },
                 )
-            queue = Queue("ai", connection=redis_conn)
             job = queue.enqueue(
                 generate_draft_job,
                 notes,
@@ -261,6 +259,12 @@ def draft_assistant(request):
                 },
             )
             job_id = job.get_id()
+            logger.info(
+                "Draft job enqueued job_id=%s queue=%s redis_env=%s",
+                job_id,
+                queue.name,
+                redis_key or "unknown",
+            )
             trace_success(
                 request_id=op_request_id,
                 user=request.user,
