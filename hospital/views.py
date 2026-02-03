@@ -1,6 +1,7 @@
 # ==============================
 # Django Core Imports
 # ==============================
+import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
@@ -1438,6 +1439,22 @@ def _get_patient_admit_date(patient):
         return patient.created_at.date()
     return timezone.now().date()
 
+def _invoice_dedupe_key(patient):
+    if patient and getattr(patient, "id", None):
+        return f"invoice:{patient.id}"
+    return ""
+
+
+def _get_last_invoice_email_log(patient):
+    dedupe_key = _invoice_dedupe_key(patient)
+    if not dedupe_key:
+        return None
+    return (
+        EmailLog.objects.filter(dedupe_key=dedupe_key)
+        .order_by("-created_at")
+        .first()
+    )
+
 
 def _build_bill_context(patient, admit_date, discharge_date, total_days):
     return {
@@ -1452,6 +1469,7 @@ def _build_bill_context(patient, admit_date, discharge_date, total_days):
         "todayDate": discharge_date,
         "day": int(total_days),
         "patientId": patient.id,
+        "last_email_log": _get_last_invoice_email_log(patient),
     }
 
 
@@ -1684,7 +1702,9 @@ def _render_invoice_pdf(context):
     return pdf_file.getvalue()
 
 
-def _log_invoice_email_attempt(patient, recipient, status, message, event_type=None):
+def _log_invoice_email_attempt(
+    patient, recipient, status, message, event_type=None, dedupe_key=""
+):
     """Record invoice email attempts without raising."""
     try:
         if message and len(message) > 500:
@@ -1696,6 +1716,7 @@ def _log_invoice_email_attempt(patient, recipient, status, message, event_type=N
             or f"invoice_email patient_id={getattr(patient, 'id', 'unknown')}",
             status=status,
             error_message=message or "",
+            dedupe_key=dedupe_key or "",
         )
     except Exception:
         logger.exception(
@@ -1721,6 +1742,7 @@ def _build_invoice_email_context(patient, discharge):
         "medicineCost": discharge.medicine_cost,
         "OtherCharge": discharge.other_charge,
         "total": discharge.total,
+        "last_email_log": _get_last_invoice_email_log(patient),
     }
 
 
@@ -1734,17 +1756,43 @@ def send_invoice_email(patient, discharge, event_type=None):
     if not to_email:
         logger.warning("Invoice email skipped: missing patient email.")
         _log_invoice_email_attempt(
-            patient, "", "FAILED", "missing_recipient_email", event_type=event_type
+            patient,
+            "",
+            "FAILED",
+            "missing_recipient_email",
+            event_type=event_type,
+            dedupe_key=_invoice_dedupe_key(patient),
         )
         return False, "missing_recipient_email", ""
 
+    dedupe_key = _invoice_dedupe_key(patient)
+
+    if not getattr(settings, "EMAIL_ENABLED", False):
+        logger.warning(
+            "Email disabled: missing credentials. Invoice email skipped.",
+            extra={"patient_id": getattr(patient, "id", None)},
+        )
+        _log_invoice_email_attempt(
+            patient,
+            to_email,
+            "SKIPPED",
+            "email_disabled",
+            event_type=event_type,
+            dedupe_key=dedupe_key,
+        )
+        return False, "email_disabled", to_email
+
+    pending_log = None
     try:
+        cooldown_minutes = int(
+            getattr(settings, "INVOICE_EMAIL_COOLDOWN_MINUTES", 5)
+        )
+        cooldown_window = timezone.now() - timedelta(minutes=cooldown_minutes)
         recent_success = (
             EmailLog.objects.filter(
-                Q(event_type__icontains="invoice_email")
-                & Q(event_type__icontains=str(patient.id)),
-                status="SUCCESS",
-                created_at__gte=timezone.now() - timedelta(minutes=10),
+                dedupe_key=dedupe_key,
+                status__in=["SUCCESS", "PENDING"],
+                created_at__gte=cooldown_window,
             )
             .order_by("-created_at")
             .first()
@@ -1752,12 +1800,38 @@ def send_invoice_email(patient, discharge, event_type=None):
         if recent_success:
             elapsed = timezone.now() - recent_success.created_at
             remaining_minutes = max(
-                1, int((600 - elapsed.total_seconds() + 59) // 60)
+                1, int(((cooldown_minutes * 60) - elapsed.total_seconds() + 59) // 60)
             )
             _log_invoice_email_attempt(
-                patient, to_email, "FAILED", "cooldown_active", event_type=event_type
+                patient,
+                to_email,
+                "SKIPPED",
+                "cooldown_active",
+                event_type=event_type,
+                dedupe_key=dedupe_key,
             )
             return False, f"cooldown_active:{remaining_minutes}", to_email
+
+        try:
+            pending_log = EmailLog.objects.create(
+                to_email=to_email,
+                subject="Your Hospital Invoice",
+                event_type=event_type
+                or f"invoice_email patient_id={getattr(patient, 'id', 'unknown')}",
+                status="PENDING",
+                error_message="",
+                dedupe_key=dedupe_key,
+            )
+        except IntegrityError:
+            _log_invoice_email_attempt(
+                patient,
+                to_email,
+                "SKIPPED",
+                "duplicate_pending",
+                event_type=event_type,
+                dedupe_key=dedupe_key,
+            )
+            return False, "duplicate_pending", to_email
 
         context = _build_invoice_email_context(patient, discharge)
         pdf_content = _render_invoice_pdf(context)
@@ -1792,18 +1866,29 @@ def send_invoice_email(patient, discharge, event_type=None):
             )
         sent_count = email.send(fail_silently=False)
         if sent_count and sent_count > 0:
-            _log_invoice_email_attempt(
-                patient, to_email, "SUCCESS", "", event_type=event_type
-            )
+            if pending_log:
+                pending_log.status = "SUCCESS"
+                pending_log.error_message = ""
+                pending_log.save(update_fields=["status", "error_message"])
             logger.info(
                 "Invoice email sent patient_id=%s recipient=%s",
                 getattr(patient, "id", None),
                 to_email,
             )
             return True, "", to_email
-        _log_invoice_email_attempt(
-            patient, to_email, "FAILED", "send_returned_0", event_type=event_type
-        )
+        if pending_log:
+            pending_log.status = "FAILED"
+            pending_log.error_message = "send_returned_0"
+            pending_log.save(update_fields=["status", "error_message"])
+        else:
+            _log_invoice_email_attempt(
+                patient,
+                to_email,
+                "FAILED",
+                "send_returned_0",
+                event_type=event_type,
+                dedupe_key=dedupe_key,
+            )
         logger.warning(
             "Invoice email send returned 0 patient_id=%s recipient=%s",
             getattr(patient, "id", None),
@@ -1816,13 +1901,22 @@ def send_invoice_email(patient, discharge, event_type=None):
             getattr(patient, "id", None),
             to_email,
         )
-        _log_invoice_email_attempt(
-            patient,
-            to_email,
-            "FAILED",
-            str(exc),
-            event_type=event_type,
-        )
+        error_message = str(exc)
+        if error_message and len(error_message) > 500:
+            error_message = error_message[:500]
+        if pending_log:
+            pending_log.status = "FAILED"
+            pending_log.error_message = error_message or "send_failed"
+            pending_log.save(update_fields=["status", "error_message"])
+        else:
+            _log_invoice_email_attempt(
+                patient,
+                to_email,
+                "FAILED",
+                error_message,
+                event_type=event_type,
+                dedupe_key=dedupe_key,
+            )
         return False, str(exc), to_email
 
 

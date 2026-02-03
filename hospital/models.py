@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.models import User
 
@@ -153,8 +154,10 @@ class ConsultationRequest(models.Model):
 
 class EmailLog(models.Model):
     STATUS_CHOICES = [
+        ("PENDING", "Pending"),
         ("SUCCESS", "Success"),
         ("FAILED", "Failed"),
+        ("SKIPPED", "Skipped"),
     ]
 
     to_email = models.EmailField(blank=True)
@@ -162,7 +165,18 @@ class EmailLog(models.Model):
     event_type = models.CharField(max_length=100)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     error_message = models.TextField(blank=True)
+    dedupe_key = models.CharField(max_length=128, blank=True, db_index=True)
+    provider_message_id = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.event_type} - {self.status}"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["dedupe_key"],
+                condition=Q(status="PENDING") & ~Q(dedupe_key=""),
+                name="uniq_emaillog_pending_dedupe_key",
+            ),
+        ]

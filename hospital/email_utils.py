@@ -1,14 +1,17 @@
 import logging
+from datetime import timedelta
 
 from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
+from django.db import IntegrityError
+from django.utils import timezone
 
 from .models import EmailLog
 
 logger = logging.getLogger(__name__)
 
 
-def _log_email(to_email, subject, event_type, status, error_message=""):
+def _log_email(to_email, subject, event_type, status, error_message="", dedupe_key=""):
     try:
         EmailLog.objects.create(
             to_email=to_email,
@@ -16,12 +19,18 @@ def _log_email(to_email, subject, event_type, status, error_message=""):
             event_type=event_type,
             status=status,
             error_message=error_message or "",
+            dedupe_key=dedupe_key or "",
         )
     except Exception:
         logger.exception(
             "Failed to record EmailLog",
             extra={"to": to_email, "event_type": event_type},
         )
+
+def _invoice_dedupe_key(invoice):
+    if invoice and invoice.patient_id:
+        return f"invoice:{invoice.patient_id}"
+    return ""
 
 
 def send_consultation_email(appointment, event_type):
@@ -68,12 +77,80 @@ def send_consultation_email(appointment, event_type):
 def send_invoice_email(invoice, pdf_bytes):
     subject = "Your Hospital Invoice"
     to_email = invoice.patient.user.email if invoice.patient and invoice.patient.user else ""
+    dedupe_key = _invoice_dedupe_key(invoice)
 
     if not to_email:
-        _log_email(to_email, subject, "invoice_email", "FAILED", "Missing patient email.")
+        _log_email(
+            to_email,
+            subject,
+            "invoice_email",
+            "FAILED",
+            "missing_recipient_email",
+            dedupe_key=dedupe_key,
+        )
         return False
 
+    if not getattr(settings, "EMAIL_ENABLED", False):
+        logger.warning(
+            "Email disabled: missing credentials. Invoice email skipped.",
+            extra={"invoice": invoice.id},
+        )
+        _log_email(
+            to_email,
+            subject,
+            "invoice_email",
+            "SKIPPED",
+            "email_disabled",
+            dedupe_key=dedupe_key,
+        )
+        return False
+
+    pending_log = None
     try:
+        cooldown_minutes = int(
+            getattr(settings, "INVOICE_EMAIL_COOLDOWN_MINUTES", 5)
+        )
+        cooldown_window = timezone.now() - timedelta(minutes=cooldown_minutes)
+        recent = (
+            EmailLog.objects.filter(
+                dedupe_key=dedupe_key,
+                status__in=["SUCCESS", "PENDING"],
+                created_at__gte=cooldown_window,
+            )
+            .order_by("-created_at")
+            .first()
+        )
+        if recent:
+            _log_email(
+                to_email,
+                subject,
+                "invoice_email",
+                "SKIPPED",
+                "cooldown_active",
+                dedupe_key=dedupe_key,
+            )
+            return False
+
+        try:
+            pending_log = EmailLog.objects.create(
+                to_email=to_email,
+                subject=subject,
+                event_type="invoice_email",
+                status="PENDING",
+                error_message="",
+                dedupe_key=dedupe_key,
+            )
+        except IntegrityError:
+            _log_email(
+                to_email,
+                subject,
+                "invoice_email",
+                "SKIPPED",
+                "duplicate_pending",
+                dedupe_key=dedupe_key,
+            )
+            return False
+
         email = EmailMessage(
             subject=subject,
             body="Please find your invoice attached.",
@@ -88,9 +165,27 @@ def send_invoice_email(invoice, pdf_bytes):
                 mimetype="application/pdf",
             )
         email.send(fail_silently=False)
-        _log_email(to_email, subject, "invoice_email", "SUCCESS")
+        if pending_log:
+            pending_log.status = "SUCCESS"
+            pending_log.error_message = ""
+            pending_log.save(update_fields=["status", "error_message"])
         return True
     except Exception as exc:
         logger.exception("Failed to send invoice email", extra={"invoice": invoice.id})
-        _log_email(to_email, subject, "invoice_email", "FAILED", str(exc))
+        error_message = str(exc)
+        if error_message and len(error_message) > 500:
+            error_message = error_message[:500]
+        if pending_log:
+            pending_log.status = "FAILED"
+            pending_log.error_message = error_message or "send_failed"
+            pending_log.save(update_fields=["status", "error_message"])
+        else:
+            _log_email(
+                to_email,
+                subject,
+                "invoice_email",
+                "FAILED",
+                error_message,
+                dedupe_key=dedupe_key,
+            )
         return False

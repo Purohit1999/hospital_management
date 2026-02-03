@@ -210,6 +210,7 @@ EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").strip().lower() == "true"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_ENABLED = bool(EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD)
 
 if EMAIL_PROVIDER == "gmail":
     EMAIL_HOST = EMAIL_HOST or "smtp.gmail.com"
@@ -230,14 +231,12 @@ EMAIL_RECEIVING_USER = [
     email for email in os.getenv("EMAIL_RECEIVING_USER", "").split(",") if email
 ]
 
-def _warn_if_email_disabled():
-    logger = logging.getLogger("hospitalmanagement.settings")
-    if not EMAIL_HOST_PASSWORD:
-        logger.warning("Email disabled: missing credentials.")
-        globals()["EMAIL_BACKEND"] = "django.core.mail.backends.console.EmailBackend"
+if not EMAIL_ENABLED:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-
-_warn_if_email_disabled()
+INVOICE_EMAIL_COOLDOWN_MINUTES = int(
+    os.getenv("INVOICE_EMAIL_COOLDOWN_MINUTES", "5")
+)
 
 # ─────────────────────────────────────────────
 # STRIPE SETTINGS

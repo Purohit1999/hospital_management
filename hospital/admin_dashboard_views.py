@@ -15,7 +15,7 @@ from .forms_admin_dashboard import (
     DoctorForm,
     PatientForm,
 )
-from .models import Appointment, DischargeDetails, Doctor, Invoice, Patient
+from .models import Appointment, DischargeDetails, Doctor, Invoice, Patient, EmailLog
 from .pdf_utils import render_invoice_pdf
 
 logger = logging.getLogger(__name__)
@@ -376,6 +376,11 @@ def adm2_appointment_reject(request, pk):
 
 
 def _build_invoice_context(patient, discharge, total_days):
+    last_email_log = (
+        EmailLog.objects.filter(dedupe_key=f"invoice:{patient.id}")
+        .order_by("-created_at")
+        .first()
+    )
     return {
         "name": patient.user.get_full_name(),
         "mobile": patient.mobile,
@@ -393,6 +398,7 @@ def _build_invoice_context(patient, discharge, total_days):
         "OtherCharge": discharge.other_charge,
         "total": discharge.total,
         "patientId": patient.id,
+        "last_email_log": last_email_log,
     }
 
 

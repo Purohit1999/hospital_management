@@ -149,6 +149,19 @@
       <a href="{% url 'email-invoice' patientId %}">Send Invoice Email</a>
     {% endif %}
   </div>
+
+  <div style="margin-top: 20px;">
+    <h5>Last Email Status</h5>
+    {% if last_email_log %}
+      <p><strong>Status:</strong> {{ last_email_log.status }}</p>
+      <p><strong>Created:</strong> {{ last_email_log.created_at }}</p>
+      {% if last_email_log.error_message %}
+        <p><strong>Note:</strong> {{ last_email_log.error_message }}</p>
+      {% endif %}
+    {% else %}
+      <p class="text-muted">No email status recorded yet.</p>
+    {% endif %}
+  </div>
 </div>
 
 <script>
