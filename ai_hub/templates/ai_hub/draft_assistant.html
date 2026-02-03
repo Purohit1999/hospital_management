@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container my-5">
   <h2 class="mb-3">Discharge Summary Draft Assistant</h2>
-  <form method="post">
+  <form method="post" id="draft-form">
     {% csrf_token %}
     <div class="mb-3">
       <label class="form-label">Doctor Notes</label>
@@ -19,66 +19,94 @@
     <button type="submit" class="btn btn-primary">Generate Draft</button>
   </form>
 
-  {% if error_message %}
-    <div class="alert alert-warning mt-3">{{ error_message }}</div>
-  {% endif %}
+  <div class="alert alert-warning mt-3 d-none" id="draft-error"></div>
 
-  {% if job_id %}
-    <div class="alert alert-info mt-3" id="draft-status">
-      Generating draft… Please wait.
-    </div>
-    <div class="spinner-border text-primary" role="status" id="draft-spinner">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  {% endif %}
+  <div class="alert alert-info mt-3 d-none" id="draft-status">
+    Generating draft… Please wait.
+  </div>
+  <div class="spinner-border text-primary d-none" role="status" id="draft-spinner">
+    <span class="visually-hidden">Loading...</span>
+  </div>
 
-  {% if draft %}
-    <div class="mt-4">
-      <h5>Draft Summary</h5>
-      <pre id="draft-text">{{ draft }}</pre>
-    </div>
+  <div class="mt-4 d-none" id="draft-output">
+    <h5>Draft Summary</h5>
+    <pre id="draft-text"></pre>
     <div class="mt-3">
       <h5>Patient Instructions</h5>
-      <pre id="instructions-text">{{ instructions }}</pre>
+      <pre id="instructions-text"></pre>
     </div>
-  {% endif %}
+  </div>
 
-  {% if request_id %}
-  <div class="mt-3 text-muted small">Request ID: {{ request_id }}</div>
-  {% endif %}
+  <div class="mt-3 text-muted small d-none" id="request-id"></div>
 </div>
 
-{% if job_id %}
 <script>
   (function () {
-    const jobId = "{{ job_id }}";
+    const form = document.getElementById("draft-form");
     const statusEl = document.getElementById("draft-status");
     const spinnerEl = document.getElementById("draft-spinner");
+    const errorEl = document.getElementById("draft-error");
+    const outputEl = document.getElementById("draft-output");
     const draftEl = document.getElementById("draft-text");
     const instructionsEl = document.getElementById("instructions-text");
+    const requestIdEl = document.getElementById("request-id");
 
-    const ensureOutput = () => {
-      let draft = draftEl;
-      let instructions = instructionsEl;
-      if (!draft) {
-        const container = document.createElement("div");
-        container.className = "mt-4";
-        container.innerHTML = "<h5>Draft Summary</h5><pre id='draft-text'></pre>";
-        statusEl.insertAdjacentElement("afterend", container);
-        draft = document.getElementById("draft-text");
-      }
-      if (!instructions) {
-        const container = document.createElement("div");
-        container.className = "mt-3";
-        container.innerHTML = "<h5>Patient Instructions</h5><pre id='instructions-text'></pre>";
-        (draft || statusEl).parentNode.appendChild(container);
-        instructions = document.getElementById("instructions-text");
-      }
-      return { draft, instructions };
+    const showError = (message) => {
+      errorEl.textContent = message;
+      errorEl.classList.remove("d-none");
+      statusEl.classList.add("d-none");
+      spinnerEl.classList.add("d-none");
     };
 
-    const poll = () => {
-      fetch("{% url 'draft-status' 'JOB_ID' %}".replace("JOB_ID", jobId))
+    const startPolling = (statusUrl) => {
+      const poll = () => {
+        fetch(statusUrl)
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error("Bad response");
+            }
+            return res.json();
+          })
+          .then((data) => {
+            if (data.state === "finished") {
+              const result = data.result || {};
+              draftEl.textContent = result.draft || "";
+              instructionsEl.textContent = result.instructions || "";
+              outputEl.classList.remove("d-none");
+              statusEl.textContent = "Draft ready.";
+              spinnerEl.classList.add("d-none");
+              return;
+            }
+            if (data.state === "failed") {
+              showError(data.error || "Draft generation failed.");
+              return;
+            }
+            if (data.state === "not_found") {
+              showError("Draft job expired. Please retry.");
+              return;
+            }
+            setTimeout(poll, 1500);
+          })
+          .catch(() => {
+            showError("Unable to fetch draft status. Please retry.");
+          });
+      };
+      poll();
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      errorEl.classList.add("d-none");
+      statusEl.classList.remove("d-none");
+      spinnerEl.classList.remove("d-none");
+      outputEl.classList.add("d-none");
+      requestIdEl.classList.add("d-none");
+      const formData = new FormData(form);
+      fetch("{% url 'ai-draft' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": formData.get("csrfmiddlewaretoken") },
+        body: formData,
+      })
         .then((res) => {
           if (!res.ok) {
             throw new Error("Bad response");
@@ -86,35 +114,18 @@
           return res.json();
         })
         .then((data) => {
-          if (data.state === "finished") {
-            const { draft, instructions } = ensureOutput();
-            const result = data.result || {};
-            draft.textContent = result.draft || "";
-            instructions.textContent = result.instructions || "";
-            statusEl.textContent = "Draft ready.";
-            if (spinnerEl) spinnerEl.remove();
+          if (!data || !data.request_id || !data.status_url) {
+            showError("Unable to start draft. Please retry.");
             return;
           }
-          if (data.state === "failed") {
-            statusEl.textContent = data.error || "Draft generation failed.";
-            if (spinnerEl) spinnerEl.remove();
-            return;
-          }
-          if (data.state === "not_found") {
-            statusEl.textContent = "Draft job expired. Please retry.";
-            if (spinnerEl) spinnerEl.remove();
-            return;
-          }
-          setTimeout(poll, 1500);
+          requestIdEl.textContent = "Request ID: " + data.request_id;
+          requestIdEl.classList.remove("d-none");
+          startPolling(data.status_url);
         })
         .catch(() => {
-          statusEl.textContent = "Unable to fetch draft status. Please retry.";
-          if (spinnerEl) spinnerEl.remove();
+          showError("Unable to start draft. Please retry.");
         });
-    };
-
-    poll();
+    });
   })();
 </script>
-{% endif %}
 {% endblock %}

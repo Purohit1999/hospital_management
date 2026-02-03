@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 
 from .models import (
@@ -266,6 +267,14 @@ def draft_assistant(request):
                 queue.name,
                 redis_key or "unknown",
             )
+            return JsonResponse(
+                {
+                    "request_id": job_id,
+                    "status_url": reverse(
+                        "draft-status", kwargs={"request_id": job_id}
+                    ),
+                }
+            )
             trace_success(
                 request_id=op_request_id,
                 user=request.user,
@@ -287,15 +296,9 @@ def draft_assistant(request):
                 "Draft generation failed. Please try again later."
             )
             messages.error(request, error_message)
-            return render(
-                request,
-                "ai_hub/draft_assistant.html",
-                {
-                    "draft": "",
-                    "instructions": "",
-                    "request_id": request_id,
-                    "error_message": error_message,
-                },
+            return JsonResponse(
+                {"error": "Draft generation failed. Please try again later."},
+                status=500,
             )
     return render(
         request,
