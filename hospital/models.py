@@ -155,6 +155,7 @@ class ConsultationRequest(models.Model):
 class EmailLog(models.Model):
     STATUS_CHOICES = [
         ("PENDING", "Pending"),
+        ("SENT", "Sent"),
         ("SUCCESS", "Success"),
         ("FAILED", "Failed"),
         ("SKIPPED", "Skipped"),
@@ -167,6 +168,7 @@ class EmailLog(models.Model):
     error_message = models.TextField(blank=True)
     dedupe_key = models.CharField(max_length=128, blank=True, db_index=True)
     provider_message_id = models.CharField(max_length=255, blank=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

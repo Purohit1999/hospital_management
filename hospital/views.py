@@ -45,6 +45,7 @@ from io import BytesIO
 from .models import Doctor, Patient, Appointment, DischargeDetails, Invoice, EmailLog
 from .models import ConsultationRequest
 from payments.models import Payment
+from .email_utils import send_invoice_email as send_invoice_email_helper
 from .forms import (
     AppointmentForm,
     PatientUserForm, PatientForm,
@@ -758,10 +759,23 @@ def admin_patient_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def admin_view_patient_view(request):
-    patients = Patient.objects.select_related("user").order_by("-id")
+    patients = list(Patient.objects.select_related("user").order_by("-id"))
+    dedupe_keys = [f"invoice:{patient.id}" for patient in patients]
+    latest_logs = {}
+    if dedupe_keys:
+        for log in (
+            EmailLog.objects.filter(dedupe_key__in=dedupe_keys)
+            .order_by("-created_at")
+        ):
+            if log.dedupe_key not in latest_logs:
+                latest_logs[log.dedupe_key] = log
+    for patient in patients:
+        log = latest_logs.get(f"invoice:{patient.id}")
+        patient.email_status = getattr(log, "status", None)
+        patient.email_time = getattr(log, "sent_at", None)
     logger.info(
         "admin_view_patient_view count=%s",
-        patients.count(),
+        len(patients),
         extra={"path": request.path, "user": request.user.username},
     )
     return render(
@@ -1696,7 +1710,7 @@ def _render_invoice_pdf(context):
 
     html = render_to_string("hospital/download_bill.html", context)
     pdf_file = BytesIO()
-    pisa_status = pisa.CreatePDF(html, dest=pdf_file)
+    pisa_status = pisa.CreatePDF(html.encode("utf-8"), dest=pdf_file)
     if pisa_status.err:
         return None
     return pdf_file.getvalue()
@@ -1765,74 +1779,7 @@ def send_invoice_email(patient, discharge, event_type=None):
         )
         return False, "missing_recipient_email", ""
 
-    dedupe_key = _invoice_dedupe_key(patient)
-
-    if not getattr(settings, "EMAIL_ENABLED", False):
-        logger.warning(
-            "Email disabled: missing credentials. Invoice email skipped.",
-            extra={"patient_id": getattr(patient, "id", None)},
-        )
-        _log_invoice_email_attempt(
-            patient,
-            to_email,
-            "SKIPPED",
-            "email_disabled",
-            event_type=event_type,
-            dedupe_key=dedupe_key,
-        )
-        return False, "email_disabled", to_email
-
-    pending_log = None
     try:
-        cooldown_minutes = int(
-            getattr(settings, "INVOICE_EMAIL_COOLDOWN_MINUTES", 5)
-        )
-        cooldown_window = timezone.now() - timedelta(minutes=cooldown_minutes)
-        recent_success = (
-            EmailLog.objects.filter(
-                dedupe_key=dedupe_key,
-                status__in=["SUCCESS", "PENDING"],
-                created_at__gte=cooldown_window,
-            )
-            .order_by("-created_at")
-            .first()
-        )
-        if recent_success:
-            elapsed = timezone.now() - recent_success.created_at
-            remaining_minutes = max(
-                1, int(((cooldown_minutes * 60) - elapsed.total_seconds() + 59) // 60)
-            )
-            _log_invoice_email_attempt(
-                patient,
-                to_email,
-                "SKIPPED",
-                "cooldown_active",
-                event_type=event_type,
-                dedupe_key=dedupe_key,
-            )
-            return False, f"cooldown_active:{remaining_minutes}", to_email
-
-        try:
-            pending_log = EmailLog.objects.create(
-                to_email=to_email,
-                subject="Your Hospital Invoice",
-                event_type=event_type
-                or f"invoice_email patient_id={getattr(patient, 'id', 'unknown')}",
-                status="PENDING",
-                error_message="",
-                dedupe_key=dedupe_key,
-            )
-        except IntegrityError:
-            _log_invoice_email_attempt(
-                patient,
-                to_email,
-                "SKIPPED",
-                "duplicate_pending",
-                event_type=event_type,
-                dedupe_key=dedupe_key,
-            )
-            return False, "duplicate_pending", to_email
-
         context = _build_invoice_email_context(patient, discharge)
         pdf_content = _render_invoice_pdf(context)
         download_url = reverse("download-pdf", args=[patient.id])
@@ -1850,51 +1797,27 @@ def send_invoice_email(patient, discharge, event_type=None):
                     password=env_password,
                 )
                 logger.info("Invoice email using env fallback credentials.")
-        email = EmailMultiAlternatives(
+        sent, error = send_invoice_email_helper(
+            patient=patient,
+            to_email=to_email,
             subject="Your Hospital Invoice",
             body=body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[to_email],
+            pdf_bytes=pdf_content,
+            attachment_name=f"invoice_{patient.id}.pdf",
             cc=[settings.ADMIN_EMAIL],
+            event_type=event_type
+            or f"invoice_email patient_id={getattr(patient, 'id', 'unknown')}",
             connection=connection,
+            return_error=True,
         )
-        if pdf_content:
-            email.attach(
-                filename=f"invoice_{patient.id}.pdf",
-                content=pdf_content,
-                mimetype="application/pdf",
-            )
-        sent_count = email.send(fail_silently=False)
-        if sent_count and sent_count > 0:
-            if pending_log:
-                pending_log.status = "SUCCESS"
-                pending_log.error_message = ""
-                pending_log.save(update_fields=["status", "error_message"])
+        if sent:
             logger.info(
                 "Invoice email sent patient_id=%s recipient=%s",
                 getattr(patient, "id", None),
                 to_email,
             )
             return True, "", to_email
-        if pending_log:
-            pending_log.status = "FAILED"
-            pending_log.error_message = "send_returned_0"
-            pending_log.save(update_fields=["status", "error_message"])
-        else:
-            _log_invoice_email_attempt(
-                patient,
-                to_email,
-                "FAILED",
-                "send_returned_0",
-                event_type=event_type,
-                dedupe_key=dedupe_key,
-            )
-        logger.warning(
-            "Invoice email send returned 0 patient_id=%s recipient=%s",
-            getattr(patient, "id", None),
-            to_email,
-        )
-        return False, "send_returned_0", to_email
+        return False, error or "send_failed", to_email
     except Exception as exc:
         logger.exception(
             "Invoice email send failed patient_id=%s recipient=%s",
@@ -1904,20 +1827,15 @@ def send_invoice_email(patient, discharge, event_type=None):
         error_message = str(exc)
         if error_message and len(error_message) > 500:
             error_message = error_message[:500]
-        if pending_log:
-            pending_log.status = "FAILED"
-            pending_log.error_message = error_message or "send_failed"
-            pending_log.save(update_fields=["status", "error_message"])
-        else:
-            _log_invoice_email_attempt(
-                patient,
-                to_email,
-                "FAILED",
-                error_message,
-                event_type=event_type,
-                dedupe_key=dedupe_key,
-            )
-        return False, str(exc), to_email
+        _log_invoice_email_attempt(
+            patient,
+            to_email,
+            "FAILED",
+            error_message,
+            event_type=event_type,
+            dedupe_key=_invoice_dedupe_key(patient),
+        )
+        return False, error_message, to_email
 
 
 @login_required(login_url="adminlogin")

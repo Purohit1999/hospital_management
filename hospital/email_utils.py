@@ -1,8 +1,9 @@
 import logging
+import os
 from datetime import timedelta
 
 from django.conf import settings
-from django.core.mail import EmailMessage, send_mail
+from django.core.mail import EmailMessage, send_mail, get_connection
 from django.db import IntegrityError
 from django.utils import timezone
 
@@ -27,8 +28,10 @@ def _log_email(to_email, subject, event_type, status, error_message="", dedupe_k
             extra={"to": to_email, "event_type": event_type},
         )
 
-def _invoice_dedupe_key(invoice):
-    if invoice and invoice.patient_id:
+def _invoice_dedupe_key(invoice=None, patient=None):
+    if patient and getattr(patient, "id", None):
+        return f"invoice:{patient.id}"
+    if invoice and getattr(invoice, "patient_id", None):
         return f"invoice:{invoice.patient_id}"
     return ""
 
@@ -74,36 +77,60 @@ def send_consultation_email(appointment, event_type):
         return False
 
 
-def send_invoice_email(invoice, pdf_bytes):
-    subject = "Your Hospital Invoice"
-    to_email = invoice.patient.user.email if invoice.patient and invoice.patient.user else ""
-    dedupe_key = _invoice_dedupe_key(invoice)
+def send_invoice_email(
+    invoice=None,
+    pdf_bytes=None,
+    *,
+    patient=None,
+    to_email=None,
+    subject="Your Hospital Invoice",
+    body="Please find your invoice attached.",
+    cc=None,
+    attachment_name=None,
+    event_type="invoice_email",
+    connection=None,
+    return_error=False,
+):
+    if not patient and invoice:
+        patient = invoice.patient
+    if not to_email and patient:
+        if patient.email:
+            to_email = patient.email
+        elif patient.user and patient.user.email:
+            to_email = patient.user.email
+
+    dedupe_key = _invoice_dedupe_key(invoice=invoice, patient=patient)
+    if not attachment_name:
+        attachment_id = getattr(invoice, "id", None) or getattr(patient, "id", None)
+        attachment_name = f"invoice_{attachment_id}.pdf" if attachment_id else "invoice.pdf"
+    if cc is None:
+        cc = [settings.ADMIN_INVOICE_EMAIL] if getattr(settings, "ADMIN_INVOICE_EMAIL", "") else []
 
     if not to_email:
         _log_email(
             to_email,
             subject,
-            "invoice_email",
+            event_type,
             "FAILED",
             "missing_recipient_email",
             dedupe_key=dedupe_key,
         )
-        return False
+        return (False, "missing_recipient_email") if return_error else False
 
     if not getattr(settings, "EMAIL_ENABLED", False):
         logger.warning(
             "Email disabled: missing credentials. Invoice email skipped.",
-            extra={"invoice": invoice.id},
+            extra={"invoice": getattr(invoice, "id", None)},
         )
         _log_email(
             to_email,
             subject,
-            "invoice_email",
-            "SKIPPED",
+            event_type,
+            "FAILED",
             "email_disabled",
             dedupe_key=dedupe_key,
         )
-        return False
+        return (False, "email_disabled") if return_error else False
 
     pending_log = None
     try:
@@ -114,7 +141,7 @@ def send_invoice_email(invoice, pdf_bytes):
         recent = (
             EmailLog.objects.filter(
                 dedupe_key=dedupe_key,
-                status__in=["SUCCESS", "PENDING"],
+                status__in=["SENT", "SUCCESS", "PENDING"],
                 created_at__gte=cooldown_window,
             )
             .order_by("-created_at")
@@ -124,18 +151,24 @@ def send_invoice_email(invoice, pdf_bytes):
             _log_email(
                 to_email,
                 subject,
-                "invoice_email",
+                event_type,
                 "SKIPPED",
                 "cooldown_active",
                 dedupe_key=dedupe_key,
             )
-            return False
+            elapsed = timezone.now() - recent.created_at
+            remaining = max(
+                1, int(((cooldown_minutes * 60) - elapsed.total_seconds() + 59) // 60)
+            )
+            return (
+                (False, f"cooldown_active:{remaining}") if return_error else False
+            )
 
         try:
             pending_log = EmailLog.objects.create(
                 to_email=to_email,
                 subject=subject,
-                event_type="invoice_email",
+                event_type=event_type,
                 status="PENDING",
                 error_message="",
                 dedupe_key=dedupe_key,
@@ -144,34 +177,54 @@ def send_invoice_email(invoice, pdf_bytes):
             _log_email(
                 to_email,
                 subject,
-                "invoice_email",
+                event_type,
                 "SKIPPED",
                 "duplicate_pending",
                 dedupe_key=dedupe_key,
             )
-            return False
+            return (False, "duplicate_pending") if return_error else False
+
+        if connection is None and not settings.EMAIL_HOST_PASSWORD:
+            env_password = os.environ.get("EMAIL_HOST_PASSWORD", "")
+            if env_password:
+                connection = get_connection(
+                    username=settings.EMAIL_HOST_USER,
+                    password=env_password,
+                )
+                logger.info("Invoice email using env fallback credentials.")
 
         email = EmailMessage(
             subject=subject,
-            body="Please find your invoice attached.",
+            body=body,
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
-            cc=[settings.ADMIN_INVOICE_EMAIL],
+            cc=cc,
+            connection=connection,
         )
         if pdf_bytes:
             email.attach(
-                filename=f"invoice_{invoice.id}.pdf",
+                filename=attachment_name,
                 content=pdf_bytes,
                 mimetype="application/pdf",
             )
-        email.send(fail_silently=False)
+        sent_count = email.send(fail_silently=False)
+        if not sent_count:
+            if pending_log:
+                pending_log.status = "FAILED"
+                pending_log.error_message = "send_returned_0"
+                pending_log.save(update_fields=["status", "error_message"])
+            return (False, "send_returned_0") if return_error else False
         if pending_log:
-            pending_log.status = "SUCCESS"
+            pending_log.status = "SENT"
+            pending_log.sent_at = timezone.now()
             pending_log.error_message = ""
-            pending_log.save(update_fields=["status", "error_message"])
-        return True
+            pending_log.save(update_fields=["status", "sent_at", "error_message"])
+        return (True, "") if return_error else True
     except Exception as exc:
-        logger.exception("Failed to send invoice email", extra={"invoice": invoice.id})
+        logger.exception(
+            "Failed to send invoice email",
+            extra={"invoice": getattr(invoice, "id", None)},
+        )
         error_message = str(exc)
         if error_message and len(error_message) > 500:
             error_message = error_message[:500]
@@ -183,9 +236,9 @@ def send_invoice_email(invoice, pdf_bytes):
             _log_email(
                 to_email,
                 subject,
-                "invoice_email",
+                event_type,
                 "FAILED",
                 error_message,
                 dedupe_key=dedupe_key,
             )
-        return False
+        return (False, error_message) if return_error else False
