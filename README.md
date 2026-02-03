@@ -230,6 +230,131 @@ To download and review all medical charges.
 
 To reach out to the hospital for help or suggestions.
 
+---
+## 🧭 Patient Journey – System Flow Diagram
+
+![Patient Journey System Flow Diagram](static/images/patient_journy.png)
+
+
+🏥 Patient Journey: Registration → Treatment → Discharge → Payment
+
+This system implements a complete end-to-end patient lifecycle using Django, covering registration, approval, discharge, invoicing, and payment visibility.
+
+1️⃣ Patient Registration
+
+A patient registers through the Patient Registration form.
+
+Registration creates a patient profile in pending approval state.
+
+At this stage:
+
+The patient cannot log in
+
+Access is restricted until admin approval
+
+2️⃣ Admin Approval (Backend Dashboard)
+
+Admin logs in via the Django Admin / Admin Dashboard
+
+Admin reviews newly registered patients
+
+Admin can:
+
+✅ Approve patient registration
+
+❌ Reject patient registration
+
+✅ Only approved patients are allowed to log in
+
+3️⃣ Patient Login
+
+Once approved, the patient can:
+
+Log in using their registered credentials
+
+Access their Patient Dashboard
+
+Dashboard shows:
+
+Appointments
+
+Medical details
+
+Current status (Admitted / Discharged)
+
+4️⃣ Patient Discharge & Invoice Generation (Admin)
+
+When treatment is complete:
+
+Admin discharges the patient from the backend
+
+During discharge:
+
+A final invoice is generated
+
+Invoice includes:
+
+Consultation charges
+
+Room charges
+
+Medication costs
+
+Total payable amount
+
+Admin can:
+
+📄 Generate Invoice PDF
+
+📧 Send invoice via email (optional feature)
+
+5️⃣ Discharged Patient View (Frontend)
+
+After discharge:
+
+Patient logs in again
+
+Navigates to Discharged Section
+
+Patient can:
+
+View discharge summary
+
+View invoice details
+
+Download invoice PDF
+
+6️⃣ Payment by Card
+
+Under the Discharged / Payment section, the patient can:
+
+See pending payment amount
+
+Proceed to card payment
+
+Payment status updates after successful transaction
+
+Ensures:
+
+Transparency
+
+No admin-side manual payment tracking
+
+✅ Key Highlights
+
+🔐 Secure approval-based login system
+
+🧾 Automated invoice generation
+
+📄 PDF invoice download
+
+📧 Email invoice support
+
+💳 Patient-side payment visibility
+
+🔁 Complete patient lifecycle management
+
+
 
 ---
 
@@ -684,6 +809,176 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 ```
+---
+🧪 Testing
+
+This project was developed using a Test-Driven Development (TDD) approach, with a strong focus on Django unit testing to ensure reliability, correctness, and maintainability across all core features. Tests were written alongside feature development and used continuously to validate behaviour during refactoring and enhancement.
+
+✅ Testing Strategy
+
+Framework: Django built-in testing framework (django.test.TestCase)
+Test Type: Automated unit and integration tests
+
+Coverage Areas:
+
+Authentication & role-based access
+
+Admin workflows
+
+Patient lifecycle (registration → discharge → payment)
+
+Doctor login and access control
+
+Payment processing
+
+AI module logic (RAG, ML scoring, agent tracing)
+
+All tests were executed repeatedly during development to confirm that new changes did not introduce regressions.
+
+🧪 Django Unit Tests Implemented
+
+The project contains dedicated test modules across multiple Django apps:
+
+hospital/tests.py
+
+payments/tests.py
+
+ai_hub/tests.py
+
+🔍 Key Test Coverage
+🛠 Admin Functionality
+
+Patient creation via admin dashboard
+
+Patient listing and editing
+
+Preventing deletion of patients with existing appointments
+
+Discharge process:
+
+Creation of discharge records
+
+Invoice PDF generation
+
+Email notification logic
+
+🧍 Patient Journey
+
+Automatic patient profile creation via Django signals
+
+Viewing discharged invoices
+
+Payment status updates after successful payment
+
+👨‍⚕️ Doctor Module
+
+![Doctor Login Tests](static/images/testing_doctor_login.png.png)
+
+Doctor signup creates both User and Doctor profile
+
+Login access restricted to Doctor role only
+
+Dashboard access blocked for unauthenticated users
+
+Proper redirect handling after login
+
+💳 Payments
+
+![Payment Workflow Test](static/images/testing_payment.png.png)
+
+Payment success endpoint correctly marks invoices as paid
+
+Payment records linked to the correct patient and discharge record
+
+🤖 AI & ML Components
+
+Agent request tracing
+
+RAG document chunking
+
+No-show prediction score validation
+
+Model inference range checks
+
+▶️ Test Execution Evidence
+
+All tests were run successfully using the Django test runner:
+
+python manage.py test -v 2
+
+✅ Full Test Suite Execution
+
+![Django Test Suite](static/images/testing_full_suite.png.png)
+
+Result:
+
+✅ 19 tests discovered
+
+✅ All tests passed successfully
+
+✅ No system check issues
+
+✅ No database integrity errors
+
+✅ Signals and role-based profile creation validated
+
+🎯 Targeted Test Runs
+
+Additional targeted test runs were also performed:
+
+python manage.py test hospital -v 2
+python manage.py test payments -v 2
+python manage.py test ai_hub -v 2
+python manage.py test --keepdb --verbosity 2
+
+💳 Payment Workflow Tests
+
+👨‍⚕️ Doctor Login & Access Control Tests
+
+🤖 AI Module Tests
+
+![AI Module Tests](static/images/testing_doctor_login.png.png)
+
+Each command completed with 100% passing tests, confirming system stability across all modules.
+
+🔁 Test-Driven Development in Practice
+
+Throughout the build:
+
+Tests were written or updated before and during feature implementation
+
+Failing tests highlighted issues such as:
+
+Duplicate profile creation via signals
+
+Database uniqueness constraints
+
+Code was refactored until tests passed
+
+Tests were re-run to confirm no regressions
+
+This iterative cycle ensured that:
+
+Business logic remained correct
+
+Refactoring did not break existing functionality
+
+Role-based workflows behaved as expected
+
+📌 Summary
+
+The testing approach demonstrates:
+
+Strong understanding of Django testing best practices
+
+Clear application of Test-Driven Development principles
+
+Robust validation of real-world healthcare workflows
+
+Production-ready reliability for critical features like billing and discharge
+
+✔️ All automated tests pass successfully, confirming the application is stable, secure, and ready for deployment.
+
 ---
 
 # 🚀 **Deployment Guide (Heroku)**

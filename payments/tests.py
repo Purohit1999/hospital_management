@@ -28,7 +28,7 @@ class PaymentSuccessViewTests(TestCase):
         group, _ = Group.objects.get_or_create(name="PATIENT")
         self.user.groups.add(group)
 
-        self.patient = Patient.objects.create(user=self.user)
+        self.patient, _ = Patient.objects.get_or_create(user=self.user)
         self.discharge = DischargeDetails.objects.create(
             patient=self.patient,
             doctor=None,

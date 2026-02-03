@@ -159,7 +159,11 @@ class DoctorLoginTests(TestCase):
         )
         group, _ = Group.objects.get_or_create(name="DOCTOR")
         self.doctor_user.groups.add(group)
-        self.doctor_profile = Doctor.objects.create(user=self.doctor_user, status=True)
+        self.doctor_profile, _ = Doctor.objects.get_or_create(
+            user=self.doctor_user, defaults={"status": True}
+        )
+        self.doctor_profile.status = True
+        self.doctor_profile.save(update_fields=["status"])
 
     def test_doctor_login_page_renders_form(self):
         response = self.client.get(reverse("doctorlogin"))
