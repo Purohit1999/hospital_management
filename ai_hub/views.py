@@ -3,10 +3,14 @@ import os
 import time
 import re
 import logging
+from redis import Redis
+from rq import Queue
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from .models import (
@@ -18,11 +22,11 @@ from .models import (
     AgentRun,
     AgentStepTrace,
 )
-from .services.llm import generate_text
 from .services import ml as ml_service
 from .services.ml import predict_no_show, predict_department
 from .services.observability import new_request_id, trace_success, trace_error
 from .services.llm_client import generate_answer
+from .tasks import generate_draft_job
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +37,13 @@ def _ai_enabled():
 
 def _agents_enabled():
     return getattr(settings, "AGENTS_ENABLED", False)
+
+
+def _get_redis_connection():
+    redis_url = os.getenv("REDIS_URL", "")
+    if not redis_url:
+        return None
+    return Redis.from_url(redis_url)
 
 
 def _rate_limit_ok(request, limit=10, window_seconds=60):
@@ -212,6 +223,8 @@ def draft_assistant(request):
     draft = ""
     instructions = ""
     request_id = ""
+    error_message = ""
+    job_id = ""
     if request.method == "POST":
         if not _rate_limit_ok(request):
             messages.error(request, "Rate limit exceeded. Please wait and try again.")
@@ -222,37 +235,44 @@ def draft_assistant(request):
         try:
             notes = request.POST.get("notes", "")
             redact = request.POST.get("redact") == "on"
-            safe_notes = _redact_pii(notes) if redact else notes
-            prompt = (
-                "Draft a discharge summary and patient-friendly instructions.\n\n"
-                f"Notes:\n{safe_notes}\n"
-            )
-            response = generate_text(prompt)
-            parts = response.split("\n\n", 1)
-            draft = parts[0]
-            instructions = parts[1] if len(parts) > 1 else ""
             reviewed = request.POST.get("reviewed") == "on"
-            if reviewed:
-                AiDraft.objects.create(
-                    user=request.user if request.user.is_authenticated else None,
-                    patient_id=request.POST.get("patient_id") or None,
-                    notes=notes,
-                    draft_text=draft,
-                    patient_instructions=instructions,
-                    reviewed=True,
+            redis_conn = _get_redis_connection()
+            if not redis_conn:
+                error_message = "Drafts are unavailable on this deployment."
+                messages.error(request, error_message)
+                return render(
+                    request,
+                    "ai_hub/draft_assistant.html",
+                    {
+                        "draft": "",
+                        "instructions": "",
+                        "request_id": request_id,
+                        "error_message": error_message,
+                    },
                 )
-                messages.success(request, "Draft saved.")
+            queue = Queue("ai", connection=redis_conn)
+            job = queue.enqueue(
+                generate_draft_job,
+                notes,
+                redact,
+                job_timeout=30,
+                result_ttl=600,
+                failure_ttl=600,
+                meta={
+                    "reviewed": reviewed,
+                    "user_id": request.user.id if request.user.is_authenticated else None,
+                    "patient_id": request.POST.get("patient_id") or None,
+                    "notes": notes,
+                },
+            )
+            job_id = job.get_id()
             trace_success(
                 request_id=op_request_id,
                 user=request.user,
                 route=request.path,
-                operation_type="draft",
+                operation_type="draft_enqueue",
                 latency_ms=int((time.time() - start) * 1000),
-                metadata={
-                    "notes": safe_notes,
-                    "reviewed": reviewed,
-                    "redact": redact,
-                },
+                metadata={"job_id": job_id, "redact": redact},
             )
         except Exception as exc:
             trace_error(
@@ -263,12 +283,78 @@ def draft_assistant(request):
                 latency_ms=int((time.time() - start) * 1000),
                 error_message=str(exc),
             )
-            raise
+            error_message = (
+                "Draft generation failed. Please try again later."
+            )
+            messages.error(request, error_message)
+            return render(
+                request,
+                "ai_hub/draft_assistant.html",
+                {
+                    "draft": "",
+                    "instructions": "",
+                    "request_id": request_id,
+                    "error_message": error_message,
+                },
+            )
     return render(
         request,
         "ai_hub/draft_assistant.html",
-        {"draft": draft, "instructions": instructions, "request_id": request_id},
+        {
+            "draft": draft,
+            "instructions": instructions,
+            "request_id": request_id,
+            "error_message": error_message,
+            "job_id": job_id,
+        },
     )
+
+
+def draft_status(request, job_id):
+    redis_conn = _get_redis_connection()
+    if not redis_conn:
+        return JsonResponse({"status": "error", "error": "Drafts unavailable."}, status=200)
+    try:
+        from rq.job import Job
+
+        job = Job.fetch(job_id, connection=redis_conn)
+    except Exception:
+        return JsonResponse({"status": "missing"}, status=200)
+
+    status = job.get_status()
+    if status == "finished":
+        result = job.result or {}
+        reviewed = bool(job.meta.get("reviewed"))
+        saved = bool(job.meta.get("saved"))
+        if reviewed and not saved:
+            try:
+                user_id = job.meta.get("user_id")
+                patient_id = job.meta.get("patient_id")
+                notes = job.meta.get("notes") or ""
+                User = get_user_model()
+                user = User.objects.filter(id=user_id).first() if user_id else None
+                AiDraft.objects.create(
+                    user=user,
+                    patient_id=patient_id or None,
+                    notes=notes,
+                    draft_text=result.get("draft", ""),
+                    patient_instructions=result.get("instructions", ""),
+                    reviewed=True,
+                )
+                job.meta["saved"] = True
+                job.save_meta()
+            except Exception:
+                logger.exception("Failed to save draft from job_id=%s", job_id)
+        return JsonResponse(
+            {
+                "status": "finished",
+                "draft": result.get("draft", ""),
+                "instructions": result.get("instructions", ""),
+            }
+        )
+    if status == "failed":
+        return JsonResponse({"status": "failed", "error": "Draft generation failed."})
+    return JsonResponse({"status": status})
 
 
 def compliance_agent(request):

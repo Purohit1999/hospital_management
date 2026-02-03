@@ -19,14 +19,27 @@
     <button type="submit" class="btn btn-primary">Generate Draft</button>
   </form>
 
+  {% if error_message %}
+    <div class="alert alert-warning mt-3">{{ error_message }}</div>
+  {% endif %}
+
+  {% if job_id %}
+    <div class="alert alert-info mt-3" id="draft-status">
+      Generating draft… Please wait.
+    </div>
+    <div class="spinner-border text-primary" role="status" id="draft-spinner">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  {% endif %}
+
   {% if draft %}
     <div class="mt-4">
       <h5>Draft Summary</h5>
-      <pre>{{ draft }}</pre>
+      <pre id="draft-text">{{ draft }}</pre>
     </div>
     <div class="mt-3">
       <h5>Patient Instructions</h5>
-      <pre>{{ instructions }}</pre>
+      <pre id="instructions-text">{{ instructions }}</pre>
     </div>
   {% endif %}
 
@@ -34,4 +47,63 @@
   <div class="mt-3 text-muted small">Request ID: {{ request_id }}</div>
   {% endif %}
 </div>
+
+{% if job_id %}
+<script>
+  (function () {
+    const jobId = "{{ job_id }}";
+    const statusEl = document.getElementById("draft-status");
+    const spinnerEl = document.getElementById("draft-spinner");
+    const draftEl = document.getElementById("draft-text");
+    const instructionsEl = document.getElementById("instructions-text");
+
+    const ensureOutput = () => {
+      let draft = draftEl;
+      let instructions = instructionsEl;
+      if (!draft) {
+        const container = document.createElement("div");
+        container.className = "mt-4";
+        container.innerHTML = "<h5>Draft Summary</h5><pre id='draft-text'></pre>";
+        statusEl.insertAdjacentElement("afterend", container);
+        draft = document.getElementById("draft-text");
+      }
+      if (!instructions) {
+        const container = document.createElement("div");
+        container.className = "mt-3";
+        container.innerHTML = "<h5>Patient Instructions</h5><pre id='instructions-text'></pre>";
+        (draft || statusEl).parentNode.appendChild(container);
+        instructions = document.getElementById("instructions-text");
+      }
+      return { draft, instructions };
+    };
+
+    const poll = () => {
+      fetch("{% url 'ai-draft-status' 'JOB_ID' %}".replace("JOB_ID", jobId))
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "finished") {
+            const { draft, instructions } = ensureOutput();
+            draft.textContent = data.draft || "";
+            instructions.textContent = data.instructions || "";
+            statusEl.textContent = "Draft ready.";
+            if (spinnerEl) spinnerEl.remove();
+            return;
+          }
+          if (data.status === "failed" || data.status === "error") {
+            statusEl.textContent = data.error || "Draft generation failed.";
+            if (spinnerEl) spinnerEl.remove();
+            return;
+          }
+          setTimeout(poll, 1500);
+        })
+        .catch(() => {
+          statusEl.textContent = "Unable to fetch draft status. Please retry.";
+          if (spinnerEl) spinnerEl.remove();
+        });
+    };
+
+    poll();
+  })();
+</script>
+{% endif %}
 {% endblock %}
