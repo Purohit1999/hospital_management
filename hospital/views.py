@@ -16,7 +16,7 @@ from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.contrib import messages
 import logging
-from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
+from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives, get_connection
 from django.template.loader import render_to_string
 from django.urls import reverse
 
@@ -1767,12 +1767,22 @@ def send_invoice_email(patient, discharge, event_type=None):
             "If you have any questions, contact us.\n\n"
             f"Download link: {download_url}\n"
         )
+        connection = None
+        if not settings.EMAIL_HOST_PASSWORD:
+            env_password = os.environ.get("EMAIL_HOST_PASSWORD", "")
+            if env_password:
+                connection = get_connection(
+                    username=settings.EMAIL_HOST_USER,
+                    password=env_password,
+                )
+                logger.info("Invoice email using env fallback credentials.")
         email = EmailMultiAlternatives(
             subject="Your Hospital Invoice",
             body=body,
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
             cc=[settings.ADMIN_EMAIL],
+            connection=connection,
         )
         if pdf_content:
             email.attach(
