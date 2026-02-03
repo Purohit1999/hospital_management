@@ -12,7 +12,7 @@ def _mock_response(prompt: str) -> str:
     )
 
 
-def generate_text(prompt: str, system: str = "") -> str:
+def generate_text(prompt: str, system: str = "", max_tokens: int = 256, timeout: int = 12) -> str:
     provider = getattr(settings, "LLM_PROVIDER", "mock")
     api_key = os.getenv("OPENAI_API_KEY", "")
     if provider == "mock" or not api_key:
@@ -27,9 +27,10 @@ def generate_text(prompt: str, system: str = "") -> str:
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.2,
+        "max_tokens": max_tokens,
     }
     headers = {"Authorization": f"Bearer {api_key}"}
-    response = requests.post(url, json=payload, headers=headers, timeout=30)
+    response = requests.post(url, json=payload, headers=headers, timeout=timeout)
     response.raise_for_status()
     data = response.json()
     content = data["choices"][0]["message"]["content"]
